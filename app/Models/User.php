@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasRoles, HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +20,17 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'father_name',
+        'birth_date',
+        'gender',
         'email',
         'password',
+        'phone',
+        'image',
+        'role',
+        'last_login',
     ];
 
     /**
@@ -44,5 +54,34 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function devices()
+    {
+        return $this->belongsToMany(Device_info::class, 'user_devices', 'user_id', 'device_id')
+            ->withTimestamps();
+    }
+    public function admin()
+    {
+        return $this->hasOne(Admin::class, 'user_id');
+    }
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class, 'user_id');
+    }
+    public function student()
+    {
+        return $this->hasOne(Student::class, 'user_id');
+    }
+    public function createdAdmins()
+    {
+        return $this->hasMany(Admin::class, 'created_by_id');
+    }
+    public function createdTeachers()
+    {
+        return $this->hasMany(Teacher::class, 'created_by_id');
+    }
+    public function createdStudents()
+    {
+        return $this->hasMany(Student::class, 'created_by_id');
     }
 }

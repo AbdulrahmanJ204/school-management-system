@@ -2,6 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Admin;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,12 +27,25 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $gender = $this->faker->randomElement(['male', 'female']);
+        $role = $this->faker->randomElement(['admin', 'teacher', 'student']);
+
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'first_name' => $this->faker->firstName($gender),
+            'father_name' => $this->faker->firstName($gender),
+            'last_name' => $this->faker->lastName(),
+            'gender' => $gender,
+            'birth_date' => $this->faker->date(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'phone' => $this->faker->unique()->phoneNumber(),
+            'password' => Hash::make('password'),
+            'role' => $role,
+            /*'email_verified_at' => $this->faker->optional()->dateTime(),
+            'email_verification_token' => $this->faker->optional()->regexify('[A-Za-z0-9]{64}'),*/
+            'image' => 'user_images/default.png',
             'remember_token' => Str::random(10),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 
@@ -40,5 +57,50 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function admin()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'admin',
+            ];
+        })->afterCreating(function (User $user) {
+            Admin::create([
+                'user_id' => $user->id,
+                'created_by' => 1, // This could be the admin's own ID or different logic
+            ]);
+        });
+    }
+
+    public function teacher()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'teacher',
+            ];
+        })->afterCreating(function (User $user) {
+            Teacher::create([
+                'user_id' => $user->id,
+                'created_by' => 1, // Or specify logic here
+            ]);
+        });
+    }
+
+    public function student()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'student',
+            ];
+        })->afterCreating(function (User $user) {
+            Student::create([
+                'user_id' => $user->id,
+                'created_by' => 1,
+                'grandfather' => $this->faker->lastName,
+                'general_id' => $this->faker->unique()->numerify('#######'),
+                'is_active' => $this->faker->boolean
+            ]);
+        });
     }
 }
