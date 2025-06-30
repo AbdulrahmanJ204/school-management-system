@@ -26,6 +26,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('students', [StudentController::class, 'show']);
     Route::resource('users', UserController::class)->only(['show', 'destroy']);
     Route::post('users/{user}', [UserController::class, 'update']);
-    Route::post('change-password', [AuthController::class, 'changePassword'])->name('change-password')->middleware('role:student');
 })->middleware(['role:admin', 'throttle:5,1']);
 
+Route::middleware('auth:api')->group(function () {
+    Route::post('change-password', [AuthController::class, 'changePassword'])->name('change-password');
+})->middleware(['role:admin|teacher', 'throttle:5,1']);
