@@ -1,0 +1,245 @@
+openapi: 3.0.0
+info:
+  title: Auth
+  version: 1.0.0
+servers:
+  - url: http://{{url}}
+  - url: http://127.0.0.1:8000
+components:
+  securitySchemes:
+    noauthAuth:
+      type: http
+      scheme: noauth
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []
+paths:
+  /register:
+    post:
+      tags:
+        - default
+      summary: register
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: zaid
+                email:
+                  type: string
+                  example: zaid@gmail.com
+                password:
+                  type: integer
+                  example: '1234567890'
+                password_confirmation:
+                  type: integer
+                  example: '1234567890'
+                last_name:
+                  type: string
+                  example: bakdash
+                father_name:
+                  type: string
+                  example: hasan
+                birth_date:
+                  type: string
+                  example: '2003-06-12'
+                gender:
+                  type: string
+                  example: male
+                phone:
+                  type: integer
+                  example: '0935946433'
+                role:
+                  type: string
+                  example: teacher
+                image:
+                  type: string
+                  format: binary
+                grandfather:
+                  type: string
+                  example: gedo
+                general_id:
+                  type: integer
+                  example: '2'
+                is_active:
+                  type: integer
+                  example: '1'
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/auth/login:
+    post:
+      tags:
+        - default
+      summary: login
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: admin@gmail.com
+                password:
+                  type: integer
+                  example: '1234567890'
+                device_id:
+                  type: string
+                  example: abc123
+                platform:
+                  type: string
+                  example: android
+                device_type:
+                  type: string
+                  example: mobile
+                device_name:
+                  type: string
+                  example: Samsung Galaxy A50
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/auth/refresh:
+    post:
+      tags:
+        - default
+      summary: refresh_token
+      requestBody:
+        content: {}
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/auth/logout:
+    post:
+      tags:
+        - default
+      summary: logout
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/change-password:
+    post:
+      tags:
+        - default
+      summary: change_password
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                current_password:
+                  type: integer
+                  example: '1234567890'
+                new_password:
+                  type: integer
+                  example: '9999999999'
+                new_password_confirmation:
+                  type: integer
+                  example: '9999999999'
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/auth/forgot-password:
+    post:
+      tags:
+        - default
+      summary: forgot_password
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: admin@gmail.com
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/reset-password:
+    post:
+      tags:
+        - default
+      summary: reset_password
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: admin@gmail.com
+                token:
+                  type: string
+                  example: >-
+                    1fba39dc6204122d0abb00f43b6c09bd9001e70f6d665fb81cc2587f8ba09983
+                password:
+                  type: string
+                  example: new12345
+                password_confirmation:
+                  type: string
+                  example: new12345
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
