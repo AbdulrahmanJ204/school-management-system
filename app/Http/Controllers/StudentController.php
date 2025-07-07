@@ -3,7 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Services\StudentService;
-
+/**
+ * @OA\Get(
+ *     path="/students",
+ *     tags={"Students"},
+ *     summary="Get list of students",
+ *     @OA\Response(
+ *         response=200,
+ *         description="Successful response"
+ *     )
+ * )
+ */
 class StudentController extends Controller
 {
     protected $studentService;
