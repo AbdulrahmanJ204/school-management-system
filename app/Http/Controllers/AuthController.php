@@ -18,7 +18,6 @@ class AuthController extends Controller
     {
         $this->authService = $authService;
     }
-
     public function register(RegisterRequest $request)
     {
         return $this->authService->register($request);

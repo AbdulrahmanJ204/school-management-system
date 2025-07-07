@@ -4,10 +4,9 @@ namespace App\Http\Requests;
 
 use App\Exceptions\UserNotFoundException;
 use App\Models\User;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateRequest extends FormRequest
+class UpdateRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\DeviceAlreadyExistsException;
 use App\Exceptions\ImageUploadFailed;
 use App\Exceptions\InvalidPasswordException;
 use App\Exceptions\PermissionException;
@@ -99,75 +100,59 @@ class AuthService
             throw new InvalidPasswordException();
         }
 
+        // Update last login time
         $user->update(['last_login' => now()]);
 
-        $device = Device_info::firstOrCreate([
-                 'device_id' => $credentials['device_id'],
-                 'platform' => $credentials['platform'],
-                 'type' => $credentials['device_type'],
-                 'name' => $credentials['device_name'],
-            ]);
+        DB::beginTransaction();
 
-        if (!$user->devices->contains($device->id)) {
-            $user->devices()->syncWithoutDetaching([$device->id]);
-        }
+        try {
+            $device = Device_info::where('device_id', $credentials['device_id'])->first();
 
-        $accessToken = $user->createToken('access_token', ['access']);
-        $refreshToken = $user->createToken('refresh_token', ['refresh']);
+            // If device exists, check if it belongs to the user already
+            if ($device && $user->devices->contains($device->id)) {
+                throw new DeviceAlreadyExistsException();
+            }
 
-        $accessToken->accessToken->expires_at = now()->addMinutes(60);
-        $accessToken->accessToken->device_id = $device->id;
-        $accessToken->accessToken->save();
+            // If device doesn't exist, create it
+            else {
+                $device = Device_info::create([
+                    'device_id' => $credentials['device_id'],
+                    'platform'  => $credentials['platform'],
+                    'type'      => $credentials['device_type'],
+                    'name'      => $credentials['device_name'],
+                ]);
+            }
 
-        $refreshToken->accessToken->expires_at = now()->addMinutes(3600);
-        $refreshToken->accessToken->device_id = $device->id;
-        $refreshToken->accessToken->save();
+            // Attach device to the user (now we’re sure it’s not duplicated)
+            $user->devices()->attach($device->id);
 
-        return ResponseHelper::jsonResponse(
-            [
-                'access_token' => $accessToken->plainTextToken,
+            // 5. Generate tokens
+            $accessToken = $user->createToken('access_token', ['access']);
+            $refreshToken = $user->createToken('refresh_token', ['refresh']);
+
+            // 6. Set token expiration and device ID
+            $accessToken->accessToken->expires_at = now()->addMinutes(60);
+            $accessToken->accessToken->device_id = $device->id;
+            $accessToken->accessToken->save();
+
+            $refreshToken->accessToken->expires_at = now()->addMinutes(3600);
+            $refreshToken->accessToken->device_id = $device->id;
+            $refreshToken->accessToken->save();
+
+            DB::commit();
+
+            // 7. Return success response
+            return ResponseHelper::jsonResponse([
+                'access_token'  => $accessToken->plainTextToken,
                 'refresh_token' => $refreshToken->plainTextToken
-            ],
-            __('messages.auth.login'),
-            200,
-            true
-        );
-    }
-    public function refresh(Request $request)
-    {
-        $refreshToken = $request->bearerToken();
+            ], __('messages.auth.login'));
 
-        $token = PersonalAccessToken::findToken($refreshToken);
+        } catch (\Throwable $e) {
+            DB::rollBack();
 
-        if (!$token || !in_array('refresh', $token->abilities ?? [])) {
-            return ResponseHelper::jsonResponse(null, __('messages.auth.invalid_token'), 401, false);
+            // Re-throw expected exceptions (like DeviceAlreadyExists)
+            throw $e;
         }
-
-        $user = $token->tokenable;
-        $deviceId = $token->device_id;
-
-        $token->delete();
-
-        $newAccessToken = $user->createToken('access_token', ['access']);
-        $newRefreshToken = $user->createToken('refresh_token', ['refresh']);
-
-        $newAccessToken->accessToken->expires_at = now()->addMinutes(60);
-        $newAccessToken->accessToken->device_id = $deviceId;
-        $newAccessToken->accessToken->save();
-
-        $newRefreshToken->accessToken->expires_at = now()->addMinutes(3600);
-        $newRefreshToken->accessToken->device_id = $deviceId;
-        $newRefreshToken->accessToken->save();
-
-        return ResponseHelper::jsonResponse(
-            [
-                'new_access_token' => $newAccessToken->plainTextToken,
-                'new_refresh_token' => $newRefreshToken->plainTextToken
-            ],
-            __('messages.auth.refresh'),
-            200,
-            true
-        );
     }
     public function logout(Request $request)
     {
