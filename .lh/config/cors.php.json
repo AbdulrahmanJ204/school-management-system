@@ -1,0 +1,30 @@
+{
+    "sourceFile": "config/cors.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1751896688088,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1751896993559,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,21 @@\n+return [\n+\n+'paths' => ['api/*', 'sanctum/csrf-cookie'],\n+\n+'allowed_methods' => ['*'],\n+\n+'allowed_origins' => [\n+    'http://localhost:5173',\n+    'http://10.65.9.223:5173',  // عنوان فرونت إند الخاص بك\n+],\n+\n+'allowed_origins_patterns' => [],\n+\n+'allowed_headers' => ['*'],\n+\n+'exposed_headers' => [],\n+\n+'max_age' => 0,\n+\n+'supports_credentials' => true,  // مهم لو تستخدم withCredentials في axios\n+];\n"
+                },
+                {
+                    "date": 1751896999094,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,10 +4,10 @@\n \n 'allowed_methods' => ['*'],\n \n 'allowed_origins' => [\n-    'http://localhost:5173',\n-    'http://10.65.9.223:5173',  // عنوان فرونت إند الخاص بك\n+'http://localhost:5173',\n+'http://10.65.9.223:5173',\n ],\n \n 'allowed_origins_patterns' => [],\n \n@@ -16,24 +16,6 @@\n 'exposed_headers' => [],\n \n 'max_age' => 0,\n \n-'supports_credentials' => true,  // مهم لو تستخدم withCredentials في axios\n-];\n-return [\n-'paths' => ['api/*', 'sanctum/csrf-cookie'],\n-\n-'allowed_methods' => ['*'],\n-\n-'allowed_origins' => ['http://localhost:5173'], // هنا تحط عنوان الفيرونت اند الخاص بك\n-// أو لو بتستخدم عنوان آخر، حط عنوانه الصحيح\n-\n-'allowed_origins_patterns' => [],\n-\n-'allowed_headers' => ['*'],\n-\n-'exposed_headers' => [],\n-\n-'max_age' => 0,\n-\n-'supports_credentials' => true, // لازم يكون true عشان يسمح ب withCredentials\n+'supports_credentials' => true, // مهم لو تستخدم withCredentials في axios\n ];\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1751897168754,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,22 @@\n+<?php\n+\n+return [\n+    'paths' => ['api/*', 'sanctum/csrf-cookie'],\n+\n+    'allowed_methods' => ['*'],\n+\n+    'allowed_origins' => [\n+        'http://localhost:5173',\n+        'http://10.65.9.223:5173',\n+    ],\n+\n+    'allowed_origins_patterns' => [],\n+\n+    'allowed_headers' => ['*'],\n+\n+    'exposed_headers' => [],\n+\n+    'max_age' => 0,\n+\n+    'supports_credentials' => true, // مهم لو تستخدم withCredentials في axios\n+];\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1751896688088,
+            "name": "Commit-0",
+            "content": "return [\n'paths' => ['api/*', 'sanctum/csrf-cookie'],\n\n'allowed_methods' => ['*'],\n\n'allowed_origins' => ['http://localhost:5173'], // هنا تحط عنوان الفيرونت اند الخاص بك\n// أو لو بتستخدم عنوان آخر، حط عنوانه الصحيح\n\n'allowed_origins_patterns' => [],\n\n'allowed_headers' => ['*'],\n\n'exposed_headers' => [],\n\n'max_age' => 0,\n\n'supports_credentials' => true, // لازم يكون true عشان يسمح ب withCredentials\n];"
+        }
+    ]
+}
