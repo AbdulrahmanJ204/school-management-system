@@ -108,24 +108,30 @@ class AuthService
         try {
             $device = Device_info::where('device_id', $credentials['device_id'])->first();
 
-            // If device exists, check if it belongs to the user already
-            if ($device && $user->devices->contains($device->id)) {
-                throw new DeviceAlreadyExistsException();
-            }
+            if ($device) {
+                // Check if the same device info is reused
+                $conflict =
+                    $device->platform !== $credentials['platform'] ||
+                    $device->type     !== $credentials['device_type'] ||
+                    $device->name     !== $credentials['device_name'];
 
-            // If device doesn't exist, create it
-            else {
+                if ($conflict) {
+                    throw new DeviceAlreadyExistsException(); // Someone reused the same device_id for another device
+                }
+
+                // If device exists and matches — just sync (if not already linked)
+                $user->devices()->syncWithoutDetaching([$device->id]);
+            } else {
+                // Device doesn't exist — create it and attach to user
                 $device = Device_info::create([
                     'device_id' => $credentials['device_id'],
                     'platform'  => $credentials['platform'],
                     'type'      => $credentials['device_type'],
                     'name'      => $credentials['device_name'],
                 ]);
+
+                $user->devices()->attach($device->id);
             }
-
-            // Attach device to the user (now we’re sure it’s not duplicated)
-            $user->devices()->attach($device->id);
-
             // 5. Generate tokens
             $accessToken = $user->createToken('access_token', ['access']);
             $refreshToken = $user->createToken('refresh_token', ['refresh']);
@@ -150,9 +156,44 @@ class AuthService
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            // Re-throw expected exceptions (like DeviceAlreadyExists)
             throw $e;
         }
+    }
+    public function refresh(Request $request)
+    {
+        $refreshToken = $request->bearerToken();
+
+        $token = PersonalAccessToken::findToken($refreshToken);
+
+        if (!$token || !in_array('refresh', $token->abilities ?? [])) {
+            return ResponseHelper::jsonResponse(null, __('messages.auth.invalid_token'), 401, false);
+        }
+
+        $user = $token->tokenable;
+        $deviceId = $token->device_id;
+
+        $token->delete();
+
+        $newAccessToken = $user->createToken('access_token', ['access']);
+        $newRefreshToken = $user->createToken('refresh_token', ['refresh']);
+
+        $newAccessToken->accessToken->expires_at = now()->addMinutes(60);
+        $newAccessToken->accessToken->device_id = $deviceId;
+        $newAccessToken->accessToken->save();
+
+        $newRefreshToken->accessToken->expires_at = now()->addMinutes(3600);
+        $newRefreshToken->accessToken->device_id = $deviceId;
+        $newRefreshToken->accessToken->save();
+
+        return ResponseHelper::jsonResponse(
+            [
+                'new_access_token' => $newAccessToken->plainTextToken,
+                'new_refresh_token' => $newRefreshToken->plainTextToken
+            ],
+            __('messages.auth.refresh'),
+            200,
+            true
+        );
     }
     public function logout(Request $request)
     {

@@ -2,15 +2,17 @@
 
 namespace App\Exceptions;
 
+use App\Helpers\ResponseHelper;
 use Exception;
 
 class UserNotFoundException extends Exception
 {
     public function render()
     {
-        return response()->json([
-            'success' => false,
-            'message' => __('messages.user.not-found') // Use lang file for consistency
-        ], 404);
+        return ResponseHelper::jsonResponse ([],
+            __('messages.user.not-found'),
+            404,
+            false
+        );
     }
 }

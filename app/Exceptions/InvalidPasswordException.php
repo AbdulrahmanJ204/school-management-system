@@ -2,15 +2,17 @@
 
 namespace App\Exceptions;
 
+use App\Helpers\ResponseHelper;
 use Exception;
 
 class InvalidPasswordException extends Exception
 {
     public function render()
     {
-        return response()->json([
-            'success' => false,
-            'message' => __('messages.auth.invalid_password') // Use lang file for consistency
-        ], 401);
+        return ResponseHelper::jsonResponse ([],
+            __('messages.auth.invalid_password'),
+            401,
+            false
+        );
     }
 }
