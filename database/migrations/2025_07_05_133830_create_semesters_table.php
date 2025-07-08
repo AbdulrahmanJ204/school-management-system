@@ -10,14 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('students', function (Blueprint $table) {
+        Schema::create('semesters', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->string('grandfather')->nullable();
-            $table->unsignedBigInteger('general_id')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->foreignId('created_by')->constrained('users');
+            $table->foreignId('year_id')->constrained('years');
+            $table->string('name');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
+            $table->foreignId('created_by')->constrained('users');
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('students');
+        Schema::dropIfExists('semesters');
     }
 };
