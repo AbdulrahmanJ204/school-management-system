@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admins', function (Blueprint $table) {
+        Schema::create('file_downloads', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('file_id')->constrained('files');
             $table->foreignId('user_id')->constrained('users');
+            $table->timestamp('downloaded_at');
+            $table->string('ip_address', 45);
             $table->timestamps();
-            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('created_by')->constrained('users');
+
         });
     }
 
@@ -24,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admins');
+        Schema::dropIfExists('file_downloads');
     }
 };
