@@ -1,0 +1,18 @@
+{
+    "sourceFile": "database/seeders/AdminSeeder.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1751897293815,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1751897293815,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace Database\\Seeders;\n\nuse App\\Models\\Admin;\nuse App\\Models\\User;\nuse Illuminate\\Database\\Seeder;\nuse Illuminate\\Support\\Facades\\Hash;\nuse Illuminate\\Support\\Str;\nuse Spatie\\Permission\\Models\\Role;\n\nclass AdminSeeder extends Seeder\n{\n    /**\n     * Run the database seeds.\n     */\n    public function run(): void\n    {\n        $adminUser = User::create([\n            'first_name' => 'admin',\n            'father_name' => 'super',\n            'last_name' => 'ruler',\n            'gender' => 'male',\n            'birth_date' => '2003-01-01',\n            'email' => 'admin@gmail.com',\n            'phone' => '0935946431',\n            'password' => '1234567890',\n            'image' => 'user_images/default.png',\n            'role' => 'admin',\n            'remember_token' => Str::random(10),\n            'created_at' => now(),\n            'updated_at' => now(),\n        ]);\n\n        Hash::make('password');\n\n        $adminRole = Role::where('name', 'admin')->first();\n        $adminUser->assignRole($adminRole);\n\n        Admin::create([\n            'user_id' => $adminUser->id,\n            'created_by' => 1, // This could be the admin's own ID or different logic\n        ]);\n    }\n}"
+        }
+    ]
+}

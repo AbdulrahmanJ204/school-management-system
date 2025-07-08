@@ -1,0 +1,22 @@
+{
+    "sourceFile": "routes/web.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1751895164506,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1751895172336,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,8 +2,8 @@\n \n use App\\Http\\Controllers\\AuthController;\n use Illuminate\\Support\\Facades\\Route;\n \n-Route::get('/',)\n+Route::get('/','welcome')\n Route::get('/reset-password/{token}', function ($token) {\n     return 'Reset link: ' . $token;\n })->name('password.reset');\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1751895164506,
+            "name": "Commit-0",
+            "content": "<?php\n\nuse App\\Http\\Controllers\\AuthController;\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::get(')\nRoute::get('/reset-password/{token}', function ($token) {\n    return 'Reset link: ' . $token;\n})->name('password.reset');"
+        }
+    ]
+}

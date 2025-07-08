@@ -1,0 +1,22 @@
+{
+    "sourceFile": "app/Http/Requests/LoginRequest.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1751961916325,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1751961927595,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n <?php\n \n namespace App\\Http\\Requests;\n \n-class LoginRequest extends FormRequest\n+class LoginRequest extends BaseRequest\n {\n     /**\n      * Determine if the user is authorized to make this request.\n      */\n"
+                }
+            ],
+            "date": 1751961916325,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Http\\Requests;\n\nclass LoginRequest extends FormRequest\n{\n    /**\n     * Determine if the user is authorized to make this request.\n     */\n    public function authorize(): bool\n    {\n        return true;\n    }\n\n    /**\n     * Get the validation rules that apply to the request.\n     *\n     * @return array<string, \\Illuminate\\Contracts\\Validation\\ValidationRule|array<mixed>|string>\n     */\n    public function rules(): array\n    {\n        return [\n            'email'       => 'required|email|exists:users,email',\n            'password'    => 'required|string',\n            'platform'    => 'required|string|in:android,ios,web,windows,macos,linux',      // Android, iOS, Web...\n            'device_type' => 'required|string|in:mobile,desktop,tablet',      // Mobile, Desktop...\n            'device_name' => 'required|string',      // e.g. iPhone 14\n            'device_id'   => 'required|string',      // Unique identifier\n        ];\n    }\n}"
+        }
+    ]
+}
