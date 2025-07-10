@@ -37,11 +37,10 @@ class UserFactory extends Factory
             'gender' => $gender,
             'birth_date' => $this->faker->date(),
             'email' => $this->faker->unique()->safeEmail(),
+            'user_name' => $this->faker->unique()->username(),
             'phone' => $this->faker->unique()->phoneNumber(),
             'password' => Hash::make('password'),
             'role' => $role,
-            /*'email_verified_at' => $this->faker->optional()->dateTime(),
-            'email_verification_token' => $this->faker->optional()->regexify('[A-Za-z0-9]{64}'),*/
             'image' => 'user_images/default.png',
             'remember_token' => Str::random(10),
             'created_at' => now(),

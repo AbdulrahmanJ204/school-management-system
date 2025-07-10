@@ -20,12 +20,12 @@ class LoginRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'email'       => 'required|email|exists:users,email',
+            'user_name'   => 'required|string|exists:users,user_name',
             'password'    => 'required|string',
-            'platform'    => 'required|string|in:android,ios,web,windows,macos,linux',      // Android, iOS, Web...
-            'device_type' => 'required|string|in:mobile,desktop,tablet',      // Mobile, Desktop...
-            'device_name' => 'required|string',      // e.g. iPhone 14
-            'device_id'   => 'required|string',      // Unique identifier
+            'platform'    => 'required|string|in:android,ios,web,windows,macos,linux',
+            'device_type' => 'required|string|in:mobile,desktop,tablet',
+            'device_name' => 'required|string',
+            'device_id'   => 'required|string',
         ];
     }
 }

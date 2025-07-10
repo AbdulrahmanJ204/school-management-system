@@ -8,6 +8,7 @@ use App\Exceptions\InvalidPasswordException;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Helpers\RoleHelper;
+use App\Http\Resources\UserResource;
 use App\Models\Admin;
 use App\Models\Device_info;
 use App\Models\Student;
@@ -17,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\PersonalAccessToken;
 use Spatie\Permission\Models\Role;
 
@@ -40,9 +42,18 @@ class AuthService
 
         $credentials = $request->validated();
 
-        if( $request->hasFile('image')) {
+        if ($request->hasFile('image'))
+        {
             try {
-                $credentials['image'] = $request->file('image')->store('user_images', 'public');
+                $image = $request->file('image');
+                $imageName = $image->hashName();
+                $imagePath = 'user_images/' . $imageName;
+
+                if (!Storage::disk('public')->exists($imagePath))
+                {
+                    $image->storeAs('user_images', $imageName, 'public');
+                }
+                $credentials['image'] = $imagePath;
             } catch (\Exception $e) {
                 throw new ImageUploadFailed();
             }
@@ -94,13 +105,12 @@ class AuthService
     {
         $credentials = $request->validated();
 
-        $user = User::where('email', $credentials['email'])->firstOrFail();
+        $user = User::where('user_name', $credentials['user_name'])->firstOrFail();
 
         if (!Hash::check($credentials['password'], $user->password)) {
             throw new InvalidPasswordException();
         }
 
-        // Update last login time
         $user->update(['last_login' => now()]);
 
         DB::beginTransaction();
@@ -149,8 +159,9 @@ class AuthService
 
             // 7. Return success response
             return ResponseHelper::jsonResponse([
+                'user' => new UserResource($user),
                 'access_token'  => $accessToken->plainTextToken,
-                'refresh_token' => $refreshToken->plainTextToken
+                'refresh_token' => $refreshToken->plainTextToken,
             ], __('messages.auth.login'));
 
         } catch (\Throwable $e) {

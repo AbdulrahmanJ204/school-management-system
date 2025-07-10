@@ -22,7 +22,8 @@ return new class extends Migration
             $table->date('birth_date')->nullable();
 
             // Contact & Account
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
+            $table->string('user_name')->unique();
             $table->string('phone')->nullable();
             $table->string('password')->nullable();
 
