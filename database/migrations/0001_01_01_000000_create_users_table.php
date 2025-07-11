@@ -23,6 +23,7 @@ return new class extends Migration
 
             // Contact & Account
             $table->string('email')->unique()->nullable();
+            $table->string('user_name')->unique();
             $table->string('phone')->nullable();
             $table->string('password')->nullable();
 

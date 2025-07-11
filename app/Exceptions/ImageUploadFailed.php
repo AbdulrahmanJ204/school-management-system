@@ -2,15 +2,17 @@
 
 namespace App\Exceptions;
 
+use App\Helpers\ResponseHelper;
 use Exception;
 
 class ImageUploadFailed extends Exception
 {
     public function render()
     {
-        return response()->json([
-            'success' => false,
-            'message' => __('messages.user.image_upload_failed') // Use lang file for consistency
-        ], 404);
+        return ResponseHelper::jsonResponse ([],
+            __('messages.user.image_upload_failed'),
+            404,
+            false
+        );
     }
 }

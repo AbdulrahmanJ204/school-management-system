@@ -11,12 +11,12 @@ class BaseRequest extends FormRequest
 {
     protected function failedValidation(Validator $validator): void
     {
-        $errors = collect($validator->errors())->map(fn ($message) => $message[0]);
+        $firstError = $validator->errors()->first();
 
         throw new HttpResponseException(
             ResponseHelper::jsonResponse(
-                $errors->toArray(),
-                'Validation failed',
+                [],
+                $firstError,
                 400,
                 false
             )

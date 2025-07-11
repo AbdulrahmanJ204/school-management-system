@@ -174,6 +174,7 @@ return [
         'teacher'               => 'معلم',
         'current_password'      => 'كلمة السر الحالية',
         'new_password'          => 'كلمة السر الجديدة',
-        'is_active'             => 'فعال'
+        'is_active'             => 'فعال',
+        'user_name'             => 'اسم المستخدم'
     ],
 ];
