@@ -16,7 +16,7 @@ return new class extends Migration
 
             // Personal Details
             $table->string('first_name');
-            $table->string('father_name');
+            $table->string('father_name')->nullable();
             $table->string('last_name');
             $table->enum('gender', ['male', 'female']);
             $table->date('birth_date')->nullable();
