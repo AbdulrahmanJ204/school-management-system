@@ -11,11 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admins', function (Blueprint $table) {
+        Schema::create('teacher_app_updates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->string('version');
+            $table->string('platform');
+            $table->string('url');
+            $table->text('change_log')->nullable();
+            $table->boolean('is_force_update');
             $table->timestamps();
-            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('created_by')->constrained('users');
+
         });
     }
 
@@ -24,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admins');
+        Schema::dropIfExists('teacher_app_updates');
     }
 };

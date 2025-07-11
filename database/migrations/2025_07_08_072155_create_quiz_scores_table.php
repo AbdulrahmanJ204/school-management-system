@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admins', function (Blueprint $table) {
+        Schema::create('quiz_scores', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('quiz_id')->constrained('quizzes');
+            $table->foreignId('student_id')->constrained('students');
+            $table->unsignedBigInteger('full_score');
+            $table->unsignedBigInteger('score');
             $table->timestamps();
-            $table->foreignId('created_by')->nullable()->constrained('users');
+
         });
     }
 
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admins');
+        Schema::dropIfExists('quiz_scores');
     }
 };
