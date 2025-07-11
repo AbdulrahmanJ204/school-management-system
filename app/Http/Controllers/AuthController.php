@@ -22,9 +22,9 @@ class AuthController extends Controller
     {
         return $this->authService->register($request);
     }
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, string $role)
     {
-        return $this->authService->login($request);
+        return $this->authService->login($request, $role);
     }
     public function refresh(Request $request)
     {

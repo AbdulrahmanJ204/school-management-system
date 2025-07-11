@@ -6,5 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Quiz extends Model
 {
-    //
+    protected $fillable = ['name', 'created_by', 'is_active', 'taken_at'];
+    public function questions()
+    {
+        return $this->hasMany(Question::class);
+    }
+    public function scores()
+    {
+        return $this->hasMany(ScoreQuiz::class);
+    }
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }
