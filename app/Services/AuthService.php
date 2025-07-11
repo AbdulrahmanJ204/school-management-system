@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Exceptions\DeviceAlreadyExistsException;
 use App\Exceptions\ImageUploadFailed;
 use App\Exceptions\InvalidPasswordException;
+use App\Exceptions\InvalidRoleException;
+use App\Exceptions\MustPassRoleException;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Helpers\RoleHelper;
@@ -101,11 +103,21 @@ class AuthService
             true
         );
     }
-    public function login($request)
+    public function login($request, $role)
     {
         $credentials = $request->validated();
 
+        $role = strtolower($role);
+
+        if (!in_array($role, ['admin', 'teacher', 'student'])) {
+            throw new MustPassRoleException();
+        }
+
         $user = User::where('user_name', $credentials['user_name'])->firstOrFail();
+
+        if ($user->role !== $role) {
+            throw new InvalidRoleException();
+        }
 
         if (!Hash::check($credentials['password'], $user->password)) {
             throw new InvalidPasswordException();
