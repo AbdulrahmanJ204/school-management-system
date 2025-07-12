@@ -25,7 +25,6 @@ class RegisterRequest extends BaseRequest
             'first_name' => 'required|string|max:30',
             'last_name' => 'required|string|max:30',
             'father_name' => 'required|string|max:30',
-            'user_name' => 'required|string|max:90|unique:users',
             'email' => 'required_unless:role,student|email|unique:users,email|prohibited_if:role,student',
             'password' => 'required_unless:role,student|string|min:8|confirmed|prohibited_if:role,student',
             'role' => 'required|in:admin,teacher,student',

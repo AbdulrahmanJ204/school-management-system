@@ -20,7 +20,7 @@ class LoginRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'user_name'   => 'required|string|exists:users,user_name',
+            'user_name'   => 'required|string|in:',
             'password'    => 'required|string',
             'platform'    => 'required|string|in:android,ios,web,windows,macos,linux',
             'device_type' => 'required|string|in:mobile,desktop,tablet',

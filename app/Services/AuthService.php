@@ -6,8 +6,10 @@ use App\Exceptions\DeviceAlreadyExistsException;
 use App\Exceptions\ImageUploadFailed;
 use App\Exceptions\InvalidPasswordException;
 use App\Exceptions\InvalidRoleException;
+use App\Exceptions\InvalidUserException;
 use App\Exceptions\MustPassRoleException;
 use App\Exceptions\PermissionException;
+use App\Exceptions\UserNotFoundException;
 use App\Helpers\ResponseHelper;
 use App\Helpers\RoleHelper;
 use App\Http\Resources\UserResource;
@@ -107,15 +109,40 @@ class AuthService
     {
         $credentials = $request->validated();
 
-        $role = strtolower($role);
+        $username = $credentials['user_name'];
+        $expectedRole = strtolower($role);
 
-        if (!in_array($role, ['admin', 'teacher', 'student'])) {
-            throw new MustPassRoleException();
+        if (!in_array($expectedRole, ['admin', 'teacher', 'student'])) {
+            throw new InvalidRoleException();
         }
 
-        $user = User::where('user_name', $credentials['user_name'])->firstOrFail();
+        $prefixMap = [
+            'admin' => 'Adm_',
+            'teacher' => 'Tch_',
+            'student' => 'Std_',
+        ];
 
-        if ($user->role !== $role) {
+        $expectedPrefix = $prefixMap[$expectedRole];
+
+        if (!str_starts_with($username, $expectedPrefix)) {
+            throw new InvalidUserException(__('messages.auth.invalid_username_prefix'));
+        }
+
+        $idPart = str_replace($expectedPrefix, '', $username);
+
+        if (!is_numeric($idPart)) {
+            throw new InvalidUserException(__('messages.auth.invalid_user_id'));
+        }
+
+        $userId = (int) $idPart;
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+
+        if ($user->role !== $expectedRole) {
             throw new InvalidRoleException();
         }
 

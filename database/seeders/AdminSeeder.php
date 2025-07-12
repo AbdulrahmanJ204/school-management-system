@@ -23,7 +23,6 @@ class AdminSeeder extends Seeder
             'gender' => 'male',
             'birth_date' => '2003-01-01',
             'email' => 'admin@gmail.com',
-            'user_name' => 'admin first',
             'phone' => '0935946431',
             'password' => '1234567890',
             'image' => 'user_images/default.png',
