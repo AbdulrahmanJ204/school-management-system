@@ -7,7 +7,7 @@ use Exception;
 
 class InvalidUserException extends Exception
 {
-    protected string $message;
+    protected $message;
     public function __construct(string $message)
     {
         parent::__construct();
