@@ -22,8 +22,10 @@ class AuthController extends Controller
     {
         return $this->authService->register($request);
     }
-    public function login(LoginRequest $request, string $role)
+    public function login(LoginRequest $request)
     {
+        $role = strtolower(request()->query('role'));
+
         return $this->authService->login($request, $role);
     }
     public function refresh(Request $request)
