@@ -38,10 +38,10 @@ class UserService
         };
 
         return ResponseHelper::jsonResponse(
-            new UserResource($user)
+            new UserResource($user),
+            __('messages.user.get')
         );
     }
-
     public function updateUser($request, $id)
     {
         $admin = auth()->user();
