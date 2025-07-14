@@ -95,9 +95,9 @@ class UserService
         });
 
         return ResponseHelper::jsonResponse(
-            null,
+            new UserResource($user),
             __('messages.user.updated'),
-            200,
+            201,
             true
         );
     }
