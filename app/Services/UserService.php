@@ -101,7 +101,6 @@ class UserService
             true
         );
     }
-
     public function deleteUser(int $id)
     {
         $admin = auth()->user();
