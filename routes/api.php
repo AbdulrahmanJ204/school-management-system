@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\ScoreQuizController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
@@ -25,6 +26,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('admins', [AdminController::class, 'show']);
     Route::get('teachers', [TeacherController::class, 'show']);
     Route::get('students', [StudentController::class, 'show']);
+    Route::get('staff', [UserController::class, 'getStaff']);
     Route::resource('users', UserController::class)->only(['show', 'destroy']);
     Route::post('users/{user}', [UserController::class, 'update']);
 })->middleware(['role:admin', 'throttle:5,1']);
@@ -40,4 +42,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('quizzes/{quiz_id}/questions', [QuestionController::class, 'create']);
     Route::post('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'update']);
     Route::delete('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'destroy']);
-})->middleware(['role:teacher']);
+})->middleware(['role:teacher', 'throttle:5,1']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('score-quizzes', [ScoreQuizController::class, 'create']);
+})->middleware(['role:student', 'throttle:5,1']);

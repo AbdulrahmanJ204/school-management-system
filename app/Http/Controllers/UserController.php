@@ -19,6 +19,11 @@ class UserController extends Controller
         return $this->userService->getUser($id);
     }
 
+    public function getStaff()
+    {
+        return $this->userService->listAdminsAndTeachers();
+    }
+
     public function update(UpdateRequest $request, $id)
     {
         return $this->userService->updateUser($request, $id);

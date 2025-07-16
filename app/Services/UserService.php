@@ -137,4 +137,21 @@ class UserService
             true
         );
     }
+    public function listAdminsAndTeachers()
+    {
+        /*if (!auth()->user()->hasPermissionTo('list_admins_and_teachers')) {
+            throw new PermissionException();
+        }*/
+
+        $users = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'role', 'image')
+            ->whereIn('role', ['admin', 'teacher'])
+            ->with(['admin', 'teacher'])
+            ->orderBy('id', 'asc')
+            ->paginate(15);
+
+        return ResponseHelper::jsonResponse(
+            UserResource::collection($users),
+            __('messages.user.list_admins_and_teachers'),
+        );
+    }
 }
