@@ -39,7 +39,7 @@ class RolePermissionSeeder extends Seeder
             'delete_question',
             'create_score_quiz',
             'list_quizzes',
-            'get_quiz'
+            'get_quiz',
         ];
 
         foreach ($permissions as $permission) {

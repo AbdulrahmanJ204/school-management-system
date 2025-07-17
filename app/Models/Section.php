@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Section extends Model
@@ -28,6 +29,11 @@ class Section extends Model
     public function studentEnrollments()
     {
         return $this->hasMany(StudentEnrollment::class);
+    }
+
+    public function quizTargets()
+    {
+        return $this->hasMany(QuizTarget::class);
     }
 }
 

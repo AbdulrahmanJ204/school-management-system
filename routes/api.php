@@ -42,6 +42,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('quizzes/{quiz_id}/questions', [QuestionController::class, 'create']);
     Route::post('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'update']);
     Route::delete('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'destroy']);
+    Route::get('quizzes', [QuizController::class, 'index']);
+    Route::get('quiz/{id}', [QuizController::class, 'show']);
 })->middleware(['role:teacher', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {

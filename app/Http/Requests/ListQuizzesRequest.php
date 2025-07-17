@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
-class CreateAndUpdateQuizRequest extends BaseRequest
+use Illuminate\Foundation\Http\FormRequest;
+
+class ListQuizzesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,13 +22,8 @@ class CreateAndUpdateQuizRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
-            'is_active' => 'prohibited',
-            'taken_at' => 'prohibited',
-            'targets'                 => 'required|array|min:1',
-            'targets.*.subject_id'    => 'required|exists:subjects,id',
-            'targets.*.section_id'    => 'required|exists:sections,id',
-            'targets.*.semester_id'   => 'required|exists:semesters,id',
+            'grade_id'   => 'sometimes|integer|exists:grades,id',
+            'section_id' => 'sometimes|integer|exists:sections,id',
         ];
     }
 }
