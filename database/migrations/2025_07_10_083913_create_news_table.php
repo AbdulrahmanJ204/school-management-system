@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('content');
-            $table->date('publish_date');
+            $table->foreignId('school_day_id')->constrained('school_days');
             $table->string('photo')->nullable();
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');

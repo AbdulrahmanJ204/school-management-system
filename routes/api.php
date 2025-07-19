@@ -41,3 +41,5 @@ Route::middleware('auth:api')->group(function () {
     Route::post('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'update']);
     Route::delete('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'destroy']);
 })->middleware(['role:teacher']);
+
+require __DIR__.'/news.php';

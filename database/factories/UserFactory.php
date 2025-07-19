@@ -38,7 +38,7 @@ class UserFactory extends Factory
             'birth_date' => $this->faker->date(),
             'email' => $this->faker->unique()->safeEmail(),
             'phone' => $this->faker->unique()->phoneNumber(),
-            'password' => Hash::make('password'),
+            'password' => Hash::make('1234567890'),
             'role' => $role,
             'image' => 'user_images/default.png',
             'remember_token' => Str::random(10),

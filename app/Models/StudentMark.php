@@ -90,7 +90,7 @@ class StudentMark extends Model
     public function isPass()
     {
         $subject = $this->subject;
-        $gradeYear = GradeYearSettings::where('year_id', $this->enrollment->semester->year_id)
+        $gradeYear = GradeYearSetting::where('year_id', $this->enrollment->semester->year_id)
             ->where('grade_id', $subject->subjectMajor->grade_id)
             ->first();
 
