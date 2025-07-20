@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class News extends Model
 {
     //
-    protected $fillable = ['title', 'content', 'school_day_id', 'created_at', 'updated_at', 'created_by'];
+    protected $fillable = ['title', 'content', 'school_day_id','photo', 'created_at', 'updated_at', 'created_by'];
 
+    protected $casts = [
+        'title' => 'text',
+        'description' => 'json',
+    ];
     public function newsTargets(){
         return $this->hasMany(NewsTarget::class, 'news_id');
     }

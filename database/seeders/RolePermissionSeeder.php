@@ -35,7 +35,8 @@ class RolePermissionSeeder extends Seeder
             'delete_quiz',
             'create_question',
             'update_question',
-            'delete_question'
+            'delete_question',
+            'create_news'
         ];
 
         foreach ($permissions as $permission) {
@@ -50,6 +51,7 @@ class RolePermissionSeeder extends Seeder
         $adminRole->givePermissionTo(['get_user']);
         $adminRole->givePermissionTo(['change_password']);
         $adminRole->givePermissionTo(['delete_user']);
+        $adminRole->givePermissionTo(['create_news']);
 
         $teacherRole->givePermissionTo(['change_password']);
         $teacherRole->givePermissionTo(['create_quiz']);

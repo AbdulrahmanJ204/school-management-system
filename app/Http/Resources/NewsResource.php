@@ -17,7 +17,7 @@ class NewsResource extends JsonResource
         return [
             "id" => $this->id,
             "title" => $this->title,
-            "description" => $this->content,
+            "description" => json_decode($this->content),
             'date'=> $this->schoolDay->date,
             'created_at'=> $this->created_at,
             'photo' => $this->photo ? asset('storage/' . $this->photo) : null, // Full URL
