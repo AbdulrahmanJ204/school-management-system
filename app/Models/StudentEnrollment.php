@@ -91,7 +91,7 @@ class StudentEnrollment extends Model
     public function isPromoted()
     {
         $failedSubjects = $this->getFailedSubjects();
-        $gradeYear = GradeYearSettings::where('year_id', $this->semester->year_id)
+        $gradeYear = GradeYearSetting::where('year_id', $this->semester->year_id)
             ->where('grade_id', $this->section->grade_id)
             ->first();
 

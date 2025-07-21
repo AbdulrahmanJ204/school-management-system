@@ -5,6 +5,7 @@ info:
 servers:
   - url: http://{{url}}
   - url: http://192.168.1.105:8000
+  - url: http://127.0.0.1:8000
 components:
   securitySchemes:
     bearerAuth:
@@ -20,7 +21,7 @@ tags:
   - name: User
   - name: Quiz
 paths:
-  /register:
+  /api/register:
     post:
       tags:
         - Auth
