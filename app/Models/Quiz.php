@@ -15,6 +15,10 @@ class Quiz extends Model
     {
         return $this->hasMany(ScoreQuiz::class);
     }
+    public function targets()
+    {
+        return $this->hasMany(QuizTarget::class);
+    }
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');

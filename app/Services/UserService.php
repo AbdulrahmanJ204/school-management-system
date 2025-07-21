@@ -38,10 +38,10 @@ class UserService
         };
 
         return ResponseHelper::jsonResponse(
-            new UserResource($user)
+            new UserResource($user),
+            __('messages.user.get')
         );
     }
-
     public function updateUser($request, $id)
     {
         $admin = auth()->user();
@@ -95,13 +95,12 @@ class UserService
         });
 
         return ResponseHelper::jsonResponse(
-            null,
+            new UserResource($user),
             __('messages.user.updated'),
-            200,
+            201,
             true
         );
     }
-
     public function deleteUser(int $id)
     {
         $admin = auth()->user();
@@ -136,6 +135,23 @@ class UserService
             __('messages.user.deleted'),
             200,
             true
+        );
+    }
+    public function listAdminsAndTeachers()
+    {
+        /*if (!auth()->user()->hasPermissionTo('list_admins_and_teachers')) {
+            throw new PermissionException();
+        }*/
+
+        $users = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'role', 'image')
+            ->whereIn('role', ['admin', 'teacher'])
+            ->with(['admin', 'teacher'])
+            ->orderBy('id', 'asc')
+            ->paginate(15);
+
+        return ResponseHelper::jsonResponse(
+            UserResource::collection($users),
+            __('messages.user.list_admins_and_teachers'),
         );
     }
 }

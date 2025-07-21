@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAndUpdateQuizRequest;
+use App\Http\Requests\ListQuizzesRequest;
+use App\Http\Requests\UpdateQuizRequest;
 use App\Services\QuizService;
 
 class QuizController extends Controller
@@ -16,11 +18,10 @@ class QuizController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ListQuizzesRequest $request)
     {
-        //
+        return $this->quizService->listQuizzes($request);
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -40,9 +41,9 @@ class QuizController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
-        //
+        return $this->quizService->showQuiz($id);
     }
 
     /**

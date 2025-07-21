@@ -2,10 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Validator;
-
-class CreateQuestionRequest extends FormRequest
+class CreateQuestionRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.

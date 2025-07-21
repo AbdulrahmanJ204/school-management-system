@@ -42,5 +42,10 @@ class Semester extends Model
     {
         return $this->hasMany(StudentEnrollment::class);
     }
+
+    public function quizTargets()
+    {
+        return $this->hasMany(QuizTarget::class);
+    }
 }
 

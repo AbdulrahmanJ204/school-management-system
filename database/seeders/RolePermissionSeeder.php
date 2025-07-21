@@ -25,6 +25,7 @@ class RolePermissionSeeder extends Seeder
             'list_admins',
             'list_teachers',
             'list_students',
+            'list_admins_and_teachers',
             'get_user',
             'delete_user',
             'change_password',
@@ -36,6 +37,9 @@ class RolePermissionSeeder extends Seeder
             'create_question',
             'update_question',
             'delete_question',
+            'create_score_quiz',
+            'list_quizzes',
+            'get_quiz',
             'create_news',
             'update_news',
             'delete_news'
@@ -50,6 +54,7 @@ class RolePermissionSeeder extends Seeder
         $adminRole->givePermissionTo(['list_admins']);
         $adminRole->givePermissionTo(['list_teachers']);
         $adminRole->givePermissionTo(['list_students']);
+        $adminRole->givePermissionTo(['list_admins_and_teachers']);
         $adminRole->givePermissionTo(['get_user']);
         $adminRole->givePermissionTo(['change_password']);
         $adminRole->givePermissionTo(['delete_user']);
@@ -66,5 +71,9 @@ class RolePermissionSeeder extends Seeder
         $teacherRole->givePermissionTo(['create_question']);
         $teacherRole->givePermissionTo(['update_question']);
         $teacherRole->givePermissionTo(['delete_question']);
+        $teacherRole->givePermissionTo(['list_quizzes']);
+        $teacherRole->givePermissionTo(['get_quiz']);
+
+        $studentRole->givePermissionTo(['create_score_quiz']);
     }
 }
