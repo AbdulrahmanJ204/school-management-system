@@ -2,14 +2,17 @@
 
 use App\Http\Controllers\NewsController;
 use Illuminate\Support\Facades\Route;
-Route::prefix('student/news')->group(function () {
+
+Route::prefix('student/news')->middleware(['auth:api'])->group(function () {
     Route::get('/', [NewsController::class, 'index'])->name('news.index');
-})->middleware(['auth:api','role:student']);
+})->middleware(['role:student']);
 Route::prefix('admin/news')
     ->controller(NewsController::class)
-    ->middleware(['auth:api'])
+    ->middleware(['auth:api' , 'role:admin'])
     ->group(function () {
         Route::get('/', 'index');
-        Route::get('/{id}', 'show');
         Route::post('/store', 'store');
+        Route::get('/{news}', 'show');
+        Route::delete('/{news}', 'destroy');
+        Route::post('/{news}', 'update');
     });

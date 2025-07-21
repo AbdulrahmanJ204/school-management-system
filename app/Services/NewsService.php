@@ -9,6 +9,7 @@ use App\Models\News;
 use App\Models\NewsTarget;
 use App\Models\SchoolDay;
 use App\Models\StudentEnrollment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class NewsService
@@ -27,7 +28,7 @@ class NewsService
 
     }
 
-    public function getStudentNews(): \Illuminate\Http\JsonResponse
+    public function getStudentNews(): JsonResponse
     {
         $student = auth()->user()->student;
         $enrollments = StudentEnrollment::where('student_id', $student->id)
@@ -54,16 +55,12 @@ class NewsService
 
     public function getAdminNews()
     {
-        $admin = auth()->user()->admin;
         $news = News::all();
         return ResponseHelper::jsonResponse(NewsResource::collection($news));
     }
 
-    public function createNews($request)
+    public function handlePhoto($request)
     {
-        $user = auth()->user();
-        $data = $request->validated();
-
         $photoPath = null;
         if ($request->hasFile('photo')) {
             try {
@@ -80,34 +77,22 @@ class NewsService
                 throw new ImageUploadFailed();
             }
         }
+        return $photoPath;
+    }
+
+    public function createNews($request): NewsResource
+    {
+        $user = auth()->user();
+        $data = $request->validated();
+        $photoPath = $this->handlePhoto($request);
+
 
         // Get current school day
         $curDay = '2025-05-11'; // now()->format('Y-m-d');
         $schoolDay = SchoolDay::where('date', $curDay)->first();
 
         $content = $data['content'];
-
-        // If content is a string (JSON), validate it
-        if (is_string($content)) {
-            $decodedContent = json_decode($content, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \InvalidArgumentException('Invalid JSON content provided');
-            }
-
-            // Validate ops structure (without delta wrapper)
-            if (!isset($decodedContent['ops']) || !is_array($decodedContent['ops'])) {
-                throw new \InvalidArgumentException('Content must have ops array structure');
-            }
-        }
-        // If content is already an array, encode it
-        else if (is_array($content)) {
-            // Validate ops structure (without delta wrapper)
-            if (!isset($content['ops']) || !is_array($content['ops'])) {
-                throw new \InvalidArgumentException('Content must have ops array structure');
-            }
-
-            $content = json_encode($content);
-        }
+        $content = $this->handleContent($content);
 
         // Create news record
         $news = News::create([
@@ -119,6 +104,80 @@ class NewsService
         ]);
 
         // Handle news targets
+        $this->handleNewsTargetsOnCreate($request, $news);
+
+        return NewsResource::make($news);
+    }
+
+    public function updateNews($request, $news)
+    {
+
+        $user = auth()->user();
+        $data = $request->validated();
+
+        $photoPath = $this->handlePhoto($request);
+
+
+        $content = $this->handleContent($data['content']);
+        $data['content'] = $content;
+
+        if ($request->filled('section_ids')) {
+
+            $this->updateSections($news, $request);
+
+        } else if ($request->filled('grade_ids')) {
+
+            $this->updateGrades($news, $request);
+
+        } else {
+            NewsTarget::where('news_id', $news->id)->delete();
+            NewsTarget::create([
+                'news_id' => $news->id,
+                'grade_id' => null,
+                'section_id' => null,
+                'created_by' => $user->id,
+            ]);
+        }
+        if ($photoPath) {
+            $data['photo'] = $photoPath;
+        }
+        $news->update($data);
+        return ResponseHelper::jsonResponse(NewsResource::make($news), 'news updated');
+    }
+
+    public function showNews(News $news)
+    {
+        return ResponseHelper::jsonResponse(NewsResource::make($news));
+    }
+
+    public function deleteNews($news)
+    {
+        $data = clone $news;
+
+        NewsTarget::where('news_id', $news->id)->delete();
+        $news->delete();
+
+        return ResponseHelper::jsonResponse(NewsResource::make($data), 'news deleted');
+    }
+
+    public function handleContent(mixed $content): mixed
+    {
+        if (is_string($content)) {
+            $decodedContent = json_decode($content, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \InvalidArgumentException('Invalid JSON content provided');
+            }
+
+            if (!isset($decodedContent['ops']) || !is_array($decodedContent['ops'])) {
+                throw new \InvalidArgumentException('Content must have ops array structure');
+            }
+        }
+        return $content;
+    }
+
+    public function handleNewsTargetsOnCreate($request, $news): void
+    {
+        $user = auth()->user();
         if ($request->filled('section_ids')) {
             foreach ($request->section_ids as $section_id) {
                 NewsTarget::create([
@@ -146,7 +205,64 @@ class NewsService
                 'created_by' => $user->id,
             ]);
         }
-
-        return NewsResource::make($news);
     }
+
+    public function updateSections($news, $request): void
+    {
+        $user = auth()->user();
+        NewsTarget::where('news_id', $news->id)->whereNotNull('grade_id')->delete();
+        NewsTarget::where('news_id', $news->id)->whereNull('section_id')->whereNull('grade_id')->delete();
+
+        $existingSections = NewsTarget::where('news_id', $news->id)
+            ->whereNotNull('section_id')
+            ->whereNull('grade_id')
+            ->pluck('section_id')
+            ->toArray();
+
+
+        $sectionsToDelete = array_diff($existingSections, $request->section_ids);
+        $sectionsToAdd = array_diff($request->section_ids, $existingSections);
+        NewsTarget::where('news_id', $news->id)
+            ->whereIn('section_id', $sectionsToDelete)
+            ->whereNull('grade_id')
+            ->delete();
+        foreach ($sectionsToAdd as $section_id) {
+            NewsTarget::create([
+                'news_id' => $news->id,
+                'grade_id' => null,
+                'section_id' => $section_id,
+                'created_by' => $user->id,
+            ]);
+        }
+    }
+
+
+    public function updateGrades($news, $request): void
+    {
+        $user = auth()->user();
+        NewsTarget::where('news_id', $news->id)->whereNotNull('section_id')->delete();
+        NewsTarget::where('news_id', $news->id)->whereNull('section_id')->whereNull('grade_id')->delete();
+        $existingGrades = NewsTarget::where('news_id', $news->id)
+            ->whereNull('section_id')
+            ->whereNotNull('grade_id')
+            ->pluck('grade_id')
+            ->toArray();
+
+        $gradesToDelete = array_diff($existingGrades, $request->grade_ids);
+        $gradesToAdd = array_diff($request->grade_ids, $existingGrades);
+        NewsTarget::where('news_id', $news->id)
+            ->whereIn('grade_id', $gradesToDelete)
+            ->whereNull('section_id')
+            ->delete();
+
+        foreach ($gradesToAdd as $grade_id) {
+            NewsTarget::create([
+                'news_id' => $news->id,
+                'grade_id' => $grade_id,
+                'section_id' => null,
+                'created_by' => $user->id,
+            ]);
+        }
+    }
+
 }

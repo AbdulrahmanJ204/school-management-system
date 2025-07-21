@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignId('school_day_id')->constrained('school_days');
             $table->string('photo')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

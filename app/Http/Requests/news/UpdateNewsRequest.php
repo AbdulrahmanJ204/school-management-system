@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\news;
 
-use App\Models\News;
+use App\Http\Requests\BaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateNewsRequest extends FormRequest
+class UpdateNewsRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->user()->can('create_news');
+        return auth()->user()->can('update_news');
     }
 
     /**
@@ -23,9 +23,13 @@ class CreateNewsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+           'title' => 'sometimes|string|max:255',
+            'content' => 'sometimes|string',
             'photo' => 'nullable|image|max:2048',
+            'section_ids' => 'nullable|array',
+            'section_ids.*' => 'exists:sections,id',
+            'grade_ids' => 'nullable|array',
+            'grade_ids.*' => 'exists:grades,id',
         ];
     }
 }
