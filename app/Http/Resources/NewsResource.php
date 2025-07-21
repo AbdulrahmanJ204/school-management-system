@@ -20,8 +20,8 @@ class NewsResource extends JsonResource
         if ($user->role === 'admin') {
             $targets = $this->whenLoaded('newsTargets');
 
-            $grades = $targets->whereNotNull('grade')->pluck('grade')->unique()->values();
-            $sections = $targets->whereNotNull('section')->pluck('section')->unique()->values();
+            $grades = GradeResource::collection($targets->whereNotNull('grade')->pluck('grade')->unique()->values());
+            $sections = SectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
 
             $targetsArray = [];
 
@@ -41,8 +41,7 @@ class NewsResource extends JsonResource
                 'photo' => $this->photo ? asset('storage/' . $this->photo) : null, // Full URL
                 'targets' => $targetsArray,
             ];
-        }
-        else
+        } else
             return [
                 "id" => $this->id,
                 "title" => $this->title,
