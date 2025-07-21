@@ -24,14 +24,14 @@ class UserService
     {
         $user = User::select([
             'id', 'first_name', 'father_name', 'last_name', 'email',
-            'role', 'birth_date', 'gender', 'phone', 'image','last_login'
+            'user_type', 'birth_date', 'gender', 'phone', 'image','last_login'
         ])->with('devices')->find($id);
 
         if (!$user) {
             throw new UserNotFoundException();
         }
 
-        match ($user->role) {
+        match ($user->user_type) {
             'admin' => $user->load('admin.createdBy'),
             'teacher' => $user->load('teacher.createdBy'),
             'student' => $user->load('student.createdBy'),
@@ -46,13 +46,13 @@ class UserService
     {
         $admin = auth()->user();
 
-        if (!$admin->hasPermissionTo('update_user')) {
+        if (!$admin->hasPermissionTo('تعديل مستخدم')) {
             throw new PermissionException();
         }
 
         $user = User::select([
             'id', 'first_name', 'father_name', 'last_name', 'email',
-            'role', 'birth_date', 'gender', 'phone', 'image'
+            'user_type', 'birth_date', 'gender', 'phone', 'image'
         ])->find($id);
 
         if (!$user) {
@@ -82,7 +82,7 @@ class UserService
 
             $user->update($credentials);
 
-            match ($user->role) {
+            match ($user->user_type) {
                 'admin' => $user->admin->touch(),
                 'teacher' => $user->teacher->touch(),
                 'student' => $user->student->update([
@@ -105,7 +105,7 @@ class UserService
     {
         $admin = auth()->user();
 
-        if (!$admin->hasPermissionTo('delete_user')) {
+        if (!$admin->hasPermissionTo('حذف مستخدم')) {
             throw new PermissionException();
         }
 
@@ -117,7 +117,7 @@ class UserService
 
         DB::transaction(function () use ($user) {
 
-            match ($user->role) {
+            match ($user->user_type) {
                 'admin' => $user->admin?->delete(),
                 'teacher' => $user->teacher?->delete(),
                 'student' => $user->student?->delete()
@@ -139,12 +139,12 @@ class UserService
     }
     public function listAdminsAndTeachers()
     {
-        /*if (!auth()->user()->hasPermissionTo('list_admins_and_teachers')) {
+        if (!auth()->user()->hasPermissionTo('عرض المشرفين و الاساتذة')) {
             throw new PermissionException();
-        }*/
+        }
 
-        $users = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'role', 'image')
-            ->whereIn('role', ['admin', 'teacher'])
+        $users = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'user_type', 'image')
+            ->whereIn('user_type', ['admin', 'teacher'])
             ->with(['admin', 'teacher'])
             ->orderBy('id', 'asc')
             ->paginate(15);

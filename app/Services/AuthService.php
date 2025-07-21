@@ -5,13 +5,13 @@ namespace App\Services;
 use App\Exceptions\DeviceAlreadyExistsException;
 use App\Exceptions\ImageUploadFailed;
 use App\Exceptions\InvalidPasswordException;
-use App\Exceptions\InvalidRoleException;
+use App\Exceptions\InvalidUserTypeException;
 use App\Exceptions\InvalidUserException;
-use App\Exceptions\MustPassRoleException;
+use App\Exceptions\MustPassUserTypeException;
 use App\Exceptions\PermissionException;
 use App\Exceptions\UserNotFoundException;
 use App\Helpers\ResponseHelper;
-use App\Helpers\RoleHelper;
+use App\Helpers\UserTypeHelper;
 use App\Http\Resources\UserResource;
 use App\Models\Admin;
 use App\Models\Device_info;
@@ -40,7 +40,7 @@ class AuthService
     {
         $admin = auth()->user();
 
-        if (!$admin->hasPermissionTo('create_user')) {
+        if (!$admin->hasPermissionTo('انشاء مستخدم')) {
             throw new PermissionException();
         }
 
@@ -66,20 +66,16 @@ class AuthService
             $credentials['image'] = 'user_images/default.png';
         }
 
-        $roleName =  $credentials['role'];
-        $guardName = RoleHelper::getGuardForRole($roleName);
+        $userTypeName =  $credentials['user_type'];
 
-        if($request->role !== 'student')
+        if($request->user_type !== 'student')
             $credentials['password'] = Hash::make($credentials['password']);
 
-        DB::transaction(function () use ($admin, $credentials, $roleName, $guardName) {
+        DB::transaction(function () use ($admin, $credentials, $userTypeName) {
 
             $user = User::create($credentials);
 
-            $role = Role::where('name', $roleName)->where('guard_name', $guardName)->firstOrFail();
-            $user->assignRole($role);
-
-            match ($roleName) {
+            match ($userTypeName) {
                 'admin' => Admin::create([
                     'user_id' => $user->id,
                     'created_by' => $admin->id,
@@ -92,7 +88,8 @@ class AuthService
                     'user_id' => $user->id,
                     'created_by' => $admin->id,
                     'grandfather'=> $credentials['grandfather'],
-                    'general_id'      => $credentials['general_id'],
+                    'mother' => $credentials['mother'],
+                    'general_id' => $credentials['general_id'],
                     'is_active' => $credentials['is_active']
                 ])
             };
@@ -105,15 +102,15 @@ class AuthService
             true
         );
     }
-    public function login($request, $role)
+    public function login($request, $user_type)
     {
         $credentials = $request->validated();
 
         $username = $credentials['user_name'];
-        $expectedRole = strtolower($role);
+        $expectedUserType = strtolower($user_type);
 
-        if (!in_array($expectedRole, ['admin', 'teacher', 'student'])) {
-            throw new InvalidRoleException();
+        if (!in_array($expectedUserType, ['admin', 'teacher', 'student'])) {
+            throw new InvalidUserTypeException();
         }
 
         $prefixMap = [
@@ -122,7 +119,7 @@ class AuthService
             'student' => 'Std_',
         ];
 
-        $expectedPrefix = $prefixMap[$expectedRole];
+        $expectedPrefix = $prefixMap[$expectedUserType];
 
         if (!str_starts_with($username, $expectedPrefix)) {
             throw new InvalidUserException(__('messages.auth.invalid_username_prefix'));
@@ -142,13 +139,13 @@ class AuthService
             throw new UserNotFoundException();
         }
 
-        if ($user->role !== $expectedRole) {
-            throw new InvalidRoleException();
+        if ($user->user_type !== $expectedUserType) {
+            throw new InvalidUserTypeException();
         }
 
-        if (!Hash::check($credentials['password'], $user->password)) {
+        /*if (!Hash::check($credentials['password'], $user->password)) {
             throw new InvalidPasswordException();
-        }
+        }*/
 
         $user->update(['last_login' => now()]);
 
@@ -190,7 +187,7 @@ class AuthService
             $accessToken->accessToken->device_id = $device->id;
             $accessToken->accessToken->save();
 
-            $refreshToken->accessToken->expires_at = now()->addMinutes(3600);
+            $refreshToken->accessToken->expires_at = now()->addDays(30);
             $refreshToken->accessToken->device_id = $device->id;
             $refreshToken->accessToken->save();
 

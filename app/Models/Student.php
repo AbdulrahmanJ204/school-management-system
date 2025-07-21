@@ -24,4 +24,8 @@ class Student extends Model
     {
         return $this->belongsTo(User::class, 'created_by'); // Creator admin
     }
+    public function studentEnrollments()
+    {
+        return $this->hasMany(StudentEnrollment::class, 'student_id');
+    }
 }

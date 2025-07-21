@@ -16,11 +16,13 @@ class QuizService
     public function listQuizzes($request)
     {
         $user = auth()->user();
-        $credentials = $request->validated();
 
-        /*if (!$user->hasPermissionTo('list_quizzes') || $quiz->created_by !== $user->id) {
-            throw new PermissionException();
-        }*/
+        // Check if authenticated and has the correct user_type
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('عرض الاختبارات المؤتمتة'))) {
+            throw new PermissionException(); // or return error response
+        }
+
+        $credentials = $request->validated();
 
         $query = Quiz::withCount('questions')
             ->with(['targets.subject', 'targets.section.grade', 'targets.semester'])
@@ -56,7 +58,7 @@ class QuizService
             throw new QuizNotFoundException();
         }
 
-        if (!$user->hasPermissionTo('get_quiz') || $quiz->created_by !== $user->id) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('عرض الاختبار المؤتمت')) || $quiz->created_by !== $user->id) {
             throw new PermissionException();
         }
 
@@ -69,7 +71,7 @@ class QuizService
     {
         $user = auth()->user();
 
-        if (!$user->hasPermissionTo('create_quiz')) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('انشاء اختبار مؤتمت'))) {
             throw new PermissionException();
         }
 
@@ -114,7 +116,7 @@ class QuizService
             throw new QuizNotFoundException();
         }
 
-        if (!$user->hasPermissionTo('activate_quiz') || $quiz->created_by !== $user->id) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('تفعيل اختبار مؤتمت')) || $quiz->created_by !== $user->id) {
             throw new PermissionException();
         }
 
@@ -146,7 +148,7 @@ class QuizService
             throw new QuizNotFoundException();
         }
 
-        if (!$user->hasPermissionTo('deactivate_quiz') || $quiz->created_by !== $user->id) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('تعطيل اختبار مؤتمت')) || $quiz->created_by !== $user->id) {
             throw new PermissionException();
         }
 
@@ -177,7 +179,7 @@ class QuizService
             throw new QuizNotFoundException();
         }
 
-        if (!$user->hasPermissionTo('update_quiz') || $quiz->created_by !== $user->id) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('تعديل اختبار مؤتمت')) || $quiz->created_by !== $user->id) {
             throw new PermissionException();
         }
 
@@ -239,7 +241,7 @@ class QuizService
 
         $quiz = Quiz::with('questions', 'targets')->find($id);
 
-        if (!$user->hasPermissionTo('delete_quiz') || $quiz->created_by !== $user->id) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('حذف اختبار مؤتمت')) || $quiz->created_by !== $user->id) {
             throw new PermissionException();
         }
 
@@ -254,5 +256,4 @@ class QuizService
             __("messages.quiz.deleted")
         );
     }
-
 }

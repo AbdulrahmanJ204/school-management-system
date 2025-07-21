@@ -17,13 +17,13 @@ class UserResource extends JsonResource
             'birth_date' => $this->birth_date,
             'gender' => $this->gender,
             'phone' => $this->phone,
-            'role' => $this->role,
+            'user_type' => $this->user_type,
             'image' => $this->image ? asset('storage/' . $this->image) : asset('storage/user_images/default.png'),
             'last_login' => $this->when($isGetUserRoute, function () {
                 return $this->last_login ? $this->last_login->format('Y-m-d H:i:s') : 'This user has never logged in';
             }),
 
-            'role_details' => match ($this->role) {
+            'user_type_details' => match ($this->user_type) {
                  'admin' => [
                      'created_by' => $this->admin?->createdBy
                          ? trim("{$this->admin->createdBy->first_name} {$this->admin->createdBy->father_name} {$this->admin->createdBy->last_name}")
@@ -40,11 +40,17 @@ class UserResource extends JsonResource
                  ],
                  'student' => [
                      'grandfather' => $this->student?->grandfather,
+                     'mother' => $this->student?->mother,
                      'general_id'  => $this->student?->general_id,
                      'is_active' => $this->student?->is_active,
                      'created_by' => $this->student?->createdBy
                          ? trim("{$this->student->createdBy->first_name} {$this->student->createdBy->father_name} {$this->student->createdBy->last_name}")
                          : null,
+                     'grade' => $this->student?->studentEnrollments->first()->section->grade,
+                     'section' => [
+                         'id' => $this->student?->studentEnrollments->first()?->section?->id,
+                         'title' => $this->student?->studentEnrollments->first()?->section?->title,
+                     ],
                      'created_at' => $this->student?->created_at->format('Y-m-d H:i:s'),
                      'updated_at' => $this->student?->updated_at->format('Y-m-d H:i:s'),
                  ],
