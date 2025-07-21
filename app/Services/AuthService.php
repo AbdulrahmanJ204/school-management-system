@@ -11,7 +11,6 @@ use App\Exceptions\MustPassUserTypeException;
 use App\Exceptions\PermissionException;
 use App\Exceptions\UserNotFoundException;
 use App\Helpers\ResponseHelper;
-use App\Helpers\UserTypeHelper;
 use App\Http\Resources\UserResource;
 use App\Models\Admin;
 use App\Models\Device_info;
@@ -24,8 +23,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\PersonalAccessToken;
-use Spatie\Permission\Models\Role;
-
 
 class AuthService
 {
@@ -109,6 +106,10 @@ class AuthService
         $username = $credentials['user_name'];
         $expectedUserType = strtolower($user_type);
 
+        if (!$expectedUserType) {
+            throw new MustPassUserTypeException();
+        }
+
         if (!in_array($expectedUserType, ['admin', 'teacher', 'student'])) {
             throw new InvalidUserTypeException();
         }
@@ -143,9 +144,9 @@ class AuthService
             throw new InvalidUserTypeException();
         }
 
-        /*if (!Hash::check($credentials['password'], $user->password)) {
+        if (!Hash::check($credentials['password'], $user->password)) {
             throw new InvalidPasswordException();
-        }*/
+        }
 
         $user->update(['last_login' => now()]);
 
@@ -228,7 +229,7 @@ class AuthService
         $newAccessToken->accessToken->device_id = $deviceId;
         $newAccessToken->accessToken->save();
 
-        $newRefreshToken->accessToken->expires_at = now()->addMinutes(3600);
+        $newRefreshToken->accessToken->expires_at = now()->addDays(30);
         $newRefreshToken->accessToken->device_id = $deviceId;
         $newRefreshToken->accessToken->save();
 
