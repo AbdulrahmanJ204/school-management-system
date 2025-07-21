@@ -55,7 +55,7 @@ class NewsService
 
     public function getAdminNews()
     {
-        $news = News::all();
+        $news = News::with('newsTargets.section' , 'newsTargets.grade')->get();
         return ResponseHelper::jsonResponse(NewsResource::collection($news));
     }
 

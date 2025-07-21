@@ -20,5 +20,10 @@ class NewsTarget extends Model
     public function news() :  BelongsTo{
         return $this->belongsTo(News::class, 'news_id');
     }
-
+    public function section() :  BelongsTo{
+        return $this->belongsTo(Section::class, 'section_id');
+    }
+    public function grade() : BelongsTo{
+        return $this->belongsTo(Grade::class, 'grade_id');
+    }
 }
