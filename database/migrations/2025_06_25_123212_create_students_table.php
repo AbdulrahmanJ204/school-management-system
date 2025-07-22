@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->string('grandfather');
-            $table->string('mother');
             $table->unsignedBigInteger('general_id');
             $table->boolean('is_active')->default(true);
             $table->foreignId('created_by')->constrained('users');

@@ -34,6 +34,7 @@ class UpdateRequest extends BaseRequest
             'first_name' => 'nullable|string|max:30', // Changed from sometimes to nullable
             'last_name' => 'nullable|string|max:30',
             'father_name' => 'nullable|string|max:30',
+            'mother_name' => 'nullable|string|max:30',
             'email' => [
                 'nullable', // Changed from sometimes
                 'email',

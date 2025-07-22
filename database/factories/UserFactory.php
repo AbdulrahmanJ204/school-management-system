@@ -33,6 +33,7 @@ class UserFactory extends Factory
             'first_name' => $this->faker->firstName($gender),
             'father_name' => $this->faker->firstName($gender),
             'last_name' => $this->faker->lastName(),
+            'mother_name' => $this->faker->firstName(),
             'gender' => $gender,
             'birth_date' => $this->faker->date(),
             'email' => $this->faker->unique()->safeEmail(),
@@ -95,7 +96,6 @@ class UserFactory extends Factory
                 'user_id' => $user->id,
                 'created_by' => 1,
                 'grandfather' => $this->faker->lastName,
-                'mother' => $this->faker->firstName,
                 'general_id' => $this->faker->unique()->numerify('#######'),
                 'is_active' => $this->faker->boolean
             ]);
