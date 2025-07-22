@@ -26,6 +26,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService
 {
+
     /**
      * Create a new class instance.
      */
@@ -68,6 +69,8 @@ class AuthService
         if($request->user_type !== 'student')
             $credentials['password'] = Hash::make($credentials['password']);
 
+        $user = null;
+
         DB::transaction(function () use ($admin, $credentials, $userTypeName) {
 
             $user = User::create($credentials);
@@ -93,7 +96,7 @@ class AuthService
         });
 
         return ResponseHelper::jsonResponse(
-            null,
+            new UserResource($user),
             __('messages.user.created'),
             201,
             true

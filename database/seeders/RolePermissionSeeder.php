@@ -38,6 +38,8 @@ class RolePermissionSeeder extends Seeder
             'انشاء نتيجة اختبار مؤتمت',
             'عرض الاختبارات المؤتمتة',
             'عرض الاختبار المؤتمت',
+            'انشاء دور',
+
         ];
 
         foreach ($permissions as $permission) {

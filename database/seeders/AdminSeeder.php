@@ -19,6 +19,7 @@ class AdminSeeder extends Seeder
         $superAdminUser = User::create([
             'first_name' => 'admin',
             'father_name' => 'super',
+            'mother_name' => 'sofia',
             'last_name' => 'ruler',
             'gender' => 'male',
             'birth_date' => '2003-01-01',
