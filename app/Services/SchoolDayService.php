@@ -6,15 +6,21 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\SchoolDayRequest;
 use App\Http\Resources\SchoolDayResource;
 use App\Models\SchoolDay;
+use App\Models\Semester;
 use Illuminate\Http\Response;
 
 class SchoolDayService
 {
-    public function listSchoolDay()
+    public function listSchoolDay(Semester $semester)
     {
-        $schoolDays = SchoolDay::with(['createdBy', 'semester'])
-            ->orderBy('date', 'desc')
-            ->get();
+//        $schoolDays = SchoolDay::with([
+//            'createdBy',
+//            'semester'
+//        ])
+//            ->orderBy('date', 'desc')
+//            ->get();
+
+        $schoolDays = $semester->schoolDays;
 
         return ResponseHelper::jsonResponse(
             SchoolDayResource::collection($schoolDays)

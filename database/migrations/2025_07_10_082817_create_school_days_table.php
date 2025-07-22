@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->foreignId('semester_id')->constrained('semesters');
-            $table->enum('type', ['study', 'exam']);
+            $table->enum('type', ['study', 'exam', 'holiday']);
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
         });

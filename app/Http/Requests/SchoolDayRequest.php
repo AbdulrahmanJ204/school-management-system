@@ -37,7 +37,7 @@ class SchoolDayRequest extends BaseRequest
             ],
             'type' => [
                 'required',
-                'in:study,exam'
+                'in:study,exam,holiday'
             ]
         ];
     }
