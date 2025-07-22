@@ -13,7 +13,8 @@ class Student extends Model
         'grandfather',
         'general_id',
         'created_by',
-        'is_active'
+        'is_active',
+        'mother'
     ];
 
     public function user()

@@ -74,7 +74,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::prefix('school-days')->group(function () {
-        Route::get('/', [SchoolDayController::class, 'index']);
+        Route::get('/{semester}', [SchoolDayController::class, 'index']);
         Route::post('/', [SchoolDayController::class, 'store']);
 //        todo after (behaviorNotes, behaviorNotes, assignments, studentAttendances, teacherAttendances, news)
 //        Route::get('/{schoolDay}', [SchoolDayController::class, 'show']);

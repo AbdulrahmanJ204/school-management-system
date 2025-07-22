@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SchoolDayRequest;
 use App\Models\SchoolDay;
+use App\Models\Semester;
 use App\Services\SchoolDayService;
 use Illuminate\Http\Request;
 
@@ -20,9 +21,9 @@ class SchoolDayController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Semester $semester)
     {
-        return $this->schoolDayService->listSchoolDay();
+        return $this->schoolDayService->listSchoolDay($semester);
     }
 
     /**
