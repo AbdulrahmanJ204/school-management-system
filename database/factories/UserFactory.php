@@ -96,6 +96,7 @@ class UserFactory extends Factory
                 'user_id' => $user->id,
                 'created_by' => 1,
                 'grandfather' => $this->faker->lastName,
+                'mother' => $this->faker->firstName,
                 'general_id' => $this->faker->unique()->numerify('#######'),
                 'is_active' => $this->faker->boolean
             ]);
