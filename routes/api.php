@@ -51,3 +51,4 @@ Route::middleware('auth:api')->group(function () {
 })->middleware(['role:student', 'throttle:5,1']);
 
 require __DIR__.'/news.php';
+require __DIR__.'/files.php';

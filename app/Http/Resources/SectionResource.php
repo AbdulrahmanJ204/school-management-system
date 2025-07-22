@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Grade;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,6 +18,7 @@ class SectionResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'grade' => GradeResource::make($this->whenLoaded('grade')),
         ];
     }
 }

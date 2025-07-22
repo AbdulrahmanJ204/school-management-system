@@ -55,7 +55,7 @@ class NewsService
 
     public function getAdminNews()
     {
-        $news = News::with('newsTargets.section' , 'newsTargets.grade')->get();
+        $news = News::with('newsTargets.section.grade' , 'newsTargets.grade')->get();
         return ResponseHelper::jsonResponse(NewsResource::collection($news));
     }
 
@@ -79,7 +79,22 @@ class NewsService
         }
         return $photoPath;
     }
+    public function getLastSchoolDayID(){
+        $today = now()->toDateString();
 
+        $todaySchoolDay = SchoolDay::where('date', $today)->first();
+
+        if ($todaySchoolDay) {
+            return $todaySchoolDay->id;
+        }
+
+        $lastSchoolDay = SchoolDay::where('date', '<', $today)
+            ->orderBy('date', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        return $lastSchoolDay ? $lastSchoolDay->id : null;
+    }
     public function createNews($request): NewsResource
     {
         $user = auth()->user();
@@ -87,9 +102,7 @@ class NewsService
         $photoPath = $this->handlePhoto($request);
 
 
-        // Get current school day
-        $curDay = '2025-05-11'; // now()->format('Y-m-d');
-        $schoolDay = SchoolDay::where('date', $curDay)->first();
+        $schoolDayID = $this->getLastSchoolDayID();
 
         $content = $data['content'];
         $content = $this->handleContent($content);
@@ -99,7 +112,7 @@ class NewsService
             'title' => $data['title'],
             'content' => $content, // Store as JSON string
             'photo' => $photoPath,
-            'school_day_id' => $schoolDay->id,
+            'school_day_id' => $schoolDayID,
             'created_by' => $user->id,
         ]);
 

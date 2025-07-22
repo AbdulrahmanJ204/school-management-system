@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\news\CreateNewsRequest;
+use App\Http\Requests\news\StoreNewsRequest;
 use App\Http\Requests\news\UpdateNewsRequest;
 use App\Models\News;
 use App\Services\NewsService;
@@ -29,7 +29,7 @@ class NewsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateNewsRequest $request)
+    public function store(StoreNewsRequest $request)
     {
 
         return $this->newsService->createNews($request);
