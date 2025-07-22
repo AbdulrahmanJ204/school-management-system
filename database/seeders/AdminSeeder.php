@@ -16,7 +16,7 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminUser = User::create([
+        $superAdminUser = User::create([
             'first_name' => 'admin',
             'father_name' => 'super',
             'last_name' => 'ruler',
@@ -26,7 +26,7 @@ class AdminSeeder extends Seeder
             'phone' => '0935946431',
             'password' => '1234567890',
             'image' => 'user_images/default.png',
-            'role' => 'admin',
+            'user_type' => 'admin',
             'remember_token' => Str::random(10),
             'created_at' => now(),
             'updated_at' => now(),
@@ -34,11 +34,11 @@ class AdminSeeder extends Seeder
 
         Hash::make('password');
 
-        $adminRole = Role::where('name', 'admin')->first();
-        $adminUser->assignRole($adminRole);
+        $superAdminRole = Role::where('name', 'super_admin')->first();
+        $superAdminUser->assignRole($superAdminRole);
 
         Admin::create([
-            'user_id' => $adminUser->id,
+            'user_id' => $superAdminUser->id,
             'created_by' => 1, // This could be the admin's own ID or different logic
         ]);
     }

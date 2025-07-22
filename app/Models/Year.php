@@ -36,7 +36,7 @@ class Year extends Model
 
     public function settingGradeYears()
     {
-        return $this->hasMany(GradeYearSettings::class);
+        return $this->hasMany(GradeYearSetting::class);
     }
 
     // Scopes

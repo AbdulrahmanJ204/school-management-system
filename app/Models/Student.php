@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
+    protected $table = 'students';
+
     protected $fillable = [
         'user_id',
         'grandfather',
@@ -21,5 +23,9 @@ class Student extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by'); // Creator admin
+    }
+    public function studentEnrollments()
+    {
+        return $this->hasMany(StudentEnrollment::class, 'student_id');
     }
 }

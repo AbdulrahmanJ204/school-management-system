@@ -166,7 +166,7 @@ return [
         'password'              => 'كلمة المرور',
         'password_confirmation' => 'تأكيد كلمة المرور',
         'phone'                 => 'رقم الجوال',
-        'role'                  => 'الدور',
+        'user_type'                  => 'نوع المستخدم',
         'grandfather'           => '`اسم الجد',
         'general_id'            => 'المعرف الغام',
         'student'               => 'طالب',
@@ -174,6 +174,7 @@ return [
         'teacher'               => 'معلم',
         'current_password'      => 'كلمة السر الحالية',
         'new_password'          => 'كلمة السر الجديدة',
-        'is_active'             => 'فعال'
+        'is_active'             => 'فعال',
+        'user_name'             => 'اسم المستخدم'
     ],
 ];

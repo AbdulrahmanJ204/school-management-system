@@ -39,7 +39,7 @@ class Grade extends Model
 
     public function settingGradeYears(): HasMany
     {
-        return $this->hasMany(GradeYearSettings::class);
+        return $this->hasMany(GradeYearSetting::class);
     }
 }
 

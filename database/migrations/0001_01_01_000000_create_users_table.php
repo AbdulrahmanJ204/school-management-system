@@ -16,18 +16,18 @@ return new class extends Migration
 
             // Personal Details
             $table->string('first_name');
-            $table->string('father_name');
+            $table->string('father_name')->nullable();
             $table->string('last_name');
             $table->enum('gender', ['male', 'female']);
             $table->date('birth_date')->nullable();
 
             // Contact & Account
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
             $table->string('password')->nullable();
 
             // Role system
-            $table->enum('role', ['admin', 'teacher', 'student'])->default('student');
+            $table->enum('user_type', ['admin', 'teacher', 'student'])->default('student');
 
             // Email verification system (custom)
             $table->timestamp('email_verified_at')->nullable();

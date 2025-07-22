@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
@@ -28,7 +27,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         $gender = $this->faker->randomElement(['male', 'female']);
-        $role = $this->faker->randomElement(['admin', 'teacher', 'student']);
+        $user_type = $this->faker->randomElement(['admin', 'teacher', 'student']);
 
         return [
             'first_name' => $this->faker->firstName($gender),
@@ -39,9 +38,7 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'phone' => $this->faker->unique()->phoneNumber(),
             'password' => Hash::make('password'),
-            'role' => $role,
-            /*'email_verified_at' => $this->faker->optional()->dateTime(),
-            'email_verification_token' => $this->faker->optional()->regexify('[A-Za-z0-9]{64}'),*/
+            'user_type' => $user_type,
             'image' => 'user_images/default.png',
             'remember_token' => Str::random(10),
             'created_at' => now(),
@@ -63,7 +60,7 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'admin',
+                'user_type' => 'admin',
             ];
         })->afterCreating(function (User $user) {
             Admin::create([
@@ -77,7 +74,7 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'teacher',
+                'user_type' => 'teacher',
             ];
         })->afterCreating(function (User $user) {
             Teacher::create([
@@ -91,13 +88,14 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'student',
+                'user_type' => 'student',
             ];
         })->afterCreating(function (User $user) {
             Student::create([
                 'user_id' => $user->id,
                 'created_by' => 1,
                 'grandfather' => $this->faker->lastName,
+                'mother' => $this->faker->firstName,
                 'general_id' => $this->faker->unique()->numerify('#######'),
                 'is_active' => $this->faker->boolean
             ]);

@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Semester;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Database\Factories\AdminFactory;
+use App\Models\Year;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Seeder;
 
@@ -31,5 +32,9 @@ class DatabaseSeeder extends Seeder
         User::factory()->student()->count(10)->create();
         User::factory()->teacher()->count(5)->create();
         User::factory()->admin()->count(3)->create();
+        $this->call([
+            StudentEnrollmentSeeder::class,
+            NewsSeeder::class,
+        ]);
     }
 }

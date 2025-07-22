@@ -24,35 +24,35 @@ class UserService
     {
         $user = User::select([
             'id', 'first_name', 'father_name', 'last_name', 'email',
-            'role', 'birth_date', 'gender', 'phone', 'image','last_login'
+            'user_type', 'birth_date', 'gender', 'phone', 'image','last_login'
         ])->with('devices')->find($id);
 
         if (!$user) {
             throw new UserNotFoundException();
         }
 
-        match ($user->role) {
+        match ($user->user_type) {
             'admin' => $user->load('admin.createdBy'),
             'teacher' => $user->load('teacher.createdBy'),
             'student' => $user->load('student.createdBy'),
         };
 
         return ResponseHelper::jsonResponse(
-            new UserResource($user)
+            new UserResource($user),
+            __('messages.user.get')
         );
     }
-
     public function updateUser($request, $id)
     {
         $admin = auth()->user();
 
-        if (!$admin->hasPermissionTo('update_user')) {
+        if (!$admin->hasPermissionTo('تعديل مستخدم')) {
             throw new PermissionException();
         }
 
         $user = User::select([
             'id', 'first_name', 'father_name', 'last_name', 'email',
-            'role', 'birth_date', 'gender', 'phone', 'image'
+            'user_type', 'birth_date', 'gender', 'phone', 'image'
         ])->find($id);
 
         if (!$user) {
@@ -82,7 +82,7 @@ class UserService
 
             $user->update($credentials);
 
-            match ($user->role) {
+            match ($user->user_type) {
                 'admin' => $user->admin->touch(),
                 'teacher' => $user->teacher->touch(),
                 'student' => $user->student->update([
@@ -95,18 +95,17 @@ class UserService
         });
 
         return ResponseHelper::jsonResponse(
-            null,
+            new UserResource($user),
             __('messages.user.updated'),
-            200,
+            201,
             true
         );
     }
-
     public function deleteUser(int $id)
     {
         $admin = auth()->user();
 
-        if (!$admin->hasPermissionTo('delete_user')) {
+        if (!$admin->hasPermissionTo('حذف مستخدم')) {
             throw new PermissionException();
         }
 
@@ -118,7 +117,7 @@ class UserService
 
         DB::transaction(function () use ($user) {
 
-            match ($user->role) {
+            match ($user->user_type) {
                 'admin' => $user->admin?->delete(),
                 'teacher' => $user->teacher?->delete(),
                 'student' => $user->student?->delete()
@@ -136,6 +135,23 @@ class UserService
             __('messages.user.deleted'),
             200,
             true
+        );
+    }
+    public function listAdminsAndTeachers()
+    {
+        if (!auth()->user()->hasPermissionTo('عرض المشرفين و الاساتذة')) {
+            throw new PermissionException();
+        }
+
+        $users = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'user_type', 'image')
+            ->whereIn('user_type', ['admin', 'teacher'])
+            ->with(['admin', 'teacher'])
+            ->orderBy('id', 'asc')
+            ->paginate(15);
+
+        return ResponseHelper::jsonResponse(
+            UserResource::collection($users),
+            __('messages.user.list_admins_and_teachers'),
         );
     }
 }

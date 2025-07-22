@@ -24,7 +24,7 @@ class UpdateRequest extends BaseRequest
     public function rules(): array
     {
         $userId = $this->route('user');
-        $user = User::select(['id', 'email', 'phone', 'role'])->find($userId);
+        $user = User::select(['id', 'email', 'phone', 'user_type'])->find($userId);
 
         if (!$user) {
             throw new UserNotFoundException();
@@ -45,10 +45,10 @@ class UpdateRequest extends BaseRequest
                     ),
             ],
             'password' => 'prohibited',
-            'role' => 'prohibited',
+            'user_type' => 'prohibited',
             'gender' => 'nullable|in:male,female',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'birth_date' => 'nullable|date|before:today',
+            'birth_date' => 'nullable|date|before:today|date_format:Y-m-d|regex:/^\d{4}-\d{2}-\d{2}$/',
             'phone' => [
                 'nullable',
                 'string',
@@ -64,20 +64,20 @@ class UpdateRequest extends BaseRequest
             ],
             'grandfather' => [
                 'nullable',
-                'required_if:role,student',
-                'prohibited_unless:role,student',
+                'required_if:user_type,student',
+                'prohibited_unless:user_type,student',
                 'string',
                 'max:255'
             ],
             'general_id' => [
                 'nullable',
-                'required_if:role,student',
-                'prohibited_unless:role,student',
+                'required_if:user_type,student',
+                'prohibited_unless:user_type,student',
                 'string',
                 'max:50',
                 Rule::unique('students', 'general_id')->ignore($user->id, 'user_id')
             ],
-            'is_active' => 'nullable|required_if:role,student|boolean',
+            'is_active' => 'nullable|required_if:user_type,student|boolean',
         ];
     }
 }

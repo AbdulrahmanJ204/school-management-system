@@ -76,5 +76,10 @@ class Subject extends Model
             $this->activity_percentage + $this->quiz_percentage +
             $this->exam_percentage;
     }
+
+    public function quizTargets()
+    {
+        return $this->hasMany(QuizTarget::class);
+    }
 }
 

@@ -26,10 +26,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'birth_date',
         'gender',
         'email',
+        'user_name',
         'password',
         'phone',
         'image',
-        'role',
+        'user_type',
         'last_login',
     ];
 
@@ -42,7 +43,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
-
+    protected $casts = [
+        'last_login' => 'datetime',
+    ];
     /**
      * Get the attributes that should be cast.
      *

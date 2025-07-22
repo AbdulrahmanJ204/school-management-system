@@ -24,7 +24,9 @@ class AuthController extends Controller
     }
     public function login(LoginRequest $request)
     {
-        return $this->authService->login($request);
+        $user_type = strtolower(request()->query('user_type'));
+
+        return $this->authService->login($request, $user_type);
     }
     public function refresh(Request $request)
     {

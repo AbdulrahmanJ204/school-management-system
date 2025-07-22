@@ -6,6 +6,9 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\SchoolDayController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SemesterController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuizController;
+use App\Http\Controllers\ScoreQuizController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
@@ -13,7 +16,6 @@ use App\Http\Controllers\YearController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->name('auth.')->group(function () {
-
     Route::post('login', [AuthController::class, 'login'])->name('login')->middleware('throttle:10,1');
     Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password')->middleware('throttle:5,1');
     Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password')->middleware('throttle:5,1');
@@ -29,13 +31,29 @@ Route::middleware('auth:api')->group(function () {
     Route::get('admins', [AdminController::class, 'show']);
     Route::get('teachers', [TeacherController::class, 'show']);
     Route::get('students', [StudentController::class, 'show']);
+    Route::get('staff', [UserController::class, 'getStaff']);
     Route::resource('users', UserController::class)->only(['show', 'destroy']);
     Route::post('users/{user}', [UserController::class, 'update']);
-})->middleware(['role:admin', 'throttle:5,1']);
+})->middleware(['user_type:admin', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('change-password', [AuthController::class, 'changePassword'])->name('change-password');
-})->middleware(['role:admin|teacher', 'throttle:5,1']);
+    })->middleware(['user_type:admin|teacher', 'throttle:5,1']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('quizzes', QuizController::class);
+    Route::put('quizzes/{id}/activate', [QuizController::class, 'activate']);
+    Route::put('quizzes/{id}/deactivate', [QuizController::class, 'deactivate']);
+    Route::post('quizzes/{quiz_id}/questions', [QuestionController::class, 'create']);
+    Route::post('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'update']);
+    Route::delete('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'destroy']);
+    Route::get('quizzes', [QuizController::class, 'index']);
+    Route::get('quiz/{id}', [QuizController::class, 'show']);
+})->middleware(['user_type:teacher', 'throttle:5,1']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('score-quizzes', [ScoreQuizController::class, 'create']);
+})->middleware(['user_type:student', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {
 

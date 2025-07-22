@@ -24,6 +24,7 @@ class GradeResource extends JsonResource
             'sections' => SectionResource::collection($this->whenLoaded('sections')),
 //            'subject_majors' => SubjectMajorResource::collection($this->whenLoaded('subjectMajors')),
 //            'setting_grade_years' => SettingGradeYearResource::collection($this->whenLoaded('settingGradeYears')),
+
         ];
     }
 }

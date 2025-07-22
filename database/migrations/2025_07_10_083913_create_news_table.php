@@ -11,10 +11,11 @@ return new class extends Migration
         Schema::create('news', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('content');
-            $table->date('publish_date');
+            $table->json('content');
+            $table->foreignId('school_day_id')->constrained('school_days');
             $table->string('photo')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

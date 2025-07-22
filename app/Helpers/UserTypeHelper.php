@@ -2,11 +2,11 @@
 
 namespace App\Helpers;
 
-class RoleHelper
+class UserTypeHelper
 {
-    public static function getGuardForRole(string $role): string
+    public static function getGuardForUserType(string $user_type): string
     {
-        return match ($role) {
+        return match ($user_type) {
             'admin'   => 'api',
             'student' => 'api',
             'teacher' => 'api',
