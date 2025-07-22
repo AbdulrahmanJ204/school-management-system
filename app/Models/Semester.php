@@ -14,6 +14,7 @@ class Semester extends Model
         'name',
         'start_date',
         'end_date',
+        'is_active',
         'created_by'
     ];
 

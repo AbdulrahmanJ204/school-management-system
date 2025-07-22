@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SchoolDay extends Model
 {
@@ -21,39 +23,44 @@ class SchoolDay extends Model
     ];
 
     // Relations
-    public function semester()
+    public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function assignments()
+    public function assignments(): HasMany
     {
         return $this->hasMany(Assignment::class);
     }
 
-    public function behaviorNotes()
+    public function behaviorNotes(): HasMany
     {
         return $this->hasMany(BehaviorNote::class);
     }
 
-    public function studyNotes()
+    public function studyNotes(): HasMany
     {
         return $this->hasMany(StudyNote::class);
     }
 
-    public function studentAttendances()
+    public function studentAttendances(): HasMany
     {
         return $this->hasMany(StudentAttendance::class);
     }
 
-    public function teacherAttendances()
+    public function teacherAttendances(): HasMany
     {
         return $this->hasMany(TeacherAttendance::class);
+    }
+
+    public function news(): HasMany
+    {
+        return $this->hasMany(News::class);
     }
 
     // Scopes

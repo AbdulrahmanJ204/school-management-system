@@ -19,6 +19,12 @@ class DatabaseSeeder extends Seeder
             [
                 RolePermissionSeeder::class,
                 AdminSeeder::class,
+                YearSeeder::class,
+                SemesterSeeder::class,
+                SchoolDaySeeder::class,
+                GradeSeeder::class,
+                SectionSeeder::class,
+                SubjectSeeder::class,
             ]
         );
 

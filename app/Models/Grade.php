@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Grade extends Model
 {
@@ -14,23 +16,28 @@ class Grade extends Model
         'created_by'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     // Relations
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function sections()
+    public function sections(): HasMany
     {
         return $this->hasMany(Section::class);
     }
 
-    public function subjectMajors()
+    public function subjectMajors(): HasMany
     {
         return $this->hasMany(SubjectMajor::class);
     }
 
-    public function settingGradeYears()
+    public function settingGradeYears(): HasMany
     {
         return $this->hasMany(GradeYearSettings::class);
     }
