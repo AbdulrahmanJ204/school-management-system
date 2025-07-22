@@ -46,11 +46,11 @@ class UserResource extends JsonResource
                      'created_by' => $this->student?->createdBy
                          ? trim("{$this->student->createdBy->first_name} {$this->student->createdBy->father_name} {$this->student->createdBy->last_name}")
                          : null,
-                     'grade' => $this->student?->studentEnrollments->first()->section->grade,
-                     'section' => [
-                         'id' => $this->student?->studentEnrollments->first()?->section?->id,
-                         'title' => $this->student?->studentEnrollments->first()?->section?->title,
-                     ],
+//                     'grade' => $this->student?->studentEnrollments->first()->section->grade,
+//                     'section' => [
+//                         'id' => $this->student?->studentEnrollments->first()?->section?->id,
+//                         'title' => $this->student?->studentEnrollments->first()?->section?->title,
+//                     ],
                      'created_at' => $this->student?->created_at->format('Y-m-d H:i:s'),
                      'updated_at' => $this->student?->updated_at->format('Y-m-d H:i:s'),
                  ],

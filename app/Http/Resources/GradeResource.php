@@ -17,6 +17,14 @@ class GradeResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+
+            'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
+            'sections' => SectionResource::collection($this->whenLoaded('sections')),
+//            'subject_majors' => SubjectMajorResource::collection($this->whenLoaded('subjectMajors')),
+//            'setting_grade_years' => SettingGradeYearResource::collection($this->whenLoaded('settingGradeYears')),
+
         ];
     }
 }

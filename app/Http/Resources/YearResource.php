@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SectionResource extends JsonResource
+class YearResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,15 +16,16 @@ class SectionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'grade_id' => $this->grade_id,
+            'name' => $this->name,
+            'start_date' => $this->start_date?->format('Y-m-d'),
+            'end_date' => $this->end_date?->format('Y-m-d'),
+            'is_active' => $this->is_active,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
 
             'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
-            'grade' => new GradeResource($this->whenLoaded('grade')),
-//            'student_enrollments' => StudentEnrollmentResource::collection($this->whenLoaded('studentEnrollments')),
-//            'teacher_section_subjects' => TeacherSectionSubjectResource::collection($this->whenLoaded('teacherSectionSubjects')),
+//            'created_by' => new UserResource($this->whenLoaded('createdBy')),
+            'semesters' => SemesterResource::collection($this->whenLoaded('semesters')),
         ];
     }
 }

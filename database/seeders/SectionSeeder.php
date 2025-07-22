@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Grade;
-use App\Models\Section;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\Grade;
+use App\Models\Section;
 
 class SectionSeeder extends Seeder
 {
@@ -14,20 +15,25 @@ class SectionSeeder extends Seeder
      */
     public function run(): void
     {
-        $sections = ['A', 'B', 'C', 'D'];
-        $grades = Grade::all();
+        $sections = [];
+        $sectionNames = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة'];
 
-        foreach ($grades as $grade) {
-            // Create 2-4 sections per grade depending on grade level
-            $sectionCount = $grade->id <= 3 ? 2 : ($grade->id <= 8 ? 3 : 4);
+        // Create sections for each grade (grades 1-12)
+        for ($gradeId = 1; $gradeId <= 12; $gradeId++) {
+            // Primary grades (1-6) have fewer sections
+            $numSections = $gradeId <= 6 ? 3 : 5;
 
-            for ($i = 0; $i < $sectionCount; $i++) {
-                Section::create([
-                    'title' => $sections[$i],
-                    'grade_id' => $grade->id,
+            for ($i = 0; $i < $numSections; $i++) {
+                $sections[] = [
+                    'title' => $sectionNames[$i],
+                    'grade_id' => $gradeId,
                     'created_by' => 1,
-                ]);
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
         }
+
+        DB::table('sections')->insert($sections);
     }
 }

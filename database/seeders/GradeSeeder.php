@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Grade;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\Grade;
 
 class GradeSeeder extends Seeder
 {
@@ -14,23 +15,85 @@ class GradeSeeder extends Seeder
     public function run(): void
     {
         $grades = [
-            ['title' => 'Kindergarten', 'created_by' => 1],
-            ['title' => 'Grade 1', 'created_by' => 1],
-            ['title' => 'Grade 2', 'created_by' => 1],
-            ['title' => 'Grade 3', 'created_by' => 1],
-            ['title' => 'Grade 4', 'created_by' => 1],
-            ['title' => 'Grade 5', 'created_by' => 1],
-            ['title' => 'Grade 6', 'created_by' => 1],
-            ['title' => 'Grade 7', 'created_by' => 1],
-            ['title' => 'Grade 8', 'created_by' => 1],
-            ['title' => 'Grade 9', 'created_by' => 1],
-            ['title' => 'Grade 10', 'created_by' => 1],
-            ['title' => 'Grade 11', 'created_by' => 1],
-            ['title' => 'Grade 12', 'created_by' => 1],
+            // Primary School
+            [
+                'title' => 'الصف الأول الابتدائي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'الصف الثاني الابتدائي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'الصف الثالث الابتدائي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'الصف الرابع الابتدائي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'الصف الخامس الابتدائي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'الصف السادس الابتدائي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // Middle School
+            [
+                'title' => 'الصف السابع الإعدادي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'الصف الثامن الإعدادي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'الصف التاسع الإعدادي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // High School
+            [
+                'title' => 'الصف العاشر الثانوي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'الصف الحادي عشر الثانوي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'الصف البكلوريا الثانوي',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ];
 
-        foreach ($grades as $grade) {
-            Grade::create($grade);
-        }
+        DB::table('grades')->insert($grades);
     }
 }
