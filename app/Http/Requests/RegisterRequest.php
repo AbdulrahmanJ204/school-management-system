@@ -25,16 +25,17 @@ class RegisterRequest extends BaseRequest
             'first_name' => 'required|string|max:30',
             'last_name' => 'required|string|max:30',
             'father_name' => 'required|string|max:30',
-            'email' => 'required_unless:role,student|email|unique:users,email|prohibited_if:role,student',
-            'password' => 'required_unless:role,student|string|min:8|confirmed|prohibited_if:role,student',
-            'role' => 'required|in:admin,teacher,student',
+            'mother_name'  => 'required|string|max:30',
+            'email' => 'required_unless:user_type,student|email|unique:users,email|prohibited_if:user_type,student',
+            'password' => 'required_unless:user_type,student|string|min:8|confirmed|prohibited_if:user_type,student',
+            'user_type' => 'required|in:admin,teacher,student',
             'gender' => 'required|in:male,female',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'birth_date'   => 'required|date|before:today',
             'phone'        => 'required|string|unique:users,phone|regex:/^[0-9+\-\s()]*$/|min:7|max:20',
-            'grandfather'  => 'required_if:role,student|prohibited_unless:role,student|string|max:255',
-            'general_id' => 'required_if:role,student|prohibited_unless:role,student|string|max:50|unique:students,general_id',
-            'is_active' => 'required_if:role,student|in:0,1',
+            'grandfather'  => 'required_if:user_type,student|prohibited_unless:user_type,student|string|max:255',
+            'general_id' => 'required_if:user_type,student|prohibited_unless:user_type,student|string|max:50|unique:students,general_id',
+            'is_active' => 'required_if:user_type,student|in:0,1',
         ];
     }
 }

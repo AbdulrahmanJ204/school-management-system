@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('father_name')->nullable();
             $table->string('last_name');
+            $table->string('mother_name');
             $table->enum('gender', ['male', 'female']);
             $table->date('birth_date')->nullable();
 
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->string('password')->nullable();
 
             // Role system
-            $table->enum('role', ['admin', 'teacher', 'student'])->default('student');
+            $table->enum('user_type', ['admin', 'teacher', 'student'])->default('student');
 
             // Email verification system (custom)
             $table->timestamp('email_verified_at')->nullable();

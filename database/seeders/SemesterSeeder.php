@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Semester;
-use App\Models\Year;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\Semester;
+use App\Models\Year;
 
 class SemesterSeeder extends Seeder
 {
@@ -14,26 +15,68 @@ class SemesterSeeder extends Seeder
      */
     public function run(): void
     {
-        $years = Year::all();
-
-        foreach ($years as $year) {
-            // First Semester
-            Semester::create([
-                'year_id' => $year->id,
-                'name' => 'First Semester',
-                'start_date' => $year->start_date,
-                'end_date' => date('Y-m-d', strtotime($year->start_date . ' +4 months')),
+        $semesters = [
+            // 2023-2024 Academic Year
+            [
+                'year_id' => 1,
+                'name' => 'الفصل الدراسي الأول',
+                'start_date' => '2023-09-01',
+                'end_date' => '2024-01-31',
                 'created_by' => 1,
-            ]);
-
-            // Second Semester
-            Semester::create([
-                'year_id' => $year->id,
-                'name' => 'Second Semester',
-                'start_date' => date('Y-m-d', strtotime($year->start_date . ' +5 months')),
-                'end_date' => $year->end_date,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'year_id' => 1,
+                'name' => 'الفصل الدراسي الثاني',
+                'start_date' => '2024-02-01',
+                'end_date' => '2024-06-30',
                 'created_by' => 1,
-            ]);
-        }
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // 2024-2025 Academic Year (Active)
+            [
+                'year_id' => 2,
+                'name' => 'الفصل الدراسي الأول',
+                'start_date' => '2024-09-01',
+                'end_date' => '2025-01-31',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'year_id' => 2,
+                'name' => 'الفصل الدراسي الثاني',
+                'start_date' => '2025-02-01',
+                'end_date' => '2025-06-30',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // 2025-2026 Academic Year
+            [
+                'year_id' => 3,
+                'name' => 'الفصل الدراسي الأول',
+                'start_date' => '2025-09-01',
+                'end_date' => '2026-01-31',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'year_id' => 3,
+                'name' => 'الفصل الدراسي الثاني',
+                'start_date' => '2026-02-01',
+                'end_date' => '2026-06-30',
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
+
+        DB::table('semesters')->insert($semesters);
     }
 }

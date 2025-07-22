@@ -11,12 +11,12 @@ class TeacherService
 {
     public function listTeachers()
     {
-        if (!auth()->user()->hasPermissionTo('list_teachers')) {
+        if (!auth()->user()->hasPermissionTo('عرض الاساتذة')) {
             throw new PermissionException();
         }
 
-        $teachers = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'role', 'image')
-            ->where('role', 'teacher')
+        $teachers = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'user_type', 'image')
+            ->where('user_type', 'teacher')
             ->with(['teacher'])
             ->orderBy('id', 'asc')
             ->paginate(15);

@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
@@ -28,18 +27,19 @@ class UserFactory extends Factory
     public function definition(): array
     {
         $gender = $this->faker->randomElement(['male', 'female']);
-        $role = $this->faker->randomElement(['admin', 'teacher', 'student']);
+        $user_type = $this->faker->randomElement(['admin', 'teacher', 'student']);
 
         return [
             'first_name' => $this->faker->firstName($gender),
             'father_name' => $this->faker->firstName($gender),
             'last_name' => $this->faker->lastName(),
+            'mother_name' => $this->faker->firstName(),
             'gender' => $gender,
             'birth_date' => $this->faker->date(),
             'email' => $this->faker->unique()->safeEmail(),
             'phone' => $this->faker->unique()->phoneNumber(),
-            'password' => Hash::make('1234567890'),
-            'role' => $role,
+            'password' => Hash::make('password'),
+            'user_type' => $user_type,
             'image' => 'user_images/default.png',
             'remember_token' => Str::random(10),
             'created_at' => now(),
@@ -61,7 +61,7 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'admin',
+                'user_type' => 'admin',
             ];
         })->afterCreating(function (User $user) {
             Admin::create([
@@ -75,7 +75,7 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'teacher',
+                'user_type' => 'teacher',
             ];
         })->afterCreating(function (User $user) {
             Teacher::create([
@@ -89,7 +89,7 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'student',
+                'user_type' => 'student',
             ];
         })->afterCreating(function (User $user) {
             Student::create([

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-class LoginRequest extends BaseRequest
+class  LoginRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.

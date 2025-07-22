@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Semester extends Model
 {
@@ -14,6 +16,7 @@ class Semester extends Model
         'name',
         'start_date',
         'end_date',
+        'is_active',
         'created_by'
     ];
 
@@ -23,27 +26,27 @@ class Semester extends Model
     ];
 
     // Relations
-    public function year()
+    public function year(): BelongsTo
     {
         return $this->belongsTo(Year::class);
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function schoolDays()
+    public function schoolDays(): HasMany
     {
         return $this->hasMany(SchoolDay::class);
     }
 
-    public function studentEnrollments()
+    public function studentEnrollments(): HasMany
     {
         return $this->hasMany(StudentEnrollment::class);
     }
 
-    public function quizTargets()
+    public function quizTargets(): HasMany
     {
         return $this->hasMany(QuizTarget::class);
     }

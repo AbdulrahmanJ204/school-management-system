@@ -78,7 +78,7 @@ class QuestionService
             throw new QuizNotFoundException();
         }
 
-        if (!$user->hasPermissionTo('create_question') || $quiz->created_by !== $user->id) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('انشاء سؤال')) || $quiz->created_by !== $user->id) {
             throw new PermissionException();
         }
 
@@ -122,7 +122,7 @@ class QuestionService
         $user = auth()->user();
         $quiz = Quiz::find($quiz_id);
 
-        if (!$user->hasPermissionTo('update_question') || $quiz->created_by !== $user->id) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('تعديل سؤال')) || $quiz->created_by !== $user->id) {
             throw new PermissionException();
         }
 
@@ -192,7 +192,7 @@ class QuestionService
             throw new QuizNotFoundException();
         }
 
-        if (!$user->hasPermissionTo('delete_question') || $quiz->created_by !== $user->id) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('حذف سؤال')) || $quiz->created_by !== $user->id) {
             throw new PermissionException();
         }
 

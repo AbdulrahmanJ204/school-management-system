@@ -13,7 +13,8 @@ class Student extends Model
         'grandfather',
         'general_id',
         'created_by',
-        'is_active'
+        'is_active',
+        'mother'
     ];
 
     public function user()
@@ -23,5 +24,9 @@ class Student extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by'); // Creator admin
+    }
+    public function studentEnrollments()
+    {
+        return $this->hasMany(StudentEnrollment::class, 'student_id');
     }
 }

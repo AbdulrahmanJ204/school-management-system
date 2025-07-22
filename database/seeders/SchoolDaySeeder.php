@@ -2,11 +2,15 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use App\Models\SchoolDay;
 use App\Models\Semester;
 use DateTime;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+
+
 
 class SchoolDaySeeder extends Seeder
 {
@@ -15,45 +19,43 @@ class SchoolDaySeeder extends Seeder
      */
     public function run(): void
     {
-        $semesters = Semester::all();
+        $schoolDays = [];
 
-        foreach ($semesters as $semester) {
-            $this->createSchoolDaysForSemester($semester);
-        }
-    }
-    private function createSchoolDaysForSemester($semester)
-    {
-        $startDate = new DateTime($semester->start_date);
-        $endDate = new DateTime($semester->end_date);
-        $currentDate = clone $startDate;
+        // Generate school days for current semester (semester_id = 3, 2024-2025 first semester)
+        $startDate = Carbon::parse('2024-09-01');
+        $endDate = Carbon::parse('2025-01-31');
 
-        // Calculate exam period (last 2 weeks of semester)
-        $examStartDate = clone $endDate;
-        $examStartDate->modify('-14 days');
+        $currentDate = $startDate->copy();
 
-        while ($currentDate <= $endDate) {
-            $dayOfWeek = $currentDate->format('N'); // 1 (Monday) to 7 (Sunday)
+        while ($currentDate->lte($endDate)) {
+            // Skip Fridays and Saturdays (weekend in many Arab countries)
+            if (!in_array($currentDate->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY])) {
+                // Most days are study days
+                $type = 'study';
 
-            // Skip weekends (Saturday = 6, Friday = 5)
-            if ($dayOfWeek < 5 || $dayOfWeek > 6) {
-                // Determine if it's exam period or study period
-                $type = $currentDate >= $examStartDate ? 'exam' : 'study';
-
-                // Skip some random days to simulate holidays/breaks
-                if (rand(1, 10) > 8) {
-                    $currentDate->modify('+1 day');
-                    continue;
+                // Add some exam days (last week of December and January)
+                if (($currentDate->month == 12 && $currentDate->day >= 25) ||
+                    ($currentDate->month == 1 && $currentDate->day >= 20)) {
+                    $type = 'exam';
                 }
 
-                SchoolDay::create([
+                $schoolDays[] = [
                     'date' => $currentDate->format('Y-m-d'),
-                    'semester_id' => $semester->id,
+                    'semester_id' => 3, // Current active semester
                     'type' => $type,
                     'created_by' => 1,
-                ]);
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
 
-            $currentDate->modify('+1 day');
+            $currentDate->addDay();
+        }
+
+        // Insert in chunks to avoid memory issues
+        $chunks = array_chunk($schoolDays, 100);
+        foreach ($chunks as $chunk) {
+            DB::table('school_days')->insert($chunk);
         }
     }
 }

@@ -14,7 +14,7 @@ class ScoreQuizService
     {
         $user = auth()->user();
 
-        if (!$user->hasPermissionTo('create_score_quiz')) {
+        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('انشاء نتيجة اختبار مؤتمت'))) {
             throw new PermissionException();
         }
 
