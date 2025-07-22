@@ -71,7 +71,7 @@ class AuthService
 
         $user = null;
 
-        DB::transaction(function () use ($admin, $credentials, $userTypeName) {
+        DB::transaction(function () use ($admin, $credentials, $userTypeName, &$user) {
 
             $user = User::create($credentials);
 
@@ -88,7 +88,6 @@ class AuthService
                     'user_id' => $user->id,
                     'created_by' => $admin->id,
                     'grandfather'=> $credentials['grandfather'],
-                    'mother' => $credentials['mother'],
                     'general_id' => $credentials['general_id'],
                     'is_active' => $credentials['is_active']
                 ])
