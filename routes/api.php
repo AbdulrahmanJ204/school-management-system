@@ -89,3 +89,5 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('grades', GradeController::class);
     Route::apiResource('sections', SectionController::class);
 });
+require __DIR__.'/news.php';
+require __DIR__.'/files.php';

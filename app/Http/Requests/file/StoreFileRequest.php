@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Http\Requests\news;
+namespace App\Http\Requests\file;
 
 use App\Http\Requests\BaseRequest;
+
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateNewsRequest extends BaseRequest
+class StoreFileRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->user()->can('create_news');
+
+        return true;
     }
 
     /**
@@ -23,13 +25,11 @@ class CreateNewsRequest extends BaseRequest
     public function rules(): array
     {
         return [
+            'subject_id' => 'nullable|exists:subjects,id',
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'photo' => 'nullable|image|max:2048',
-            'section_ids' => 'nullable|array',
-            'section_ids.*' => 'exists:sections,id',
-            'grade_ids' => 'nullable|array',
-            'grade_ids.*' => 'exists:grades,id',
+            'description' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'file' => 'required|file',
         ];
     }
 }
