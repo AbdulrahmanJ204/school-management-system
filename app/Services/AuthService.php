@@ -26,6 +26,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService
 {
+
     /**
      * Create a new class instance.
      */
