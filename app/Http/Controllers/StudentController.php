@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\YearService;
+use App\Services\StudentService;
 /**
  * @OA\Get(
  *     path="/students",
@@ -17,7 +17,7 @@ use App\Services\YearService;
 class StudentController extends Controller
 {
     protected $studentService;
-    public function __construct(YearService $studentService)
+    public function __construct(StudentService $studentService)
     {
         $this->studentService = $studentService;
     }
