@@ -14,7 +14,6 @@ class File extends Model
         'description',
         'size',
         'file',
-        'photo',
         'school_day_id',
         'created_by',
     ];

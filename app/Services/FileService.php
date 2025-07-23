@@ -56,7 +56,6 @@ class FileService
         $subjectCode = Subject::find($data['subject_id'])->first()->code;
         $lastFileID = File::latest()->first()->id ?? 0;
 
-        $photo = $this->handlePhoto($request, $subjectCode);
         $file = $this->handleFile($request, $subjectCode, $lastFileID);
         $size = Storage::disk('public')->size($file);
         $result = File::create([
@@ -64,7 +63,6 @@ class FileService
             'title' => $data['title'],
             'description' => $data['description'],
             'school_day_id' => $lastSchoolDayID,
-            'photo' => $photo,
             'file' => $file,
             'size' => $size,
             'created_by' => $request->user()->id,
@@ -73,27 +71,8 @@ class FileService
         return ResponseHelper::jsonResponse(FileResource::make($result), 'file stored successfully');
     }
 
-    public function handlePhoto($request, $subjectCode)
-    {
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            try {
-                $image = $request->file('photo');
-                $imageName = $image->hashName();
-                $path = 'library/images/' . $subjectCode;
-                $imagePath = $path . '/' . $imageName;
 
-                if (!Storage::disk('public')->exists($imagePath)) {
-                    $image->storeAs($path, $imageName, 'public');
-                }
-                $photoPath = $imagePath;
 
-            } catch (\Exception $e) {
-                throw new ImageUploadFailed();
-            }
-        }
-        return $photoPath;
-    }
 
     public function handleFile(StoreFileRequest $request, $subjectCode, $id)
     {

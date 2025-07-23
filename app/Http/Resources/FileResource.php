@@ -18,7 +18,6 @@ class FileResource extends JsonResource
             'id'=>$this->id,
             'name'=>$this->title,
             "description"=> $this->description,
-            "photo"=> $this->photo ? asset('storage/' . $this->photo) : null,
             "size"=> round($this->size  / (1024 * 1024) , 2 ),
             "publish date"=> $this->schoolDay->date->format('Y-m-d'),
         ];
