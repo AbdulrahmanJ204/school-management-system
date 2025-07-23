@@ -13,7 +13,6 @@ return new class extends Migration
             $table->foreignId('subject_id')->nullable()->constrained('subjects');
             $table->string('title');
             $table->text('description')->nullable();
-            $table->string('photo')->nullable();
             $table->string('file')->nullable();
             $table->unsignedBigInteger('size');
             $table->foreignId('school_day_id')->constrained('school_days');
