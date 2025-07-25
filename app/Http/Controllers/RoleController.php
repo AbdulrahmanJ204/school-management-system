@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 use App\Services\RoleService;
 use Illuminate\Http\Request;
 
@@ -19,9 +20,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        return $this->roleService->list();
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -29,28 +29,27 @@ class RoleController extends Controller
     {
         return $this->roleService->create($request);
     }
-
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
-        //
+        return $this->roleService->getRole($id);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateRoleRequest $request, int $id)
     {
-        //
+        return $this->roleService->update($request, $id);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
-        //
+        return $this->roleService->delete($id);
     }
 }

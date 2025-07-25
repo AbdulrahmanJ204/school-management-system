@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('file_targets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('section_id')->nullable()->constrained('sections');
+            $table->foreignId('grade_id')->nullable()->constrained('grades');
             $table->foreignId('file_id')->constrained('files');
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');

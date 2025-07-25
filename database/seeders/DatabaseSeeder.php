@@ -35,6 +35,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             StudentEnrollmentSeeder::class,
             NewsSeeder::class,
+            SubjectMajorSeeder::class,
+            SubjectSeeder::class,
         ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+
 class UserResource extends JsonResource
 {
     public function toArray($request): array
@@ -13,6 +14,7 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => trim("{$this->first_name} {$this->father_name} {$this->last_name}"),
+            'mother_name' => $this->mother_name,
             'email' => $this->email,
             'birth_date' => $this->birth_date,
             'gender' => $this->gender,
@@ -40,7 +42,6 @@ class UserResource extends JsonResource
                  ],
                  'student' => [
                      'grandfather' => $this->student?->grandfather,
-                     'mother' => $this->student?->mother,
                      'general_id'  => $this->student?->general_id,
                      'is_active' => $this->student?->is_active,
                      'created_by' => $this->student?->createdBy

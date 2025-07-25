@@ -39,7 +39,11 @@ class RolePermissionSeeder extends Seeder
             'عرض الاختبارات المؤتمتة',
             'عرض الاختبار المؤتمت',
             'انشاء دور',
-
+            'عرض الصلاحيات',
+            'تعديل دور',
+            'عرض ادوار',
+            'عرض دور',
+            'حذف دور'
         ];
 
         foreach ($permissions as $permission) {
