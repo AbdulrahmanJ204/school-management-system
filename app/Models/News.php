@@ -16,6 +16,7 @@ class News extends Model
     protected $casts = [
         'description' => 'json',
     ];
+    protected $with = ['newsTargets.grade' , 'newsTargets.section.grade'];
     public function newsTargets(): HasMany
     {
         return $this->hasMany(NewsTarget::class, 'news_id');
@@ -24,4 +25,18 @@ class News extends Model
     {
         return $this->belongsTo(SchoolDay::class, 'school_day_id');
     }
+
+    public function loadDeletedNewsTargets(): self
+    {
+        if ($this->trashed()) {
+            $targets = NewsTarget::onlyTrashed()
+                ->where('news_id', $this->id)
+                ->where('deleted_at', $this->deleted_at)
+                ->with(['section.grade', 'grade'])
+                ->get();
+            $this->setRelation('newsTargets', $targets);
+        }
+        return $this;
+    }
+
 }

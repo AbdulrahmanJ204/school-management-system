@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\UserType;
 use App\Models\NewsTarget;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,7 +18,7 @@ class NewsResource extends JsonResource
     {
         $user = auth()->user();
 
-        if ($user->role === 'admin') {
+        if ($user->user_type === UserType::Admin->value) {
             $targets = $this->whenLoaded('newsTargets');
 
             $grades = GradeResource::collection($targets->whereNotNull('grade')->pluck('grade')->unique()->values());
@@ -36,9 +37,10 @@ class NewsResource extends JsonResource
                 "id" => $this->id,
                 "title" => $this->title,
                 "description" => json_decode($this->content),
-                'date' => $this->schoolDay?->date ?? 'Y-m-d',
-                'created_at' => $this->created_at,
+                'date' => $this->schoolDay?->date->format('Y-m-d'),
+                'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'photo' => $this->photo ? asset('storage/' . $this->photo) : null, // Full URL
+                'deleted_at'=>$this->deleted_at?->format('Y-m-d'),
                 'targets' => $targetsArray,
             ];
         } else
@@ -47,7 +49,6 @@ class NewsResource extends JsonResource
                 "title" => $this->title,
                 "description" => json_decode($this->content),
                 'date' => $this->schoolDay->date->format('Y-m-d'),
-                'created_at' => $this->created_at,
                 'photo' => $this->photo ? asset('storage/' . $this->photo) : null, // Full URL
             ];
     }
