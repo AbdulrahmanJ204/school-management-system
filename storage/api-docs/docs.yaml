@@ -1,0 +1,660 @@
+openapi: 3.0.0
+info:
+  title: Erbeen Sixth School
+  version: 1.0.0
+servers:
+  - url: http://{{url}}
+  - url: http://192.168.1.105:8000
+  - url: http://127.0.0.1:8000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    noauthAuth:
+      type: http
+      scheme: noauth
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: User
+  - name: Quiz
+paths:
+  /api/register:
+    post:
+      tags:
+        - Auth
+      summary: register
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: zaid
+                email:
+                  type: string
+                  example: zaid@gmail.com
+                password:
+                  type: integer
+                  example: '1234567890'
+                password_confirmation:
+                  type: integer
+                  example: '1234567890'
+                last_name:
+                  type: string
+                  example: bakdash
+                father_name:
+                  type: string
+                  example: hasan
+                birth_date:
+                  type: string
+                  example: '2003-06-12'
+                gender:
+                  type: string
+                  example: male
+                phone:
+                  type: integer
+                  example: '0935946433'
+                role:
+                  type: string
+                  example: teacher
+                image:
+                  type: string
+                  format: binary
+                grandfather:
+                  type: string
+                  example: gedo
+                general_id:
+                  type: integer
+                  example: '2'
+                is_active:
+                  type: integer
+                  example: '1'
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: refresh_token
+      requestBody:
+        content: {}
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: login
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: admin@gmail.com
+                password:
+                  type: integer
+                  example: '1234567890'
+                device_id:
+                  type: string
+                  example: abc123
+                platform:
+                  type: string
+                  example: android
+                device_type:
+                  type: string
+                  example: mobile
+                device_name:
+                  type: string
+                  example: Samsung Galaxy A50
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Host:
+              schema:
+                type: string
+                example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+                example: close
+            X-Powered-By:
+              schema:
+                type: string
+                example: PHP/8.2.12
+            Cache-Control:
+              schema:
+                type: string
+                example: no-cache, private
+            Date:
+              schema:
+                type: string
+                example: Mon, 07 Jul 2025 09:03:03 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+                example: '10'
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+                example: '9'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                successful: true
+                message: تم تسجيل الدخول بنجاح.
+                data:
+                  access_token: 7|Ro4PmV5SW9B9L2q7QXdYXWfom6mWiTh0JMnQs2l4143310ef
+                  refresh_token: 8|T60pHZfPBmUjUccYEBNLH7sMooN5sADfEzj0XaEzb4a809fd
+                status_code: 200
+        '400':
+          description: Bad Request
+          headers:
+            Host:
+              schema:
+                type: string
+                example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+                example: close
+            X-Powered-By:
+              schema:
+                type: string
+                example: PHP/8.2.12
+            Cache-Control:
+              schema:
+                type: string
+                example: no-cache, private
+            Date:
+              schema:
+                type: string
+                example: Mon, 07 Jul 2025 11:10:40 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+                example: '10'
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+                example: '6'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: '400'
+                  value:
+                    successful: false
+                    message: Validation failed
+                    data:
+                      email: حقل البريد الإلكتروني مطلوب.
+                      password: حقل كلمة المرور مطلوب.
+                      platform: حقل platform مطلوب.
+                      device_type: حقل device type مطلوب.
+                      device_name: حقل device name مطلوب.
+                      device_id: حقل device id مطلوب.
+                    status_code: 400
+                example-1:
+                  summary: '400'
+                  value:
+                    successful: false
+                    message: Validation failed
+                    data:
+                      email: قيمة الحقل البريد الإلكتروني غير موجودة.
+                    status_code: 400
+                example-2:
+                  summary: '400'
+                  value:
+                    successful: false
+                    message: Validation failed
+                    data:
+                      email: >-
+                        يجب أن يكون حقل البريد الإلكتروني عنوان بريد إلكتروني
+                        صحيح البُنية.
+                    status_code: 400
+                example-3:
+                  summary: '400'
+                  value:
+                    successful: false
+                    message: Validation failed
+                    data:
+                      platform: قيمة حقل platform غير موجودة في قائمة القيم المسموح بها.
+                      device_type: >-
+                        قيمة حقل device type غير موجودة في قائمة القيم المسموح
+                        بها.
+                    status_code: 400
+                example-4:
+                  summary: '400'
+                  value:
+                    success: false
+                    message: الجهاز مسجل فعلا.
+                example-5:
+                  summary: '400'
+                  value:
+                    successful: false
+                    message: الجهاز مسجل فعلا.
+                    status_code: 400
+        '401':
+          description: Unauthorized
+          headers:
+            Host:
+              schema:
+                type: string
+                example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+                example: close
+            X-Powered-By:
+              schema:
+                type: string
+                example: PHP/8.2.12
+            Cache-Control:
+              schema:
+                type: string
+                example: no-cache, private
+            Date:
+              schema:
+                type: string
+                example: Mon, 07 Jul 2025 10:48:43 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+                example: '10'
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+                example: '9'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: كلمة مرور غير صحيحة!.
+  /api/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: logout
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/change-password:
+    post:
+      tags:
+        - Auth
+      summary: change_password
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                current_password:
+                  type: integer
+                  example: '1234567890'
+                new_password:
+                  type: integer
+                  example: '9999999999'
+                new_password_confirmation:
+                  type: integer
+                  example: '9999999999'
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: forgot_password
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: admin@gmail.com
+      security:
+        - noauthAuth: []
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/reset-password:
+    post:
+      tags:
+        - Auth
+      summary: reset_password
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: admin@gmail.com
+                token:
+                  type: string
+                  example: >-
+                    1fba39dc6204122d0abb00f43b6c09bd9001e70f6d665fb81cc2587f8ba09983
+                password:
+                  type: string
+                  example: new12345
+                password_confirmation:
+                  type: string
+                  example: new12345
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /users/1:
+    post:
+      tags:
+        - User
+      summary: update_user
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: zizo
+                email:
+                  type: string
+                  example: admin@gmail.com
+                last_name:
+                  type: string
+                  example: rafi
+                father_name:
+                  type: string
+                  example: hasan
+                birth_date:
+                  type: string
+                  example: '2003-06-12'
+                gender:
+                  type: string
+                  example: male
+                phone:
+                  type: integer
+                  example: '09857495999867'
+                role:
+                  type: string
+                  example: admin
+                grandfather:
+                  type: string
+                  example: memo
+                general_id:
+                  type: integer
+                  example: '5'
+                is_active:
+                  type: integer
+                  example: '0'
+                image:
+                  type: string
+                  format: binary
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - User
+      summary: get_user
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /students:
+    get:
+      tags:
+        - User
+      summary: list_students
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teachers:
+    get:
+      tags:
+        - User
+      summary: list_teachers
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /users/4:
+    delete:
+      tags:
+        - User
+      summary: delete_user
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /admins:
+    get:
+      tags:
+        - User
+      summary: list_admins
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /quizzes/1/activate:
+    put:
+      tags:
+        - Quiz
+      summary: activate_quiz
+      requestBody:
+        content: {}
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /quizzes:
+    post:
+      tags:
+        - Quiz
+      summary: create_quiz
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                name:
+                  type: string
+                  example: math
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /quizzes/1/deactivate:
+    put:
+      tags:
+        - Quiz
+      summary: deactivate_quiz
+      requestBody:
+        content: {}
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /quizzes/1:
+    put:
+      tags:
+        - Quiz
+      summary: update_quiz
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                name:
+                  type: string
+                  example: science
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
