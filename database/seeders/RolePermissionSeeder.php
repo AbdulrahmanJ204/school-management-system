@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\NewsPermission;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -39,7 +40,12 @@ class RolePermissionSeeder extends Seeder
             'عرض الاختبارات المؤتمتة',
             'عرض الاختبار المؤتمت',
             'انشاء دور',
-
+            'عرض الصلاحيات',
+            'تعديل دور',
+            'عرض ادوار',
+            'عرض دور',
+            'حذف دور',
+            ...array_map(fn($permission) => $permission->value, NewsPermission::cases())
         ];
 
         foreach ($permissions as $permission) {

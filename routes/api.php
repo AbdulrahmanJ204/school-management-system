@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GradeController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SchoolDayController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SemesterController;
@@ -36,6 +37,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('users', UserController::class)->only(['show', 'destroy']);
     Route::post('users/{user}', [UserController::class, 'update']);
     Route::resource('roles', RoleController::class);
+    Route::get('permissions', [PermissionController::class, 'show']);
 })->middleware(['user_type:admin', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {
