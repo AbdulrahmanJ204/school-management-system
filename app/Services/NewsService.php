@@ -40,7 +40,7 @@ class NewsService
 
     private function listAdminNews(): JsonResponse
     {
-        $news = News::withTrashed()->get();
+        $news = News::withTrashed()->get()->sortByDesc('created_at');
         $news->each(function (News $new) {
             $new->loadDeletedNewsTargets();
         });
@@ -69,7 +69,7 @@ class NewsService
         return NewsResource::make($news);
     }
 
-    public function update($request, $news)
+    public function update($request, $news): JsonResponse
     {
 
         $data = $request->validated();
