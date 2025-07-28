@@ -12,10 +12,12 @@ use App\Http\Resources\NewsResource;
 use App\Models\News;
 use App\Models\NewsTarget;
 use App\Models\SchoolDay;
+use App\Models\Student;
 use App\Models\StudentEnrollment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class NewsService
 {
@@ -32,27 +34,8 @@ class NewsService
 
     private function listStudentNews(): JsonResponse
     {
-        $student = auth()->user()->student;
-        $enrollments = StudentEnrollment::where('student_id', $student->id)
-            ->whereHas('semester.year', function ($query) {
-                $query->where('is_active', true);
-            })
-            ->get();
-        $sectionIds = $enrollments->pluck('section_id');
-        $gradeId = $enrollments->pluck('grade_id')->unique();
-        $news = News::whereHas('newsTargets', function ($query) use ($gradeId, $sectionIds) {
-            $query
-                ->whereIn('section_id', $sectionIds)
-                ->orWhere('grade_id', $gradeId)
-                ->orWhere(function ($q) {
-                    $q->whereNull('section_id')
-                        ->whereNull('grade_id');
-                }
-                );
-        })->orderBy('created_at', 'desc')->get();
-
-        $uniqueNews = collect($news)->unique('id')->values();
-        return ResponseHelper::jsonResponse(NewsResource::collection($uniqueNews));
+        $news = $this->getStudentNewsCollection();
+        return ResponseHelper::jsonResponse(NewsResource::collection($news));
     }
 
     private function listAdminNews(): JsonResponse
@@ -80,9 +63,9 @@ class NewsService
             'created_by' => $user->id,
         ]);
 
-         $this->handleNewsTargetsOnCreate($request, $data, $news);
-        // necessary to use load for relations here here , because auto load not work here i guess.
-        $news->load('newsTargets.grade' , 'newsTargets.section.grade');
+        $this->handleNewsTargetsOnCreate($request, $data, $news);
+        // necessary to use load for relations here , because Autoload not work here I guess.
+        $news->load('newsTargets.grade', 'newsTargets.section.grade');
         return NewsResource::make($news);
     }
 
@@ -114,22 +97,11 @@ class NewsService
     {
         //AuthHelper::authorize(NewsPermission::show->value);
         $user_type = auth()->user()->user_type;
-
-        $news = null;
-        if ($user_type === UserType::Admin->value) {
-            $news = News::withTrashed()->findOrFail($newsId);
-            $targets = NewsTarget::withTrashed()
-                ->where('news_id', $newsId)
-                ->where('deleted_at', $news->deleted_at)
-                ->with(['section.grade', 'grade'])->get();
-            $news->setRelation('newsTargets', $targets);
-        }
-        if ($user_type === UserType::Student->value) {
-            $news = News::findOrFail($newsId)
-                ->with('newsTargets.section.grade', 'newsTargets.grade')
-                ->first();
-        }
-        return ResponseHelper::jsonResponse(NewsResource::make($news));
+        return match ($user_type) {
+            UserType::Admin->value => $this->showAdminNews($newsId),
+            UserType::Student->value => $this->showStudentNews($newsId),
+            default => throw new PermissionException(),
+        };
     }
 
     /**
@@ -156,7 +128,7 @@ class NewsService
     public function restore($newsId)
     {
         AuthHelper::authorize(NewsPermission::restore->value);
-        $news = News::onlyTrashed()->findorFail($newsId);
+        $news = News::onlyTrashed()->findOrFail($newsId);
         $deleteDate = $news->deleted_at;
         $news->restore();
         $targets = NewsTarget::onlyTrashed()
@@ -335,6 +307,62 @@ class NewsService
                 'created_by' => $user->id,
             ]);
         }
+    }
+
+    /**
+     * @param $newsId
+     * @return JsonResponse
+     */
+    public function showAdminNews($newsId): JsonResponse
+    {
+        $news = News::withTrashed()->findOrFail($newsId);
+        $news->loadDeletedNewsTargets();
+        return ResponseHelper::jsonResponse(NewsResource::make($news));
+    }
+
+    /**
+     * @param $newsId
+     * @return JsonResponse
+     */
+    public function showStudentNews($newsId): JsonResponse
+    {
+        $news = News::findOrFail($newsId);
+        $studentNews = $this->getStudentNewsCollection();
+        if ($studentNews->contains('id', $newsId)) {
+            return ResponseHelper::jsonResponse(NewsResource::make($news));
+        }
+        return ResponseHelper::jsonResponse([] , 'unauthorized' , 403 , false);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getStudentNewsCollection(): mixed
+    {
+        $enrollments = auth()->user()->student->currentYearEnrollments();
+        $news = collect();
+
+        foreach ($enrollments as $enrollment) {
+            $currentSemesterNews = News::whereHas('schoolDay', function ($query) use ($enrollment) {
+                $query->where('semester_id', $enrollment->semester_id);
+            })->whereHas('newsTargets', function ($query) use ($enrollment) {
+                $query->where('section_id', $enrollment->section_id);
+            })->get();
+            $news = $news->merge($currentSemesterNews);
+        }
+
+        $gradeId = $enrollments->pluck('grade_id')->unique();
+        $gradeAndPublicNews =
+            News::whereHas('newsTargets', function ($query) use ($gradeId) {
+                $query->where('grade_id', $gradeId)->orWhere(function ($q) {
+                    $q->whereNull('section_id')
+                        ->whereNull('grade_id');
+                });
+            })->get();
+        return $news->merge($gradeAndPublicNews)
+            ->unique('id')
+            ->sortByDesc('created_at')
+            ->values();
     }
 
 
