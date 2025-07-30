@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('subject_major_id')->constrained('subject_majors');
+            $table->foreignId('main_subject_id')->constrained('main_subjects');
             $table->string('code');
             $table->integer('full_mark');
             $table->integer('homework_percentage');

@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class SubjectMajor extends Model
+class MainSubject extends Model
 {
     use HasFactory;
 
@@ -22,17 +24,17 @@ class SubjectMajor extends Model
     ];
 
     // Relations
-    public function grade()
+    public function grade(): BelongsTo
     {
         return $this->belongsTo(Grade::class);
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function subjects()
+    public function subjects(): HasMany
     {
         return $this->hasMany(Subject::class);
     }

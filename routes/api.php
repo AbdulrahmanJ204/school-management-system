@@ -12,6 +12,8 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScoreQuizController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\SubjectMajorController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\YearController;
@@ -88,6 +90,10 @@ Route::middleware('auth:api')->group(function () {
 
     Route::apiResource('grades', GradeController::class);
     Route::apiResource('sections', SectionController::class);
+    Route::apiResource('main-subjects', SubjectMajorController::class);
+    Route::apiResource('subjects', SubjectController::class);
+
 });
+
 require __DIR__.'/news.php';
 require __DIR__.'/files.php';

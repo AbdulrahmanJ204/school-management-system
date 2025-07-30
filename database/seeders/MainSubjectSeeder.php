@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Grade;
 use App\Models\User;
 
-class SubjectMajorSeeder extends Seeder
+class MainSubjectSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,7 +18,7 @@ class SubjectMajorSeeder extends Seeder
         $gradeId = Grade::first()->id ?? 1;
         $userId = User::first()->id ?? 1;
 
-        $subjectMajors = [
+        $mainSubjects = [
             [
                 'grade_id' => $gradeId,
                 'name' => 'Science',
@@ -75,6 +75,6 @@ class SubjectMajorSeeder extends Seeder
             ],
         ];
 
-        DB::table('subject_majors')->insert($subjectMajors);
+        DB::table('main_subjects')->insert($mainSubjects);
     }
 }

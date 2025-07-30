@@ -13,8 +13,8 @@ class SubjectSeeder extends Seeder
      */
     public function run(): void
     {
-        $subjectMajors = [
-            // Primary School Subject Majors
+        $mainSubjects = [
+            // Primary School Main Subjects
             [
                 'grade_id' => 7,
                 'name' => 'الرياضيات',
@@ -44,12 +44,12 @@ class SubjectSeeder extends Seeder
             ]
         ];
 
-        DB::table('subject_majors')->insert($subjectMajors);
+        DB::table('main_subjects')->insert($mainSubjects);
 
         $subjects = [
             [
                 'name' => 'التحليل الرياضي',
-                'subject_major_id' => 1,
+                'main_subject_id' => 1,
                 'code' => 'ANALYSIS-7',
                 'full_mark' => 100,
                 'homework_percentage' => 15,
@@ -64,7 +64,7 @@ class SubjectSeeder extends Seeder
             ],
             [
                 'name' => 'الجبر',
-                'subject_major_id' => 1,
+                'main_subject_id' => 1,
                 'code' => 'ALGEBRA-7',
                 'full_mark' => 100,
                 'homework_percentage' => 20,
@@ -79,7 +79,7 @@ class SubjectSeeder extends Seeder
             ],
             [
                 'name' => 'اللغة العربية',
-                'subject_major_id' => 2,
+                'main_subject_id' => 2,
                 'code' => 'AR-7',
                 'full_mark' => 100,
                 'homework_percentage' => 10,
@@ -94,7 +94,7 @@ class SubjectSeeder extends Seeder
             ],
             [
                 'name' => 'علم الأحياء',
-                'subject_major_id' => 3,
+                'main_subject_id' => 3,
                 'code' => 'BIO-7',
                 'full_mark' => 100,
                 'homework_percentage' => 10,
@@ -109,7 +109,7 @@ class SubjectSeeder extends Seeder
             ],
             [
                 'name' => 'الفيزياء',
-                'subject_major_id' => 3,
+                'main_subject_id' => 3,
                 'code' => 'PHY-7',
                 'full_mark' => 100,
                 'homework_percentage' => 10,
@@ -124,7 +124,7 @@ class SubjectSeeder extends Seeder
             ],
             [
                 'name' => 'الكيمياء',
-                'subject_major_id' => 3,
+                'main_subject_id' => 3,
                 'code' => 'CHEM-7',
                 'full_mark' => 100,
                 'homework_percentage' => 10,

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('subject_majors', function (Blueprint $table) {
+        Schema::create('main_subjects', function (Blueprint $table) {
             $table->id();
             $table->foreignId('grade_id')->constrained('grades');
             $table->string('name');
@@ -21,6 +21,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('subject_majors');
+        Schema::dropIfExists('main_subjects');
     }
 };
