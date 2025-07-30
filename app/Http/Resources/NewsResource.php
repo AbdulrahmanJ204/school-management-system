@@ -37,8 +37,8 @@ class NewsResource extends JsonResource
                 "id" => $this->id,
                 "title" => $this->title,
                 "description" => json_decode($this->content),
-                'date' => $this->schoolDay?->date->format('Y-m-d'),
-                'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+                'date' => $this->publish_date->format('Y-m-d h:i:s A'),
+                'created_at' => $this->created_at->format('Y-m-d h:i:s A'),
                 'photo' => $this->photo ? asset('storage/' . $this->photo) : null, // Full URL
                 'deleted_at'=>$this->deleted_at?->format('Y-m-d'),
                 'targets' => $targetsArray,
@@ -48,7 +48,7 @@ class NewsResource extends JsonResource
                 "id" => $this->id,
                 "title" => $this->title,
                 "description" => json_decode($this->content),
-                'date' => $this->schoolDay->date->format('Y-m-d'),
+                'date' => $this->publish_date->format('Y-m-d h:i:s A'),
                 'photo' => $this->photo ? asset('storage/' . $this->photo) : null, // Full URL
             ];
     }
