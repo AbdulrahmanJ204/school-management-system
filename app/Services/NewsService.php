@@ -14,6 +14,7 @@ use App\Models\NewsTarget;
 use App\Models\SchoolDay;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -53,13 +54,13 @@ class NewsService
         $user = auth()->user();
         $data = $request->validated();
         $photoPath = $this->handlePhoto($request);
-        $schoolDayID = $this->getLastSchoolDayID();
+        $publishDate = Carbon::now();
         $content = $this->handleContent($data['content']);
         $news = News::create([
             'title' => $data['title'],
             'content' => $content,
             'photo' => $photoPath,
-            'school_day_id' => $schoolDayID,
+            'publish_date' => $publishDate,
             'created_by' => $user->id,
         ]);
 
@@ -95,7 +96,7 @@ class NewsService
 
     public function show($newsId): JsonResponse
     {
-        //AuthHelper::authorize(NewsPermission::show->value);
+
         $user_type = auth()->user()->user_type;
         return match ($user_type) {
             UserType::Admin->value => $this->showAdminNews($newsId),
@@ -166,23 +167,6 @@ class NewsService
         return $photoPath;
     }
 
-    private function getLastSchoolDayID()
-    {
-        $today = now()->toDateString();
-
-        $todaySchoolDay = SchoolDay::where('date', $today)->first();
-
-        if ($todaySchoolDay) {
-            return $todaySchoolDay->id;
-        }
-
-        $lastSchoolDay = SchoolDay::where('date', '<', $today)
-            ->orderBy('date', 'desc')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        return $lastSchoolDay ? $lastSchoolDay->id : null;
-    }
 
     private function handleContent(mixed $content): mixed
     {
@@ -331,7 +315,7 @@ class NewsService
         if ($studentNews->contains('id', $newsId)) {
             return ResponseHelper::jsonResponse(NewsResource::make($news));
         }
-        return ResponseHelper::jsonResponse([] , 'unauthorized' , 403 , false);
+        return ResponseHelper::jsonResponse([], 'unauthorized', 403, false);
     }
 
     /**
@@ -343,22 +327,27 @@ class NewsService
         $news = collect();
 
         foreach ($enrollments as $enrollment) {
-            $currentSemesterNews = News::whereHas('schoolDay', function ($query) use ($enrollment) {
-                $query->where('semester_id', $enrollment->semester_id);
-            })->whereHas('newsTargets', function ($query) use ($enrollment) {
-                $query->where('section_id', $enrollment->section_id);
-            })->get();
+            $start_date = $enrollment->semester->start_date;
+            $end_date = $enrollment->semester->end_date;
+
+            $currentSemesterNews = News::where('publish_date', '>=', $start_date)
+                ->where('publish_date', '<=', $end_date)
+                ->whereHas('newsTargets', function ($query) use ($enrollment) {
+                    $query->where('section_id', $enrollment->section_id);
+                })->get();
             $news = $news->merge($currentSemesterNews);
         }
-
-        $gradeId = $enrollments->pluck('grade_id')->unique();
+        $overallStartDate = $enrollments->min('semester.start_date');
+        $overallEndDate = $enrollments->max('semester.end_date');
+        $gradeId = $enrollments->pluck('grade_id')->first();
         $gradeAndPublicNews =
-            News::whereHas('newsTargets', function ($query) use ($gradeId) {
-                $query->where('grade_id', $gradeId)->orWhere(function ($q) {
-                    $q->whereNull('section_id')
-                        ->whereNull('grade_id');
-                });
-            })->get();
+            News:: where('publish_date', '>=', $overallStartDate)
+                ->where('publish_date', '<=', $overallEndDate)->whereHas('newsTargets', function ($query) use ($gradeId) {
+                    $query->where('grade_id', $gradeId)->orWhere(function ($q) {
+                        $q->whereNull('section_id')
+                            ->whereNull('grade_id');
+                    });
+                })->get();
         return $news->merge($gradeAndPublicNews)
             ->unique('id')
             ->sortByDesc('created_at')
