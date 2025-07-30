@@ -43,7 +43,12 @@ class RolePermissionSeeder extends Seeder
             'تعديل دور',
             'عرض ادوار',
             'عرض دور',
-            'حذف دور'
+            'حذف دور',
+            'عرض درجات الطلاب',
+            'انشاء درجة طالب',
+            'عرض درجة طالب',
+            'تعديل درجة طالب',
+            'حذف درجة طالب'
         ];
 
         foreach ($permissions as $permission) {

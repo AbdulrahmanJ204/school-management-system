@@ -12,6 +12,7 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScoreQuizController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentMarkController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SubjectMajorController;
 use App\Http\Controllers\TeacherController;
@@ -92,6 +93,9 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('sections', SectionController::class);
     Route::apiResource('main-subjects', SubjectMajorController::class);
     Route::apiResource('subjects', SubjectController::class);
+    Route::apiResource('student-marks', StudentMarkController::class);
+    Route::get('student-marks/enrollment/{enrollmentId}', [StudentMarkController::class, 'getByEnrollment']);
+    Route::get('student-marks/subject/{subjectId}', [StudentMarkController::class, 'getBySubject']);
 
 });
 
