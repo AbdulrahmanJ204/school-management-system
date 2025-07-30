@@ -66,7 +66,7 @@ class NewsService
 
         $this->handleNewsTargetsOnCreate($request, $data, $news);
         // necessary to use load for relations here , because Autoload not work here I guess.
-        $news->load('newsTargets.grade', 'newsTargets.section.grade');
+        $news->load('targets.grade', 'targets.section.grade');
         return NewsResource::make($news);
     }
 
@@ -90,7 +90,7 @@ class NewsService
 
         $this->updateNewsTargetsOnUpdate($request, $data, $news);
         $news->update($updateData);
-        $news->load('newsTargets.section.grade', 'newsTargets.grade');
+        $news->load('targets.section.grade', 'targets.grade');
         return ResponseHelper::jsonResponse(NewsResource::make($news), 'news updated');
     }
 
@@ -108,15 +108,15 @@ class NewsService
     /**
      * @throws PermissionException
      */
-    public function delete($news)
+    public function destroy($news): JsonResponse
     {
 
-        AuthHelper::authorize(NewsPermission::delete->value);
+        AuthHelper::authorize(NewsPermission::softDelete->value);
 
         $data = clone $news;
-        $data->load('newsTargets.section.grade', 'newsTargets.grade');
+        $data->load('targets.section.grade', 'targets.grade');
         DB::transaction(function () use ($news) {
-            $news->newsTargets()->delete();
+            $news->targets()->delete();
             $news->delete();
         });
 
@@ -138,7 +138,7 @@ class NewsService
             ->with(['section.grade', 'grade'])
             ->get();
         $targets->each->restore();
-        $news->setRelation('newsTargets', $targets);
+        $news->setRelation('targets', $targets);
         return ResponseHelper::jsonResponse(NewsResource::make($news), 'news restored successfully');
 
     }
@@ -219,10 +219,10 @@ class NewsService
     private function updateSections($news, $data): void
     {
         $user = auth()->user();
-        $news->newsTargets()->whereNotNull('grade_id')->delete();
-        $news->newsTargets()->whereNull('section_id')->whereNull('grade_id')->delete();
+        $news->targets()->whereNotNull('grade_id')->delete();
+        $news->targets()->whereNull('section_id')->whereNull('grade_id')->delete();
 
-        $existingSections = $news->newsTargets()
+        $existingSections = $news->targets()
             ->whereNotNull('section_id')
             ->whereNull('grade_id')
             ->pluck('section_id')
@@ -231,7 +231,7 @@ class NewsService
 
         $sectionsToDelete = array_diff($existingSections, $data['section_ids']);
         $sectionsToAdd = array_diff($data['section_ids'], $existingSections);
-        $news->newsTargets()
+        $news->targets()
             ->whereIn('section_id', $sectionsToDelete)
             ->whereNull('grade_id')
             ->delete();
@@ -249,9 +249,9 @@ class NewsService
     private function updateGrades($news, $data): void
     {
         $user = auth()->user();
-        $news->newsTargets()->whereNotNull('section_id')->delete();
-        $news->newsTargets()->whereNull('section_id')->whereNull('grade_id')->delete();
-        $existingGrades = $news->newsTargets()
+        $news->targets()->whereNotNull('section_id')->delete();
+        $news->targets()->whereNull('section_id')->whereNull('grade_id')->delete();
+        $existingGrades = $news->targets()
             ->whereNull('section_id')
             ->whereNotNull('grade_id')
             ->pluck('grade_id')
@@ -259,7 +259,7 @@ class NewsService
 
         $gradesToDelete = array_diff($existingGrades, $data['grade_ids']);
         $gradesToAdd = array_diff($data['grade_ids'], $existingGrades);
-        $news->newsTargets()
+        $news->targets()
             ->whereIn('grade_id', $gradesToDelete)
             ->whereNull('section_id')
             ->delete();
@@ -283,7 +283,7 @@ class NewsService
         } else if ($request->filled('grade_ids')) {
             $this->updateGrades($news, $data);
         } else if ($request->filled('is_global') && $data['is_global']) {
-            $news->newsTargets()->delete();
+            $news->targets()->delete();
             NewsTarget::create([
                 'news_id' => $news->id,
                 'grade_id' => null,
@@ -325,14 +325,13 @@ class NewsService
     {
         $enrollments = auth()->user()->student->currentYearEnrollments();
         $news = collect();
-
         foreach ($enrollments as $enrollment) {
             $start_date = $enrollment->semester->start_date;
             $end_date = $enrollment->semester->end_date;
 
             $currentSemesterNews = News::where('publish_date', '>=', $start_date)
                 ->where('publish_date', '<=', $end_date)
-                ->whereHas('newsTargets', function ($query) use ($enrollment) {
+                ->whereHas('targets', function ($query) use ($enrollment) {
                     $query->where('section_id', $enrollment->section_id);
                 })->get();
             $news = $news->merge($currentSemesterNews);
@@ -342,7 +341,7 @@ class NewsService
         $gradeId = $enrollments->pluck('grade_id')->first();
         $gradeAndPublicNews =
             News:: where('publish_date', '>=', $overallStartDate)
-                ->where('publish_date', '<=', $overallEndDate)->whereHas('newsTargets', function ($query) use ($gradeId) {
+                ->where('publish_date', '<=', $overallEndDate)->whereHas('targets', function ($query) use ($gradeId) {
                     $query->where('grade_id', $gradeId)->orWhere(function ($q) {
                         $q->whereNull('section_id')
                             ->whereNull('grade_id');
@@ -354,5 +353,19 @@ class NewsService
             ->values();
     }
 
-
+    /**
+     * @throws PermissionException
+     */
+    public function delete($newsId): JsonResponse
+    {
+        AuthHelper::authorize(NewsPermission::delete->value);
+       $news = News::onlyTrashed()->findOrFail($newsId);
+        $clone = clone  $news;
+        $clone->load('targets.section.grade', 'targets.grade');
+        DB::transaction(function () use ($news) {
+            $news->targets()->withTrashed()->forceDelete();
+            $news->forceDelete();
+        });
+        return ResponseHelper::jsonResponse(NewsResource::make($clone) , 'News Deleted Permanently');
+    }
 }

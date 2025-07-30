@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PermissionException;
 use App\Http\Requests\news\StoreNewsRequest;
 use App\Http\Requests\news\UpdateNewsRequest;
 use App\Models\News;
@@ -55,13 +56,26 @@ class NewsController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @throws PermissionException
      */
     public function destroy(News $news): JsonResponse
     {
-        return $this->newsService->delete($news);
+        return $this->newsService->destroy($news);
     }
-    public function restore($newsId)
+
+    /**
+     * @throws PermissionException
+     */
+    public function restore($newsId): JsonResponse
     {
         return $this->newsService->restore($newsId);
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function delete($newsId): JsonResponse
+    {
+        return $this->newsService->delete($newsId);
     }
 }

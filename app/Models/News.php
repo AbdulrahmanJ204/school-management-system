@@ -17,8 +17,8 @@ class News extends Model
         'description' => 'json',
         'publish_date' => 'datetime',
     ];
-    protected $with = ['newsTargets.grade' , 'newsTargets.section.grade'];
-    public function newsTargets(): HasMany
+    protected $with = ['targets.grade' , 'targets.section.grade'];
+    public function targets(): HasMany
     {
         return $this->hasMany(NewsTarget::class, 'news_id');
     }
@@ -32,7 +32,7 @@ class News extends Model
                 ->where('deleted_at', $this->deleted_at)
                 ->with(['section.grade', 'grade'])
                 ->get();
-            $this->setRelation('newsTargets', $targets);
+            $this->setRelation('targets', $targets);
         }
         return $this;
     }
