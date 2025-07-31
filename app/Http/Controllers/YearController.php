@@ -26,6 +26,11 @@ class YearController extends Controller
         return $this->yearService->listYear();
     }
 
+    public function trashed()
+    {
+        return $this->yearService->listTrashedYears();
+    }
+
     public function store(YearRequest $request)
     {
         return $this->yearService->createYear($request);
@@ -44,6 +49,16 @@ class YearController extends Controller
     public function destroy(Year $year)
     {
         return $this->yearService->destroyYear($year);
+    }
+
+    public function forceDelete($id)
+    {
+        return $this->yearService->forceDeleteYear($id);
+    }
+
+    public function restore($id)
+    {
+        return $this->yearService->restoreYear($id);
     }
 
     public function Active(Year $year)

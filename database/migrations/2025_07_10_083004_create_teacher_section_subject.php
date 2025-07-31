@@ -17,6 +17,7 @@ return new class extends Migration
             $table->boolean('is_active');
             $table->integer('num_class_period');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

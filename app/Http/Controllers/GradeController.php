@@ -47,4 +47,19 @@ class GradeController extends Controller
     {
         return $this->gradeService->destroyGrade($grade);
     }
+
+    public function trashed()
+    {
+        return $this->gradeService->listTrashedGrades();
+    }
+
+    public function restore($id)
+    {
+        return $this->gradeService->restoreGrade($id);
+    }
+
+    public function forceDelete($id)
+    {
+        return $this->gradeService->forceDeleteGrade($id);
+    }
 }

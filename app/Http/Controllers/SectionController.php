@@ -47,4 +47,19 @@ class SectionController extends Controller
     {
         return $this->sectionService->destroySection($section);
     }
+
+    public function trashed()
+    {
+        return $this->sectionService->listTrashedSections();
+    }
+
+    public function restore($id)
+    {
+        return $this->sectionService->restoreSection($id);
+    }
+
+    public function forceDelete($id)
+    {
+        return $this->sectionService->forceDeleteSection($id);
+    }
 }

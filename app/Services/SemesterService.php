@@ -11,6 +11,18 @@ use Illuminate\Http\Response;
 
 class SemesterService
 {
+    public function listTrashedSemesters()
+    {
+        $semesters = Semester::with(['createdBy', 'year'])
+            ->onlyTrashed()
+            ->orderBy('start_date', 'desc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            SemesterResource::collection($semesters)
+        );
+    }
+
     public function createSemester(SemesterRequest $request)
     {
         $admin = auth()->user();
@@ -57,6 +69,58 @@ class SemesterService
         return ResponseHelper::jsonResponse(
             null,
             __('messages.semester.deleted'),
+        );
+    }
+
+    public function restoreSemester($id)
+    {
+        $semester = Semester::withTrashed()->findOrFail($id);
+        
+        if (!$semester->trashed()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'Semester is not deleted',
+                400,
+                false
+            );
+        }
+
+        $semester->restore();
+
+        return ResponseHelper::jsonResponse(
+            new SemesterResource($semester),
+            __('messages.semester.restored'),
+        );
+    }
+
+    public function forceDeleteSemester($id)
+    {
+        $semester = Semester::withTrashed()->findOrFail($id);
+        
+        // Check if semester has related data
+        if ($semester->schoolDays()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.semester.has_school_days'),
+                400,
+                false
+            );
+        }
+
+        if ($semester->studentEnrollments()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.semester.has_enrollments'),
+                400,
+                false
+            );
+        }
+
+        $semester->forceDelete();
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.semester.force_deleted'),
         );
     }
 

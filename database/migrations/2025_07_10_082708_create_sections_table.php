@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('title');
             $table->foreignId('grade_id')->constrained('grades');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

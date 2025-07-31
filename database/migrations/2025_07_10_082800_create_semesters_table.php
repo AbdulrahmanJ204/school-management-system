@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->boolean('is_active')->default(0);
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

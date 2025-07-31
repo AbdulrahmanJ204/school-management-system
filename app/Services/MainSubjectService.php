@@ -127,4 +127,86 @@ class MainSubjectService
             __('messages.main_subject.deleted')
         );
     }
+
+    /**
+     * List trashed main subjects.
+     */
+    public function listTrashedMainSubjects(): JsonResponse
+    {
+        $user = auth()->user();
+
+        if (!$user->hasPermissionTo('عرض المواد الرئيسية')) {
+            throw new PermissionException();
+        }
+
+        $mainSubjects = MainSubject::with(['grade', 'createdBy'])
+            ->onlyTrashed()
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            MainSubjectResource::collection($mainSubjects)
+        );
+    }
+
+    /**
+     * Restore a main subject.
+     */
+    public function restoreMainSubject($id): JsonResponse
+    {
+        $user = auth()->user();
+
+        if (!$user->hasPermissionTo('تعديل مادة رئيسية')) {
+            throw new PermissionException();
+        }
+
+        $mainSubject = MainSubject::withTrashed()->findOrFail($id);
+        
+        if (!$mainSubject->trashed()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'Main subject is not deleted',
+                400,
+                false
+            );
+        }
+
+        $mainSubject->restore();
+
+        return ResponseHelper::jsonResponse(
+            new MainSubjectResource($mainSubject),
+            __('messages.main_subject.restored')
+        );
+    }
+
+    /**
+     * Force delete a main subject.
+     */
+    public function forceDeleteMainSubject($id): JsonResponse
+    {
+        $user = auth()->user();
+
+        if (!$user->hasPermissionTo('حذف مادة رئيسية')) {
+            throw new PermissionException();
+        }
+
+        $mainSubject = MainSubject::withTrashed()->findOrFail($id);
+        
+        // Check if there are related subjects
+        if ($mainSubject->subjects()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.main_subject.cannot_delete_with_subjects'),
+                400,
+                false
+            );
+        }
+
+        $mainSubject->forceDelete();
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.main_subject.force_deleted')
+        );
+    }
 }

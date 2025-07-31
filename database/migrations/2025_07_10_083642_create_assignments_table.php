@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('photo');
             $table->foreignId('subject_id')->constrained('subjects');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
 
             $table->index(['school_day_id', 'subject_id']);

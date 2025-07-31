@@ -90,4 +90,68 @@ class SectionService
             __('messages.section.deleted'),
         );
     }
+
+    public function listTrashedSections()
+    {
+        $sections = Section::with(['createdBy', 'grade'])
+            ->onlyTrashed()
+            ->orderBy('title', 'asc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            SectionResource::collection($sections)
+        );
+    }
+
+    public function restoreSection($id)
+    {
+        $section = Section::withTrashed()->findOrFail($id);
+        
+        if (!$section->trashed()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'Section is not deleted',
+                400,
+                false
+            );
+        }
+
+        $section->restore();
+
+        return ResponseHelper::jsonResponse(
+            new SectionResource($section),
+            __('messages.section.restored'),
+        );
+    }
+
+    public function forceDeleteSection($id)
+    {
+        $section = Section::withTrashed()->findOrFail($id);
+        
+        // Check if section has related data
+        if ($section->studentEnrollments()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.section.has_students'),
+                400,
+                false
+            );
+        }
+
+        if ($section->quizTargets()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.section.has_quiz_targets'),
+                400,
+                false
+            );
+        }
+
+        $section->forceDelete();
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.section.force_deleted'),
+        );
+    }
 }

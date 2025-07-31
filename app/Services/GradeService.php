@@ -102,4 +102,79 @@ class GradeService
             __('messages.grade.deleted'),
         );
     }
+
+    public function listTrashedGrades()
+    {
+        $grades = Grade::with([
+            'createdBy',
+        ])
+            ->onlyTrashed()
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            GradeResource::collection($grades)
+        );
+    }
+
+    public function restoreGrade($id)
+    {
+        $grade = Grade::withTrashed()->findOrFail($id);
+        
+        if (!$grade->trashed()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'Grade is not deleted',
+                400,
+                false
+            );
+        }
+
+        $grade->restore();
+
+        return ResponseHelper::jsonResponse(
+            new GradeResource($grade),
+            __('messages.grade.restored'),
+        );
+    }
+
+    public function forceDeleteGrade($id)
+    {
+        $grade = Grade::withTrashed()->findOrFail($id);
+        
+        // Check if grade has related data
+        if ($grade->sections()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.grade.has_sections'),
+                400,
+                false
+            );
+        }
+
+        if ($grade->subjectMajors()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.grade.has_subject_majors'),
+                400,
+                false
+            );
+        }
+
+        if ($grade->settingGradeYears()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.grade.has_settings'),
+                400,
+                false
+            );
+        }
+
+        $grade->forceDelete();
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.grade.force_deleted'),
+        );
+    }
 }

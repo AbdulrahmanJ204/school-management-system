@@ -27,6 +27,14 @@ class SchoolDayController extends Controller
     }
 
     /**
+     * Display a listing of trashed resources.
+     */
+    public function trashed()
+    {
+        return $this->schoolDayService->listTrashedSchoolDays();
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(SchoolDayRequest $request)
@@ -55,5 +63,21 @@ class SchoolDayController extends Controller
     public function destroy(SchoolDay $schoolDay)
     {
         return $this->schoolDayService->destroySchoolDay($schoolDay);
+    }
+
+    /**
+     * Force delete the specified resource from storage.
+     */
+    public function forceDelete($id)
+    {
+        return $this->schoolDayService->forceDeleteSchoolDay($id);
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore($id)
+    {
+        return $this->schoolDayService->restoreSchoolDay($id);
     }
 }

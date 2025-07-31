@@ -11,6 +11,18 @@ use Illuminate\Http\Response;
 
 class SchoolDayService
 {
+    public function listTrashedSchoolDays()
+    {
+        $schoolDays = SchoolDay::with(['createdBy', 'semester'])
+            ->onlyTrashed()
+            ->orderBy('date', 'desc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            SchoolDayResource::collection($schoolDays)
+        );
+    }
+
     public function listSchoolDay(Semester $semester)
     {
 //        $schoolDays = SchoolDay::with([
@@ -97,6 +109,53 @@ class SchoolDayService
         return ResponseHelper::jsonResponse(
             null,
             __('messages.school_day.deleted'),
+        );
+    }
+
+    public function restoreSchoolDay($id)
+    {
+        $schoolDay = SchoolDay::withTrashed()->findOrFail($id);
+        
+        if (!$schoolDay->trashed()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'School day is not deleted',
+                400,
+                false
+            );
+        }
+
+        $schoolDay->restore();
+
+        return ResponseHelper::jsonResponse(
+            new SchoolDayResource($schoolDay),
+            __('messages.school_day.restored'),
+        );
+    }
+
+    public function forceDeleteSchoolDay($id)
+    {
+        $schoolDay = SchoolDay::withTrashed()->findOrFail($id);
+        
+        // Check if school day has related data
+        if ($schoolDay->assignments()->exists() ||
+            $schoolDay->behaviorNotes()->exists() ||
+            $schoolDay->studyNotes()->exists() ||
+            $schoolDay->studentAttendances()->exists() ||
+            $schoolDay->teacherAttendances()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.school_day.has_related_data'),
+                400,
+                false
+            );
+        }
+
+        $schoolDay->forceDelete();
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.school_day.force_deleted'),
         );
     }
 }

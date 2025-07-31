@@ -162,4 +162,95 @@ class SubjectService
             __('messages.subject.deleted')
         );
     }
+
+    /**
+     * List trashed subjects.
+     */
+    public function listTrashedSubjects()
+    {
+        $user = auth()->user();
+
+        if (!$user->hasPermissionTo('عرض المواد')) {
+            throw new PermissionException();
+        }
+
+        $subjects = Subject::with([
+            'mainSubject.grade',
+            'createdBy'
+        ])
+            ->onlyTrashed()
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            SubjectResource::collection($subjects)
+        );
+    }
+
+    /**
+     * Restore a subject.
+     */
+    public function restoreSubject($id)
+    {
+        $user = auth()->user();
+
+        if (!$user->hasPermissionTo('تعديل مادة')) {
+            throw new PermissionException();
+        }
+
+        $subject = Subject::withTrashed()->findOrFail($id);
+        
+        if (!$subject->trashed()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'Subject is not deleted',
+                400,
+                false
+            );
+        }
+
+        $subject->restore();
+
+        return ResponseHelper::jsonResponse(
+            new SubjectResource($subject),
+            __('messages.subject.restored')
+        );
+    }
+
+    /**
+     * Force delete a subject.
+     */
+    public function forceDeleteSubject($id)
+    {
+        $user = auth()->user();
+
+        if (!$user->hasPermissionTo('حذف مادة')) {
+            throw new PermissionException();
+        }
+
+        $subject = Subject::withTrashed()->findOrFail($id);
+        
+        // Check if there are related records
+        if ($subject->teacherSectionSubjects()->exists() ||
+            $subject->quizTargets()->exists() ||
+            $subject->assignments()->exists() ||
+            $subject->studentMarks()->exists() ||
+            $subject->studyNotes()->exists() ||
+            $subject->files()->exists()) {
+
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.subject.cannot_delete_with_relations'),
+                400,
+                false
+            );
+        }
+
+        $subject->forceDelete();
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.subject.force_deleted')
+        );
+    }
 }

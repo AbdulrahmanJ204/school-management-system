@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('exam_percentage');
             $table->integer('num_class_period');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

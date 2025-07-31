@@ -55,4 +55,28 @@ class SubjectController extends Controller
     {
         return $this->subjectService->destroySubject($subject);
     }
+
+    /**
+     * Display a listing of trashed subjects.
+     */
+    public function trashed()
+    {
+        return $this->subjectService->listTrashedSubjects();
+    }
+
+    /**
+     * Restore the specified subject from storage.
+     */
+    public function restore($id)
+    {
+        return $this->subjectService->restoreSubject($id);
+    }
+
+    /**
+     * Force delete the specified subject from storage.
+     */
+    public function forceDelete($id)
+    {
+        return $this->subjectService->forceDeleteSubject($id);
+    }
 }

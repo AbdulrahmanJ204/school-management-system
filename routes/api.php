@@ -66,33 +66,57 @@ Route::middleware('auth:api')->group(function () {
 
     Route::prefix('years')->group(function () {
         Route::get('/', [YearController::class, 'index']);
+        Route::get('/trashed', [YearController::class, 'trashed']);
         Route::post('/', [YearController::class, 'store']);
         Route::get('/{year}', [YearController::class, 'show']);
         Route::put('/{year}', [YearController::class, 'update']);
         Route::delete('/{year}', [YearController::class, 'destroy']);
         Route::patch('/{year}/active', [YearController::class, 'Active']);
+        Route::patch('/{id}/restore', [YearController::class, 'restore']);
+        Route::delete('/{id}/force-delete', [YearController::class, 'forceDelete']);
     });
 
     Route::prefix('semesters')->group(function () {
+        Route::get('/trashed', [SemesterController::class, 'trashed']);
         Route::post('/', [SemesterController::class, 'store']);
         Route::put('/{semester}', [SemesterController::class, 'update']);
         Route::delete('/{semester}', [SemesterController::class, 'destroy']);
         Route::patch('/{semester}/active', [SemesterController::class, 'Active']);
+        Route::patch('/{id}/restore', [SemesterController::class, 'restore']);
+        Route::delete('/{id}/force-delete', [SemesterController::class, 'forceDelete']);
     });
 
     Route::prefix('school-days')->group(function () {
+        Route::get('/trashed', [SchoolDayController::class, 'trashed']);
         Route::get('/{semester}', [SchoolDayController::class, 'index']);
         Route::post('/', [SchoolDayController::class, 'store']);
 //        todo after (behaviorNotes, behaviorNotes, assignments, studentAttendances, teacherAttendances, news)
 //        Route::get('/{schoolDay}', [SchoolDayController::class, 'show']);
         Route::put('/{schoolDay}', [SchoolDayController::class, 'update']);
         Route::delete('/{schoolDay}', [SchoolDayController::class, 'destroy']);
+        Route::patch('/{id}/restore', [SchoolDayController::class, 'restore']);
+        Route::delete('/{id}/force-delete', [SchoolDayController::class, 'forceDelete']);
     });
 
     Route::apiResource('grades', GradeController::class);
+    Route::get('grades/trashed', [GradeController::class, 'trashed']);
+    Route::patch('grades/{id}/restore', [GradeController::class, 'restore']);
+    Route::delete('grades/{id}/force-delete', [GradeController::class, 'forceDelete']);
+    
     Route::apiResource('sections', SectionController::class);
+    Route::get('sections/trashed', [SectionController::class, 'trashed']);
+    Route::patch('sections/{id}/restore', [SectionController::class, 'restore']);
+    Route::delete('sections/{id}/force-delete', [SectionController::class, 'forceDelete']);
+    
     Route::apiResource('main-subjects', SubjectMajorController::class);
+    Route::get('main-subjects/trashed', [MainSubjectController::class, 'trashed']);
+    Route::patch('main-subjects/{id}/restore', [MainSubjectController::class, 'restore']);
+    Route::delete('main-subjects/{id}/force-delete', [MainSubjectController::class, 'forceDelete']);
+    
     Route::apiResource('subjects', SubjectController::class);
+    Route::get('subjects/trashed', [SubjectController::class, 'trashed']);
+    Route::patch('subjects/{id}/restore', [SubjectController::class, 'restore']);
+    Route::delete('subjects/{id}/force-delete', [SubjectController::class, 'forceDelete']);
     Route::apiResource('student-marks', StudentMarkController::class);
     Route::get('student-marks/enrollment/{enrollmentId}', [StudentMarkController::class, 'getByEnrollment']);
     Route::get('student-marks/subject/{subjectId}', [StudentMarkController::class, 'getBySubject']);

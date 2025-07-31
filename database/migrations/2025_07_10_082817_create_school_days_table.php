@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('semester_id')->constrained('semesters');
             $table->enum('type', ['study', 'exam', 'holiday']);
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('code');
             $table->integer('success_rate');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

@@ -25,6 +25,18 @@ class YearService
         );
     }
 
+    public function listTrashedYears()
+    {
+        $years = Year::with(['createdBy', 'semesters'])
+            ->onlyTrashed()
+            ->orderBy('start_date', 'desc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            YearResource::collection($years)
+        );
+    }
+
     public function createYear(YearRequest $request)
     {
         $admin = auth()->user();
@@ -80,6 +92,49 @@ class YearService
         return ResponseHelper::jsonResponse(
             null,
             __('messages.year.deleted'),
+        );
+    }
+
+    public function restoreYear($id)
+    {
+        $year = Year::withTrashed()->findOrFail($id);
+        
+        if (!$year->trashed()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'Year is not deleted',
+                400,
+                false
+            );
+        }
+
+        $year->restore();
+
+        return ResponseHelper::jsonResponse(
+            new YearResource($year),
+            __('messages.year.restored'),
+        );
+    }
+
+    public function forceDeleteYear($id)
+    {
+        $year = Year::withTrashed()->findOrFail($id);
+        
+        // Check if year has related data
+        if ($year->semesters()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.year.has_semesters'),
+                400,
+                false
+            );
+        }
+
+        $year->forceDelete();
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.year.force_deleted'),
         );
     }
 

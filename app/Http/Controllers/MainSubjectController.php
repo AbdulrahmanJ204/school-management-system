@@ -62,4 +62,31 @@ class MainSubjectController extends Controller
     {
         return $this->mainSubjectService->destroyMainSubject($mainSubject);
     }
+
+    /**
+     * Display a listing of trashed main subjects.
+     * @throws PermissionException
+     */
+    public function trashed(): JsonResponse
+    {
+        return $this->mainSubjectService->listTrashedMainSubjects();
+    }
+
+    /**
+     * Restore the specified main subject from storage.
+     * @throws PermissionException
+     */
+    public function restore($id): JsonResponse
+    {
+        return $this->mainSubjectService->restoreMainSubject($id);
+    }
+
+    /**
+     * Force delete the specified main subject from storage.
+     * @throws PermissionException
+     */
+    public function forceDelete($id): JsonResponse
+    {
+        return $this->mainSubjectService->forceDeleteMainSubject($id);
+    }
 }

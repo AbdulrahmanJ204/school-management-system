@@ -15,6 +15,11 @@ class SemesterController extends Controller
         $this->semesterService = $semesterService;
     }
 
+    public function trashed()
+    {
+        return $this->semesterService->listTrashedSemesters();
+    }
+
     public function store(SemesterRequest $request)
     {
         return $this->semesterService->createSemester($request);
@@ -28,6 +33,16 @@ class SemesterController extends Controller
     public function destroy(Semester $semester)
     {
         return $this->semesterService->destroySemester($semester);
+    }
+
+    public function forceDelete($id)
+    {
+        return $this->semesterService->forceDeleteSemester($id);
+    }
+
+    public function restore($id)
+    {
+        return $this->semesterService->restoreSemester($id);
     }
 
     public function Active(Semester $semester)
