@@ -6,7 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * @return void
+     */
+    public function up(): void
     {
         Schema::create('file_targets', function (Blueprint $table) {
             $table->id();
@@ -14,11 +17,12 @@ return new class extends Migration
             $table->foreignId('grade_id')->nullable()->constrained('grades');
             $table->foreignId('file_id')->constrained('files');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('file_targets');
     }
