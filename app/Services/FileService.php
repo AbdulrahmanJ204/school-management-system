@@ -2,125 +2,117 @@
 
 namespace App\Services;
 
-use App\Exceptions\ImageUploadFailed;
+use App\Enums\Permissions\FilesPermission;
+use App\Enums\StringsManager\FileStr;
+use App\Exceptions\PermissionException;
+use App\Helpers\AuthHelper;
 use App\Helpers\ResponseHelper;
-use App\Http\Requests\file\StoreFileRequest;
 use App\Http\Resources\FileResource;
 use App\Models\File;
-use App\Models\FileTarget;
-use App\Models\SchoolDay;
-use App\Models\Subject;
-use Illuminate\Support\Facades\Storage;
+use App\Traits\Files\FileHelpers;
+use App\Traits\Files\InitFiles;
+use App\Traits\Files\ListFiles;
+use App\Traits\Files\ShowFile;
+use App\Traits\Files\SoftDeleteFile;
+use App\Traits\Files\StoreFile;
+use App\Traits\Files\UpdateFile;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Throwable;
+
+// NOTES : FOR ADMIN , Files are done?
+
 
 class FileService
 {
+    use InitFiles, FileHelpers,
+        ListFiles, ShowFile,
+        StoreFile, UpdateFile,
+        SoftDeleteFile;
 
-    public function getFiles()
+    // API keys
+    private string $apiTitle;
+    private string $apiDescription;
+    private string $apiSubjectId;
+    private string $apiIsGeneral;
+    private string $apiFile;
+    private string $apiType;
+    private string $apiNoSubject;
+    private string $apiGradeIds;
+    private string $apiSectionIds;
+    // DB Columns
+    private string $dbTitle;
+    private string $dbDescription;
+    private string $dbSubjectId;
+    private string $dbFile;
+    private string $dbSize;
+    private string $dbType;
+    private string $dbPublishDate;
+    private string $dbCreatedBy;
+    private string $dbSectionId;
+
+    private string $dbFileId;
+    private string $dbGradeId;
+    // General Variables
+    private string $storageDisk;
+    private string $generalPath;
+    private string $dbDeletedAt;
+
+    public function __construct()
     {
-        $role = auth()->user()->role;
-        if ($role == 'admin') {
-            return $this->getAdminFiles();
-        }
+        $this->apiKeys();
+        $this->dbFields();
+        $this->generalVariables();
+    }
+
+    // --------------------------Restore--------------------------
+
+    /**
+     * @throws PermissionException
+     */
+    public function restore($fileId): JsonResponse
+    {
+        AuthHelper::authorize(FilesPermission::restore->value);
+        $file = File::onlyTrashed()->findOrFail($fileId);
+        $file->loadDeletedTargets();
+
+        $file->restore();
+        $file->targets->each->restore();
+
+        return ResponseHelper::jsonResponse(FileResource::make($file), __(FileStr::messageRestored->value));
+    }
+
+
+    // --------------------------Download--------------------------
+    public function download($fileId)
+    {
+        // TODO : implement this
 
     }
 
-    public function getAdminFiles()
+    // --------------------------Force Delete--------------------------
+
+    /**
+     * @throws PermissionException
+     * @throws Throwable
+     */
+    public function delete($fileId): JsonResponse
     {
-        $files = File::with('schoolDay')->get();
-        return ResponseHelper::jsonResponse(FileResource::collection($files), 'files retrieved successfully');
+        AuthHelper::authorize(FilesPermission::delete->value);
+
+        $file = File::onlyTrashed()->findOrFail($fileId);
+        $this->deleteFileFromStorage($file->file);
+
+        $clone = clone $file;
+        $clone->loadDeletedTargets();
+
+        DB::transaction(function () use ($file) {
+            $file->targets()->withTrashed()->forceDelete();
+            $file->forceDelete();
+        });
+
+
+        return ResponseHelper::jsonResponse(FileResource::make($clone), __(FileStr::messageDeletePermanent->value));
     }
 
-    public function getLastSchoolDayID()
-    {
-        $today = now()->toDateString();
-
-        $todaySchoolDay = SchoolDay::where('date', $today)->first();
-
-        if ($todaySchoolDay) {
-            return $todaySchoolDay->id;
-        }
-
-        $lastSchoolDay = SchoolDay::where('date', '<', $today)
-            ->orderBy('date', 'desc')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        return $lastSchoolDay ? $lastSchoolDay->id : null;
-    }
-
-    public function store(StoreFileRequest $request)
-    {
-        $data = $request->validated();
-
-        $lastSchoolDayID = $this->getLastSchoolDayID();
-        $subjectCode = Subject::find($data['subject_id'])->first()->code;
-        $lastFileID = File::latest()->first()->id ?? 0;
-
-        $file = $this->handleFile($request, $subjectCode, $lastFileID);
-        $size = Storage::disk('public')->size($file);
-        $result = File::create([
-            'subject_id' => $data['subject_id'],
-            'title' => $data['title'],
-            'description' => $data['description'],
-            'school_day_id' => $lastSchoolDayID,
-            'file' => $file,
-            'size' => $size,
-            'created_by' => $request->user()->id,
-        ]);
-        $this->handleFileTargetsOnCreate($result, $request);
-        return ResponseHelper::jsonResponse(FileResource::make($result), 'file stored successfully');
-    }
-
-
-
-
-    public function handleFile(StoreFileRequest $request, $subjectCode, $id)
-    {
-        $rPath = null;
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $extension = $file->getClientOriginalExtension();
-            $fileName = $subjectCode . '-' . ($id + 1) . '.' . $extension;
-            $path = 'library/files/' . $subjectCode;
-            $filePath = $path . '/' . $fileName;
-
-            if (!Storage::disk('public')->exists($filePath)) {
-                $file->storeAs($path, $fileName, 'public');
-            }
-            $rPath = $filePath;
-        }
-        return $rPath;
-    }
-
-    public function handleFileTargetsOnCreate(File $file, StoreFileRequest $request)
-    {
-        $user = auth()->user();
-        if ($request->filled('section_ids')) {
-            foreach ($request->section_ids as $section_id) {
-                FileTarget::create([
-                    'file_id' => $file->id,
-                    'grade_id' => null,
-                    'section_id' => $section_id,
-                    'created_by' => $user->id,
-                ]);
-            }
-        } else if ($request->filled('grade_ids')) {
-            foreach ($request->grade_ids as $grade_id) {
-                FileTarget::create([
-                    'file_id' => $file->id,
-                    'grade_id' => $grade_id,
-                    'section_id' => null,
-                    'created_by' => $user->id,
-                ]);
-            }
-        } else {
-            // Target all users
-            FileTarget::create([
-                'file_id' => $file->id,
-                'grade_id' => null,
-                'section_id' => null,
-                'created_by' => $user->id,
-            ]);
-        }
-    }
 }

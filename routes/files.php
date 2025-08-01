@@ -3,19 +3,17 @@
 use App\Http\Controllers\FileController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:api')->prefix('admin/files')->controller(FileController::class)->group(function () {
-    Route::get('/', 'index')->name('files');
+Route::middleware('auth:api')->prefix('files')->controller(FileController::class)->group(function () {
+    Route::get('/', 'index')->name('files.index');
+    Route::get('/download/{file}', 'download')->name('files.download');
+    Route::get('/{file}', 'show')->name('files.show');
+
     Route::post('/store', 'store')->name('files.store');
-    Route::post('/{file}', 'update')->name('files.store');
-    Route::delete('/{file}', 'destroy')->name('files.store');
-})->middleware(['role:admin']);
+    Route::post('/restore/{file}', 'restore')->name('files.store');
+    Route::post('/{file}', 'update')->name('files.update');
 
-Route::middleware('auth:api')->prefix('teacher/files')->controller(FileController::class)->group(function () {
-    Route::get('/', 'index')->name('files');
-    Route::post('/store', 'store')->name('files.store');
-})->middleware(['role:teacher']);
+    Route::delete('delete/{file}', 'delete')->name('files.delete');
+    Route::delete('/{file}', 'destroy')->name('files.destroy');
+});
 
-Route::middleware('auth:api')->prefix('student/files')->controller(FileController::class)->group(function () {
-    Route::get('/', 'index')->name('files');
 
-})->middleware(['role:student']);
