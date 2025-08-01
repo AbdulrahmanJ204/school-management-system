@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\NewsPermission;
+use App\Enums\Permissions\NewsPermission;
 use App\Enums\UserType;
 use App\Exceptions\ImageUploadFailed;
 use App\Exceptions\PermissionException;
@@ -11,14 +11,10 @@ use App\Helpers\ResponseHelper;
 use App\Http\Resources\NewsResource;
 use App\Models\News;
 use App\Models\NewsTarget;
-use App\Models\SchoolDay;
-use App\Models\Student;
-use App\Models\StudentEnrollment;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class NewsService
 {
@@ -328,7 +324,7 @@ class NewsService
         foreach ($enrollments as $enrollment) {
             $start_date = $enrollment->semester->start_date;
             $end_date = $enrollment->semester->end_date;
-
+            // TODO : Chnage this and the other check on date with WhereBetween.
             $currentSemesterNews = News::where('publish_date', '>=', $start_date)
                 ->where('publish_date', '<=', $end_date)
                 ->whereHas('targets', function ($query) use ($enrollment) {
