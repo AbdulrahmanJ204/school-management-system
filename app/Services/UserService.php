@@ -145,7 +145,7 @@ class UserService
 
         $users = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'user_type', 'image')
             ->whereIn('user_type', ['admin', 'teacher'])
-            ->with(['admin', 'teacher'])
+            ->with(['admin', 'teacher', 'roles.permissions'])
             ->orderBy('id', 'asc')
             ->paginate(15);
 

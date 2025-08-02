@@ -13,12 +13,12 @@ return new class extends Migration
             $table->string('name');
             $table->time('start_time');
             $table->time('end_time');
-            $table->foreignId('work_shift_id')->constrained('school_shifts');
+            $table->foreignId('school_shift_id')->constrained('school_shifts');
             $table->integer('period_order');
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
 
-            $table->unique(['work_shift_id', 'period_order']);
+            $table->unique(['school_shift_id', 'period_order']);
         });
     }
 

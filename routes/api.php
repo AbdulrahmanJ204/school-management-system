@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SchoolDayController;
+use App\Http\Controllers\SchoolShiftController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\QuestionController;
@@ -33,11 +34,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('admins', [AdminController::class, 'show']);
     Route::get('teachers', [TeacherController::class, 'show']);
     Route::get('students', [StudentController::class, 'show']);
-    Route::get('staff', [UserController::class, 'getStaff']);
+    Route::get('staff', [UserController::class, 'getStaff'])->name('staff');
     Route::resource('users', UserController::class)->only(['show', 'destroy']);
     Route::post('users/{user}', [UserController::class, 'update']);
     Route::resource('roles', RoleController::class);
     Route::get('permissions', [PermissionController::class, 'show']);
+    Route::resource('school_shifts', SchoolShiftController::class);
 })->middleware(['user_type:admin', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {
