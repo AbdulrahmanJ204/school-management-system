@@ -11,17 +11,30 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class News extends Model
 {
     use HasFactory , SoftDeletes;
-    protected $fillable = ['title', 'content', 'school_day_id','photo', 'created_at', 'updated_at', 'created_by'];
+    protected $fillable = ['title', 'content', 'publish_date','photo', 'created_at', 'updated_at', 'created_by'];
 
     protected $casts = [
         'description' => 'json',
+        'publish_date' => 'datetime',
     ];
+    protected $with = ['newsTargets.grade' , 'newsTargets.section.grade'];
     public function newsTargets(): HasMany
     {
         return $this->hasMany(NewsTarget::class, 'news_id');
     }
-    public function schoolDay(): BelongsTo
+
+
+    public function loadDeletedNewsTargets(): self
     {
-        return $this->belongsTo(SchoolDay::class, 'school_day_id');
+        if ($this->trashed()) {
+            $targets = NewsTarget::onlyTrashed()
+                ->where('news_id', $this->id)
+                ->where('deleted_at', $this->deleted_at)
+                ->with(['section.grade', 'grade'])
+                ->get();
+            $this->setRelation('newsTargets', $targets);
+        }
+        return $this;
     }
+
 }

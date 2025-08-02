@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Permissions\FilesPermission;
+use App\Enums\Permissions\NewsPermission;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -44,7 +46,9 @@ class RolePermissionSeeder extends Seeder
             'عرض ادوار',
             'عرض دور',
             'حذف دور',
-            'انشاء فترة دوام'
+            'انشاء فترة دوام',
+            ...array_map(fn($permission) => $permission->value, NewsPermission::cases()),
+            ...array_map(fn($permission) => $permission->value, FilesPermission::cases()),
         ];
 
         foreach ($permissions as $permission) {

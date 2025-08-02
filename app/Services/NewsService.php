@@ -2,68 +2,155 @@
 
 namespace App\Services;
 
+use App\Enums\NewsPermission;
+use App\Enums\UserType;
 use App\Exceptions\ImageUploadFailed;
+use App\Exceptions\PermissionException;
+use App\Helpers\AuthHelper;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\NewsResource;
 use App\Models\News;
 use App\Models\NewsTarget;
 use App\Models\SchoolDay;
+use App\Models\Student;
 use App\Models\StudentEnrollment;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class NewsService
 {
 
-    public function getNews()
+    public function listNews()
     {
-        $user = auth()->user();
-        if ($user->role === 'student') {
-            return $this->getStudentNews();
-        }
-        // Teacher has no news .
-        if ($user->role === 'admin') {
-            return $this->getAdminNews();
-        }
-
+        $user_type = auth()->user()->user_type;
+        return match ($user_type) {
+            UserType::Admin->value => $this->listAdminNews(),
+            UserType::Student->value => $this->listStudentNews(),
+            default => throw new PermissionException(),
+        };
     }
 
-    public function getStudentNews(): JsonResponse
+    private function listStudentNews(): JsonResponse
     {
-        $student = auth()->user()->student;
-        $enrollments = StudentEnrollment::where('student_id', $student->id)
-            ->whereHas('semester.year', function ($query) {
-                $query->where('is_active', true);
-            })
-            ->get();
-        $sectionIds = $enrollments->pluck('section_id');
-        $gradeId = $enrollments->pluck('grade_id')->unique();
-        $news = News::whereHas('newsTargets', function ($query) use ($gradeId, $sectionIds) {
-            $query
-                ->whereIn('section_id', $sectionIds)
-                ->orWhere('grade_id', $gradeId)
-                ->orWhere(function ($q) {
-                    $q->whereNull('section_id')
-                        ->whereNull('grade_id');
-                }
-                );
-        })->orderBy('created_at', 'desc')->get();
-
-        $uniqueNews = collect($news)->unique('id')->values();
-        return ResponseHelper::jsonResponse(NewsResource::collection($uniqueNews));
-    }
-
-    public function getAdminNews()
-    {
-        $news = News::with('newsTargets.section.grade' , 'newsTargets.grade')->get();
+        $news = $this->getStudentNewsCollection();
         return ResponseHelper::jsonResponse(NewsResource::collection($news));
     }
 
-    public function handlePhoto($request)
+    private function listAdminNews(): JsonResponse
+    {
+        $news = News::withTrashed()->get()->sortByDesc('created_at');
+        $news->each(function (News $new) {
+            $new->loadDeletedNewsTargets();
+        });
+        return ResponseHelper::jsonResponse(NewsResource::collection($news));
+    }
+
+
+    public function store($request): NewsResource
+    {
+        $user = auth()->user();
+        $data = $request->validated();
+        $photoPath = $this->handlePhoto($request);
+        $publishDate = Carbon::now();
+        $content = $this->handleContent($data['content']);
+        $news = News::create([
+            'title' => $data['title'],
+            'content' => $content,
+            'photo' => $photoPath,
+            'publish_date' => $publishDate,
+            'created_by' => $user->id,
+        ]);
+
+        $this->handleNewsTargetsOnCreate($request, $data, $news);
+        // necessary to use load for relations here , because Autoload not work here I guess.
+        $news->load('newsTargets.grade', 'newsTargets.section.grade');
+        return NewsResource::make($news);
+    }
+
+    public function update($request, $news): JsonResponse
+    {
+
+        $data = $request->validated();
+        $updateData = [];
+        if ($request->hasFile('photo')) {
+            $photoPath = $this->handlePhoto($request, $news->photo);
+            $updateData['photo'] = $photoPath;
+        }
+
+        if ($request->filled('title')) {
+            $updateData['title'] = $data['title'];
+        }
+        if ($request->filled('content')) {
+            $content = $this->handleContent($data['content']);
+            $updateData['content'] = $content;
+        }
+
+        $this->updateNewsTargetsOnUpdate($request, $data, $news);
+        $news->update($updateData);
+        $news->load('newsTargets.section.grade', 'newsTargets.grade');
+        return ResponseHelper::jsonResponse(NewsResource::make($news), 'news updated');
+    }
+
+    public function show($newsId): JsonResponse
+    {
+
+        $user_type = auth()->user()->user_type;
+        return match ($user_type) {
+            UserType::Admin->value => $this->showAdminNews($newsId),
+            UserType::Student->value => $this->showStudentNews($newsId),
+            default => throw new PermissionException(),
+        };
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function delete($news)
+    {
+
+        AuthHelper::authorize(NewsPermission::delete->value);
+
+        $data = clone $news;
+        $data->load('newsTargets.section.grade', 'newsTargets.grade');
+        DB::transaction(function () use ($news) {
+            $news->newsTargets()->delete();
+            $news->delete();
+        });
+
+        return ResponseHelper::jsonResponse(NewsResource::make($data), 'news deleted');
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function restore($newsId)
+    {
+        AuthHelper::authorize(NewsPermission::restore->value);
+        $news = News::onlyTrashed()->findOrFail($newsId);
+        $deleteDate = $news->deleted_at;
+        $news->restore();
+        $targets = NewsTarget::onlyTrashed()
+            ->where('news_id', $newsId)
+            ->where('deleted_at', $deleteDate)
+            ->with(['section.grade', 'grade'])
+            ->get();
+        $targets->each->restore();
+        $news->setRelation('newsTargets', $targets);
+        return ResponseHelper::jsonResponse(NewsResource::make($news), 'news restored successfully');
+
+    }
+
+    private function handlePhoto($request, $deletePath = null): ?string
     {
         $photoPath = null;
         if ($request->hasFile('photo')) {
             try {
+                if ($deletePath && Storage::disk('public')->exists($deletePath)) {
+                    Storage::disk('public')->delete($deletePath);
+                }
                 $image = $request->file('photo');
                 $imageName = $image->hashName();
                 $imagePath = 'news_images/' . $imageName;
@@ -79,101 +166,9 @@ class NewsService
         }
         return $photoPath;
     }
-    public function getLastSchoolDayID(){
-        $today = now()->toDateString();
-
-        $todaySchoolDay = SchoolDay::where('date', $today)->first();
-
-        if ($todaySchoolDay) {
-            return $todaySchoolDay->id;
-        }
-
-        $lastSchoolDay = SchoolDay::where('date', '<', $today)
-            ->orderBy('date', 'desc')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        return $lastSchoolDay ? $lastSchoolDay->id : null;
-    }
-    public function createNews($request): NewsResource
-    {
-        $user = auth()->user();
-        $data = $request->validated();
-        $photoPath = $this->handlePhoto($request);
 
 
-        $schoolDayID = $this->getLastSchoolDayID();
-
-        $content = $data['content'];
-        $content = $this->handleContent($content);
-
-        // Create news record
-        $news = News::create([
-            'title' => $data['title'],
-            'content' => $content, // Store as JSON string
-            'photo' => $photoPath,
-            'school_day_id' => $schoolDayID,
-            'created_by' => $user->id,
-        ]);
-
-        // Handle news targets
-        $this->handleNewsTargetsOnCreate($request, $news);
-
-        return NewsResource::make($news);
-    }
-
-    public function updateNews($request, $news)
-    {
-
-        $user = auth()->user();
-        $data = $request->validated();
-
-        $photoPath = $this->handlePhoto($request);
-
-
-        $content = $this->handleContent($data['content']);
-        $data['content'] = $content;
-
-        if ($request->filled('section_ids')) {
-
-            $this->updateSections($news, $request);
-
-        } else if ($request->filled('grade_ids')) {
-
-            $this->updateGrades($news, $request);
-
-        } else {
-            NewsTarget::where('news_id', $news->id)->delete();
-            NewsTarget::create([
-                'news_id' => $news->id,
-                'grade_id' => null,
-                'section_id' => null,
-                'created_by' => $user->id,
-            ]);
-        }
-        if ($photoPath) {
-            $data['photo'] = $photoPath;
-        }
-        $news->update($data);
-        return ResponseHelper::jsonResponse(NewsResource::make($news), 'news updated');
-    }
-
-    public function showNews(News $news)
-    {
-        return ResponseHelper::jsonResponse(NewsResource::make($news));
-    }
-
-    public function deleteNews($news)
-    {
-        $data = clone $news;
-
-        NewsTarget::where('news_id', $news->id)->delete();
-        $news->delete();
-
-        return ResponseHelper::jsonResponse(NewsResource::make($data), 'news deleted');
-    }
-
-    public function handleContent(mixed $content): mixed
+    private function handleContent(mixed $content): mixed
     {
         if (is_string($content)) {
             $decodedContent = json_decode($content, true);
@@ -188,12 +183,13 @@ class NewsService
         return $content;
     }
 
-    public function handleNewsTargetsOnCreate($request, $news): void
+    private function handleNewsTargetsOnCreate($request, $data, $news)
     {
         $user = auth()->user();
+        $targets = [];
         if ($request->filled('section_ids')) {
-            foreach ($request->section_ids as $section_id) {
-                NewsTarget::create([
+            foreach ($data['section_ids'] as $section_id) {
+                $targets[] = NewsTarget::create([
                     'news_id' => $news->id,
                     'grade_id' => null,
                     'section_id' => $section_id,
@@ -201,8 +197,8 @@ class NewsService
                 ]);
             }
         } else if ($request->filled('grade_ids')) {
-            foreach ($request->grade_ids as $grade_id) {
-                NewsTarget::create([
+            foreach ($data['grade_ids'] as $grade_id) {
+                $targets[] = NewsTarget::create([
                     'news_id' => $news->id,
                     'grade_id' => $grade_id,
                     'section_id' => null,
@@ -210,7 +206,6 @@ class NewsService
                 ]);
             }
         } else {
-            // Target all users
             NewsTarget::create([
                 'news_id' => $news->id,
                 'grade_id' => null,
@@ -218,24 +213,25 @@ class NewsService
                 'created_by' => $user->id,
             ]);
         }
+        return $targets;
     }
 
-    public function updateSections($news, $request): void
+    private function updateSections($news, $data): void
     {
         $user = auth()->user();
-        NewsTarget::where('news_id', $news->id)->whereNotNull('grade_id')->delete();
-        NewsTarget::where('news_id', $news->id)->whereNull('section_id')->whereNull('grade_id')->delete();
+        $news->newsTargets()->whereNotNull('grade_id')->delete();
+        $news->newsTargets()->whereNull('section_id')->whereNull('grade_id')->delete();
 
-        $existingSections = NewsTarget::where('news_id', $news->id)
+        $existingSections = $news->newsTargets()
             ->whereNotNull('section_id')
             ->whereNull('grade_id')
             ->pluck('section_id')
             ->toArray();
 
 
-        $sectionsToDelete = array_diff($existingSections, $request->section_ids);
-        $sectionsToAdd = array_diff($request->section_ids, $existingSections);
-        NewsTarget::where('news_id', $news->id)
+        $sectionsToDelete = array_diff($existingSections, $data['section_ids']);
+        $sectionsToAdd = array_diff($data['section_ids'], $existingSections);
+        $news->newsTargets()
             ->whereIn('section_id', $sectionsToDelete)
             ->whereNull('grade_id')
             ->delete();
@@ -250,20 +246,20 @@ class NewsService
     }
 
 
-    public function updateGrades($news, $request): void
+    private function updateGrades($news, $data): void
     {
         $user = auth()->user();
-        NewsTarget::where('news_id', $news->id)->whereNotNull('section_id')->delete();
-        NewsTarget::where('news_id', $news->id)->whereNull('section_id')->whereNull('grade_id')->delete();
-        $existingGrades = NewsTarget::where('news_id', $news->id)
+        $news->newsTargets()->whereNotNull('section_id')->delete();
+        $news->newsTargets()->whereNull('section_id')->whereNull('grade_id')->delete();
+        $existingGrades = $news->newsTargets()
             ->whereNull('section_id')
             ->whereNotNull('grade_id')
             ->pluck('grade_id')
             ->toArray();
 
-        $gradesToDelete = array_diff($existingGrades, $request->grade_ids);
-        $gradesToAdd = array_diff($request->grade_ids, $existingGrades);
-        NewsTarget::where('news_id', $news->id)
+        $gradesToDelete = array_diff($existingGrades, $data['grade_ids']);
+        $gradesToAdd = array_diff($data['grade_ids'], $existingGrades);
+        $news->newsTargets()
             ->whereIn('grade_id', $gradesToDelete)
             ->whereNull('section_id')
             ->delete();
@@ -277,5 +273,86 @@ class NewsService
             ]);
         }
     }
+
+
+    private function updateNewsTargetsOnUpdate($request, $data, $news): void
+    {
+        $user = auth()->user();
+        if ($request->filled('section_ids')) {
+            $this->updateSections($news, $data);
+        } else if ($request->filled('grade_ids')) {
+            $this->updateGrades($news, $data);
+        } else if ($request->filled('is_global') && $data['is_global']) {
+            $news->newsTargets()->delete();
+            NewsTarget::create([
+                'news_id' => $news->id,
+                'grade_id' => null,
+                'section_id' => null,
+                'created_by' => $user->id,
+            ]);
+        }
+    }
+
+    /**
+     * @param $newsId
+     * @return JsonResponse
+     */
+    public function showAdminNews($newsId): JsonResponse
+    {
+        $news = News::withTrashed()->findOrFail($newsId);
+        $news->loadDeletedNewsTargets();
+        return ResponseHelper::jsonResponse(NewsResource::make($news));
+    }
+
+    /**
+     * @param $newsId
+     * @return JsonResponse
+     */
+    public function showStudentNews($newsId): JsonResponse
+    {
+        $news = News::findOrFail($newsId);
+        $studentNews = $this->getStudentNewsCollection();
+        if ($studentNews->contains('id', $newsId)) {
+            return ResponseHelper::jsonResponse(NewsResource::make($news));
+        }
+        return ResponseHelper::jsonResponse([], 'unauthorized', 403, false);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getStudentNewsCollection(): mixed
+    {
+        $enrollments = auth()->user()->student->currentYearEnrollments();
+        $news = collect();
+
+        foreach ($enrollments as $enrollment) {
+            $start_date = $enrollment->semester->start_date;
+            $end_date = $enrollment->semester->end_date;
+
+            $currentSemesterNews = News::where('publish_date', '>=', $start_date)
+                ->where('publish_date', '<=', $end_date)
+                ->whereHas('newsTargets', function ($query) use ($enrollment) {
+                    $query->where('section_id', $enrollment->section_id);
+                })->get();
+            $news = $news->merge($currentSemesterNews);
+        }
+        $overallStartDate = $enrollments->min('semester.start_date');
+        $overallEndDate = $enrollments->max('semester.end_date');
+        $gradeId = $enrollments->pluck('grade_id')->first();
+        $gradeAndPublicNews =
+            News:: where('publish_date', '>=', $overallStartDate)
+                ->where('publish_date', '<=', $overallEndDate)->whereHas('newsTargets', function ($query) use ($gradeId) {
+                    $query->where('grade_id', $gradeId)->orWhere(function ($q) {
+                        $q->whereNull('section_id')
+                            ->whereNull('grade_id');
+                    });
+                })->get();
+        return $news->merge($gradeAndPublicNews)
+            ->unique('id')
+            ->sortByDesc('created_at')
+            ->values();
+    }
+
 
 }

@@ -2,9 +2,12 @@
 
 namespace App\Http\Requests\file;
 
+use App\Enums\FileType;
+use App\Enums\Permissions\FilesPermission;
+use App\Enums\StringsManager\FileStr;
 use App\Http\Requests\BaseRequest;
-
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Validation\Rule;
 
 class StoreFileRequest extends BaseRequest
 {
@@ -13,23 +16,26 @@ class StoreFileRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-
-        return true;
+        return auth()->user()->hasPermissionTo(FilesPermission::store->value);
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-            'subject_id' => 'nullable|exists:subjects,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'file' => 'required|file',
+            FileStr::apiSubjectId->value => 'sometimes|nullable|exists:subjects,id',
+            FileStr::apiTitle->value => 'required|string|max:255',
+            FileStr::apiDescription->value => 'sometimes|nullable|string',
+            FileStr::apiFile->value => 'required|file',
+            FileStr::apiType->value => ['sometimes', Rule::enum(FileType::class)],
+            FileStr::apiSectionIds->value => 'sometimes|array',
+            FileStr::apiSectionIds->value . '.*' => 'exists:sections,id',
+            FileStr::apiGradeIds->value => 'sometimes|array',
+            FileStr::apiGradeIds->value . '.*' => 'exists:grades,id',
         ];
     }
 }

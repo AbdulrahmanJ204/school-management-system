@@ -11,19 +11,20 @@ use Illuminate\Http\Request;
 
 class NewsController extends Controller
 {
-    protected  $newsService;
-    public function __construct(NewsService $newsService){
-    $this->newsService = $newsService;
+    protected $newsService;
+
+    public function __construct(NewsService $newsService)
+    {
+        $this->newsService = $newsService;
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index(): ?JsonResponse
     {
-
-        return $this->newsService->getNews();
+        return $this->newsService->listNews();
     }
-
 
 
     /**
@@ -31,18 +32,17 @@ class NewsController extends Controller
      */
     public function store(StoreNewsRequest $request)
     {
-
-        return $this->newsService->createNews($request);
+        return $this->newsService->store($request);
     }
+
 
     /**
      * Display the specified resource.
      */
-    public function show(News $news)
+    public function show($newsId): JsonResponse
     {
-        return $this->newsService->showNews($news);
+        return $this->newsService->show($newsId);
     }
-
 
 
     /**
@@ -50,7 +50,7 @@ class NewsController extends Controller
      */
     public function update(UpdateNewsRequest $request, News $news)
     {
-        return $this->newsService->updateNews($request, $news);
+        return $this->newsService->update($request, $news);
     }
 
     /**
@@ -58,7 +58,10 @@ class NewsController extends Controller
      */
     public function destroy(News $news): JsonResponse
     {
-
-        return $this->newsService->deleteNews($news);
+        return $this->newsService->delete($news);
+    }
+    public function restore($newsId)
+    {
+        return $this->newsService->restore($newsId);
     }
 }
