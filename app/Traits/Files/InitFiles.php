@@ -19,24 +19,6 @@ trait InitFiles {
         $this->apiGradeIds = FileStr::apiGradeIds->value;
     }
 
-    /**
-     * @return void
-     */
-    private function dbFields(): void
-    {
-        $this->dbTitle = 'title';
-        $this->dbDescription = 'description';
-        $this->dbSubjectId = 'subject_id';
-        $this->dbFile = 'file';
-        $this->dbSize = 'size';
-        $this->dbType = 'type';
-        $this->dbPublishDate = 'publish_date';
-        $this->dbCreatedBy = 'created_by';
-        $this->dbDeletedAt = 'deleted_at';
-        $this->dbFileId = 'file_id';
-        $this->dbGradeId = 'grade_id';
-        $this->dbSectionId = 'section_id';
-    }
 
     /**
      * @return void

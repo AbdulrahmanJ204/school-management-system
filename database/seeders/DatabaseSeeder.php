@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
             NewsSeeder::class,
             SubjectMajorSeeder::class,
             SubjectSeeder::class,
+              TeacherSectionSubjectTempSeeder::class,
         ]);
     }
 }

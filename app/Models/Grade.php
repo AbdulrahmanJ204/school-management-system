@@ -41,5 +41,9 @@ class Grade extends Model
     {
         return $this->hasMany(GradeYearSetting::class);
     }
+    public function schoolShiftTargets(): HasMany
+    {
+        return $this->hasMany(SchoolShiftTarget::class);
+    }
 }
 

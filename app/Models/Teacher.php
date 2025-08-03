@@ -9,10 +9,13 @@ class Teacher extends Model
         'user_id',
         'created_by'
     ];
-
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    public function teacherSectionSubjects()
+    {
+        return $this->hasMany(TeacherSectionSubject::class);
     }
     public function createdBy()
     {

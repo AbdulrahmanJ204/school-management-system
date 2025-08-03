@@ -11,6 +11,7 @@ use App\Http\Resources\FileResource;
 use App\Models\File;
 use App\Models\FileTarget;
 use App\Models\Subject;
+use App\Models\TeacherSectionSubject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
@@ -38,16 +39,16 @@ trait StoreFile
         $file = $this->handleFile($request, $subjectCode);
         $size = Storage::disk($this->storageDisk)->size($file);
         $array = [
-            $this->dbSubjectId => $data[$this->apiSubjectId],
-            $this->dbTitle => $data[$this->apiTitle],
-            $this->dbDescription => $data[$this->apiDescription],
-            $this->dbPublishDate => $publish_date,
-            $this->dbFile => $file,
-            $this->dbSize => $size,
-            $this->dbCreatedBy => $request->user()->id,
+            'subject_id' => $data[$this->apiSubjectId],
+            'title' => $data[$this->apiTitle],
+            'description' => $data[$this->apiDescription],
+            'publish_date' => $publish_date,
+            'file' => $file,
+            'size' => $size,
+            'created_by' => $request->user()->id,
         ];
         if ($request->filled($this->apiType)) {
-            $array[$this->dbType] = $data[$this->apiType];
+            $array['type'] = $data[$this->apiType];
         }
         $result = File::create($array);
         $this->handleFileTargetsOnCreate($result, $request, $data);
@@ -57,10 +58,37 @@ trait StoreFile
 
     private function teacherStore(StoreFileRequest $request): JsonResponse
     {
-        // TODO: Implement this
-        $request->validated();
-        return ResponseHelper::jsonResponse([], __(FileStr::messageStored->value));
 
+        $data = $request->validated();
+        // Teacher Can publish Files to the section_subject he teaches
+        $teacher = $request->user()->teacher;
+        $teacherTeachesTarget  =
+            TeacherSectionSubject::where('teacher_id', $teacher->id)
+            ->where('subject_id', $data[$this->apiSubjectId])
+            ->whereIn('section_id',$data[$this->apiSectionIds])
+            ->where('is_active' , true)
+            ->exists();
+        if(!$teacherTeachesTarget) {
+            throw new PermissionException();
+        }
+        $publish_date = now();
+        $subjectCode = Subject::find($data[$this->apiSubjectId])?->code ?? $this->generalPath;
+        $file = $this->handleFile($request, $subjectCode);
+        $size = Storage::disk($this->storageDisk)->size($file);
+        $array = [
+            'subject_id' => $data[$this->apiSubjectId],
+            'title' => $data[$this->apiTitle],
+            'description' => $data[$this->apiDescription],
+            'publish_date' => $publish_date,
+            'type' => 'helper',
+            'file' => $file,
+            'size' => $size,
+            'created_by' => $request->user()->id,
+        ];
+        $result = File::create($array);
+        $this->handleFileTargetsOnCreate($result, $request, $data);
+        $result->loadSectionAndGrade();
+        return ResponseHelper::jsonResponse(FileResource::make($result), __(FileStr::messageStored->value));
     }
 
     private function handleFileTargetsOnCreate(File $file, $request, $data): void
@@ -69,28 +97,28 @@ trait StoreFile
         if ($request->filled($this->apiSectionIds)) {
             foreach ($data[$this->apiSectionIds] as $section_id) {
                 FileTarget::create([
-                    $this->dbFileId => $file->id,
-                    $this->dbGradeId => null,
-                    $this->dbSectionId => $section_id,
-                    $this->dbCreatedBy => $user->id,
+                    'file_id' => $file->id,
+                    'grade_id' => null,
+                    'section_id' => $section_id,
+                    'created_by' => $user->id,
                 ]);
             }
         } else if ($request->filled($this->apiGradeIds)) {
             foreach ($data[$this->apiGradeIds] as $grade_id) {
                 FileTarget::create([
-                    $this->dbFileId => $file->id,
-                    $this->dbGradeId => $grade_id,
-                    $this->dbSectionId => null,
-                    $this->dbCreatedBy => $user->id,
+                    'file_id' => $file->id,
+                    'grade_id' => $grade_id,
+                    'section_id' => null,
+                    'created_by' => $user->id,
                 ]);
             }
         } else {
             // Target all users
             FileTarget::create([
-                $this->dbFileId => $file->id,
-                $this->dbGradeId => null,
-                $this->dbSectionId => null,
-                $this->dbCreatedBy => $user->id,
+                'file_id' => $file->id,
+                'grade_id' => null,
+                'section_id' => null,
+                'created_by' => $user->id,
             ]);
         }
     }

@@ -40,28 +40,14 @@ class FileService
     private string $apiNoSubject;
     private string $apiGradeIds;
     private string $apiSectionIds;
-    // DB Columns
-    private string $dbTitle;
-    private string $dbDescription;
-    private string $dbSubjectId;
-    private string $dbFile;
-    private string $dbSize;
-    private string $dbType;
-    private string $dbPublishDate;
-    private string $dbCreatedBy;
-    private string $dbSectionId;
-
-    private string $dbFileId;
-    private string $dbGradeId;
     // General Variables
     private string $storageDisk;
     private string $generalPath;
-    private string $dbDeletedAt;
+
 
     public function __construct()
     {
         $this->apiKeys();
-        $this->dbFields();
         $this->generalVariables();
     }
 
@@ -72,6 +58,7 @@ class FileService
      */
     public function restore($fileId): JsonResponse
     {
+
         AuthHelper::authorize(FilesPermission::restore->value);
         $file = File::onlyTrashed()->findOrFail($fileId);
         $file->loadDeletedTargets();
@@ -114,5 +101,7 @@ class FileService
 
         return ResponseHelper::jsonResponse(FileResource::make($clone), __(FileStr::messageDeletePermanent->value));
     }
+
+
 
 }
