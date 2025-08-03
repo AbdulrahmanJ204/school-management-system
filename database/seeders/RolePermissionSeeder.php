@@ -46,6 +46,7 @@ class RolePermissionSeeder extends Seeder
             'عرض ادوار',
             'عرض دور',
             'حذف دور',
+            'انشاء فترة دوام',
             ...array_map(fn($permission) => $permission->value, NewsPermission::cases()),
             ...array_map(fn($permission) => $permission->value, FilesPermission::cases()),
         ];

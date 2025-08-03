@@ -10,6 +10,7 @@ class UserResource extends JsonResource
     public function toArray($request): array
     {
         $isGetUserRoute = $request->routeIs('users.show');
+        $isGetStaffRoute = $request->routeIs('staff');
 
         return [
             'id' => $this->id,
@@ -20,11 +21,21 @@ class UserResource extends JsonResource
             'gender' => $this->gender,
             'phone' => $this->phone,
             'user_type' => $this->user_type,
+            'role' => $this->when($isGetStaffRoute, function () {
+                $role = $this->roles->first();
+                return $role ? [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                ] : null;
+            }),
+            'permissions' => $this->when($isGetStaffRoute, function () {
+                $role = $this->roles->first(); // again assuming 1 role per user
+                return $role ? $role->permissions->pluck('name') : [];
+            }),
             'image' => $this->image ? asset('storage/' . $this->image) : asset('storage/user_images/default.png'),
             'last_login' => $this->when($isGetUserRoute, function () {
                 return $this->last_login ? $this->last_login->format('Y-m-d H:i:s') : 'This user has never logged in';
             }),
-
             'user_type_details' => match ($this->user_type) {
                  'admin' => [
                      'created_by' => $this->admin?->createdBy
