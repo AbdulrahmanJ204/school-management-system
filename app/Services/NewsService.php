@@ -75,7 +75,7 @@ class NewsService
             $photoPath = $this->handlePhoto($request, $news->photo);
             $updateData['photo'] = $photoPath;
         }
-
+            // TODO: Handle case when user wants to delete photo from a news.
         if ($request->filled('title')) {
             $updateData['title'] = $data['title'];
         }
@@ -166,6 +166,7 @@ class NewsService
 
     private function handleContent(mixed $content): mixed
     {
+        // TODO : know how content structure would be sent from front end and edit this
         if (is_string($content)) {
             $decodedContent = json_decode($content, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
@@ -311,7 +312,7 @@ class NewsService
         if ($studentNews->contains('id', $newsId)) {
             return ResponseHelper::jsonResponse(NewsResource::make($news));
         }
-        return ResponseHelper::jsonResponse([], 'unauthorized', 403, false);
+        return ResponseHelper::jsonResponse([], 'unauthorized', 401, false);
     }
 
     /**
@@ -345,7 +346,7 @@ class NewsService
                 })->get();
         return $news->merge($gradeAndPublicNews)
             ->unique('id')
-            ->sortByDesc('created_at')
+            ->sortByDesc('publish_date')
             ->values();
     }
 
