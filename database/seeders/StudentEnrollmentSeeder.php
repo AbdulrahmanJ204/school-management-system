@@ -7,7 +7,6 @@ use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\Year;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class StudentEnrollmentSeeder extends Seeder

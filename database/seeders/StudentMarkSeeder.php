@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\StudentEnrollment;
@@ -28,7 +27,7 @@ class StudentMarkSeeder extends Seeder
         foreach ($enrollments as $enrollment) {
             // Get subjects for this enrollment's section
             $sectionSubjects = $subjects->where('main_subject_id', $enrollment->section->grade->mainSubjects->first()->id ?? 1);
-            
+
             foreach ($sectionSubjects as $subject) {
                 // Generate random marks based on subject percentages
                 $homework = rand(0, 100);
@@ -62,4 +61,4 @@ class StudentMarkSeeder extends Seeder
 
         DB::table('student_marks')->insert($marks);
     }
-} 
+}

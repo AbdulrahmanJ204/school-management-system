@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PermissionEnum;
 use App\Exceptions\PermissionException;
 use App\Http\Requests\MainSubjectRequest;
 use App\Http\Requests\CreateMainSubjectWithSubjectRequest;
 use App\Models\MainSubject;
 use App\Services\MainSubjectService;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class MainSubjectController extends Controller
 {
@@ -22,6 +21,7 @@ class MainSubjectController extends Controller
 
     /**
      * Display a listing of the main subjects.
+     * @throws PermissionException
      */
     public function index(): JsonResponse
     {
@@ -30,6 +30,7 @@ class MainSubjectController extends Controller
 
     /**
      * Store a newly created main subject in storage.
+     * @throws PermissionException
      */
     public function store(MainSubjectRequest $request): JsonResponse
     {
@@ -38,6 +39,7 @@ class MainSubjectController extends Controller
 
     /**
      * Display the specified main subject.
+     * @throws PermissionException
      */
     public function show(MainSubject $mainSubject): JsonResponse
     {
@@ -46,6 +48,7 @@ class MainSubjectController extends Controller
 
     /**
      * Update the specified main subject in storage.
+     * @throws PermissionException
      */
     public function update(MainSubjectRequest $request, MainSubject $mainSubject): JsonResponse
     {
@@ -54,6 +57,7 @@ class MainSubjectController extends Controller
 
     /**
      * Remove the specified main subject from storage.
+     * @throws PermissionException
      */
     public function destroy(MainSubject $mainSubject): JsonResponse
     {
@@ -62,6 +66,7 @@ class MainSubjectController extends Controller
 
     /**
      * Display a listing of trashed main subjects.
+     * @throws PermissionException
      */
     public function trashed(): JsonResponse
     {
@@ -70,6 +75,7 @@ class MainSubjectController extends Controller
 
     /**
      * Restore the specified main subject from storage.
+     * @throws PermissionException
      */
     public function restore($id): JsonResponse
     {
@@ -78,6 +84,7 @@ class MainSubjectController extends Controller
 
     /**
      * Force delete the specified main subject from storage.
+     * @throws PermissionException
      */
     public function forceDelete($id): JsonResponse
     {
@@ -86,7 +93,7 @@ class MainSubjectController extends Controller
 
     /**
      * Create a main subject with a single subject.
-     * @throws \Exception
+     * @throws Exception
      */
     public function createWithSubject(CreateMainSubjectWithSubjectRequest $request): JsonResponse
     {

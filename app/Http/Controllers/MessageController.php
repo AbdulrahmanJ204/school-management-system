@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
 use App\Http\Requests\MessageRequest;
-use App\Http\Resources\MessageResource;
 use App\Services\MessageService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {

@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ResponseHelper;
-use App\Http\Controllers\Controller;
+use App\Exceptions\PermissionException;
 use App\Http\Requests\SectionRequest;
-use App\Http\Resources\SectionResource;
 use App\Models\Section;
 use App\Services\SectionService;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 
 class SectionController extends Controller
 {
@@ -22,43 +19,65 @@ class SectionController extends Controller
 
     /**
      * Display a listing of the resource.
+     * @throws PermissionException
      */
-    public function index()
+    public function index(): JsonResponse
     {
         return $this->sectionService->listSection();
     }
 
-    public function store(SectionRequest $request)
+    /**
+     * @throws PermissionException
+     */
+    public function store(SectionRequest $request): JsonResponse
     {
         return $this->sectionService->createSection($request);
     }
 
-    public function show(Section $section)
+    /**
+     * @throws PermissionException
+     */
+    public function show(Section $section): JsonResponse
     {
         return $this->sectionService->showSection($section);
     }
 
-    public function update(SectionRequest $request, Section $section)
+    /**
+     * @throws PermissionException
+     */
+    public function update(SectionRequest $request, Section $section): JsonResponse
     {
         return $this->sectionService->updateSection($request, $section);
     }
 
-    public function destroy(Section $section)
+    /**
+     * @throws PermissionException
+     */
+    public function destroy(Section $section): JsonResponse
     {
         return $this->sectionService->destroySection($section);
     }
 
-    public function trashed()
+    /**
+     * @throws PermissionException
+     */
+    public function trashed(): JsonResponse
     {
         return $this->sectionService->listTrashedSections();
     }
 
-    public function restore($id)
+    /**
+     * @throws PermissionException
+     */
+    public function restore($id): JsonResponse
     {
         return $this->sectionService->restoreSection($id);
     }
 
-    public function forceDelete($id)
+    /**
+     * @throws PermissionException
+     */
+    public function forceDelete($id): JsonResponse
     {
         return $this->sectionService->forceDeleteSection($id);
     }

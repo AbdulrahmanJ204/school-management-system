@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\Grade;
@@ -41,4 +40,4 @@ class GradeYearSettingSeeder extends Seeder
 
         DB::table('grade_year_settings')->insert($settings);
     }
-} 
+}

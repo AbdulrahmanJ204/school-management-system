@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
@@ -62,11 +61,11 @@ class MessageSeeder extends Seeder
         foreach ($users as $user) {
             // Create 1-4 messages per user
             $numMessages = rand(1, 4);
-            
+
             for ($i = 0; $i < $numMessages; $i++) {
                 $titleIndex = array_rand($titles);
                 $contentIndex = array_rand($messageContents);
-                
+
                 $messages[] = [
                     'user_id' => $user->id,
                     'title' => $titles[$titleIndex],
@@ -80,4 +79,4 @@ class MessageSeeder extends Seeder
 
         DB::table('messages')->insert($messages);
     }
-} 
+}

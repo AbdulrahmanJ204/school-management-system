@@ -9,6 +9,7 @@ trait HasPermissionChecks
 {
     /**
      * Check if the authenticated user has a specific permission
+     * @throws PermissionException
      */
     protected function checkPermission(PermissionEnum $permission): void
     {
@@ -19,6 +20,7 @@ trait HasPermissionChecks
 
     /**
      * Check if the authenticated user has any of the given permissions
+     * @throws PermissionException
      */
     protected function checkAnyPermission(array $permissions): void
     {
@@ -39,6 +41,7 @@ trait HasPermissionChecks
 
     /**
      * Check if the authenticated user has all of the given permissions
+     * @throws PermissionException
      */
     protected function checkAllPermissions(array $permissions): void
     {
@@ -50,4 +53,4 @@ trait HasPermissionChecks
             }
         }
     }
-} 
+}

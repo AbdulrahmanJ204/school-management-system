@@ -28,6 +28,7 @@ class StudentEnrollmentController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * @throws PermissionException
      */
     public function store(StudentEnrollmentRequest $request): JsonResponse
     {
@@ -65,7 +66,7 @@ class StudentEnrollmentController extends Controller
      * Display a listing of trashed resources.
      * @throws PermissionException
      */
-    public function trashed()
+    public function trashed(): JsonResponse
     {
         return $this->studentEnrollmentService->listTrashedStudentEnrollments();
     }
@@ -74,7 +75,7 @@ class StudentEnrollmentController extends Controller
      * Restore the specified resource from storage.
      * @throws PermissionException
      */
-    public function restore($id)
+    public function restore($id): JsonResponse
     {
         return $this->studentEnrollmentService->restoreStudentEnrollment($id);
     }

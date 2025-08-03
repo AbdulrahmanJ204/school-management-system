@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Exception;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\Student;
@@ -13,6 +13,7 @@ class BehaviorNoteSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * @throws Exception
      */
     public function run(): void
     {
@@ -119,7 +120,7 @@ class BehaviorNoteSeeder extends Seeder
                 DB::table('behavior_notes')->insert($chunk);
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->command->error('Error inserting behavior notes: ' . $e->getMessage());
             throw $e;
         }

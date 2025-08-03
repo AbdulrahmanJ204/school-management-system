@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Exceptions\PermissionException;
 use App\Http\Requests\SchoolDayRequest;
 use App\Models\SchoolDay;
 use App\Models\Semester;
 use App\Services\SchoolDayService;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class SchoolDayController extends Controller
 {
@@ -20,63 +20,71 @@ class SchoolDayController extends Controller
 
     /**
      * Display a listing of the resource.
+     * @throws PermissionException
      */
-    public function index(Semester $semester)
+    public function index(Semester $semester): JsonResponse
     {
         return $this->schoolDayService->listSchoolDay($semester);
     }
 
     /**
      * Display a listing of trashed resources.
+     * @throws PermissionException
      */
-    public function trashed(Semester $semester)
+    public function trashed(Semester $semester): JsonResponse
     {
         return $this->schoolDayService->listTrashedSchoolDays($semester);
     }
 
     /**
      * Store a newly created resource in storage.
+     * @throws PermissionException
      */
-    public function store(SchoolDayRequest $request)
+    public function store(SchoolDayRequest $request): JsonResponse
     {
         return $this->schoolDayService->createSchoolDay($request);
     }
 
-//        todo after (behaviorNotes, behaviorNotes, assignments, studentAttendances, teacherAttendances, news)
-
-//    public function show(SchoolDay $schoolDay)
-//    {
-//        return $this->schoolDayService->showSchoolDay($schoolDay);
-//    }
+    /**
+     * @throws PermissionException
+     */
+    public function show(SchoolDay $schoolDay): JsonResponse
+    {
+        return $this->schoolDayService->showSchoolDay($schoolDay);
+    }
 
     /**
      * Update the specified resource in storage.
+     * @throws PermissionException
      */
-    public function update(Request $request, SchoolDay $schoolDay)
+    public function update(SchoolDayRequest $request, SchoolDay $schoolDay): JsonResponse
     {
         return $this->schoolDayService->updateSchoolDay($request, $schoolDay);
     }
 
     /**
      * Remove the specified resource from storage.
+     * @throws PermissionException
      */
-    public function destroy(SchoolDay $schoolDay)
+    public function destroy(SchoolDay $schoolDay): JsonResponse
     {
         return $this->schoolDayService->destroySchoolDay($schoolDay);
     }
 
     /**
      * Force delete the specified resource from storage.
+     * @throws PermissionException
      */
-    public function forceDelete($id)
+    public function forceDelete($id): JsonResponse
     {
         return $this->schoolDayService->forceDeleteSchoolDay($id);
     }
 
     /**
      * Restore the specified resource from storage.
+     * @throws PermissionException
      */
-    public function restore($id)
+    public function restore($id): JsonResponse
     {
         return $this->schoolDayService->restoreSchoolDay($id);
     }

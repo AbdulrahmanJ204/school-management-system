@@ -2,69 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PermissionEnum;
-use App\Helpers\ResponseHelper;
-use App\Http\Controllers\Controller;
+use App\Exceptions\PermissionException;
 use App\Http\Requests\YearRequest;
-use App\Http\Resources\YearResource;
 use App\Models\Year;
 use App\Services\YearService;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 
 class YearController extends Controller
 {
     protected YearService $yearService;
-    
+
     public function __construct(YearService $yearService)
     {
         $this->yearService = $yearService;
     }
-    
+
     /**
      * Display a listing of the resource.
+     * @throws PermissionException
      */
-    public function index()
+    public function index(): JsonResponse
     {
         return $this->yearService->listYear();
     }
 
-    public function trashed()
+    /**
+     * @throws PermissionException
+     */
+    public function trashed(): JsonResponse
     {
         return $this->yearService->listTrashedYears();
     }
 
-    public function store(YearRequest $request)
+    /**
+     * @throws PermissionException
+     */
+    public function store(YearRequest $request): JsonResponse
     {
         return $this->yearService->createYear($request);
     }
 
-    public function show(Year $year)
+    /**
+     * @throws PermissionException
+     */
+    public function show(Year $year): JsonResponse
     {
         return $this->yearService->showYear($year);
     }
 
-    public function update(Request $request, Year $year)
+    /**
+     * @throws PermissionException
+     */
+    public function update(YearRequest $request, Year $year): JsonResponse
     {
         return $this->yearService->updateYear($request, $year);
     }
 
-    public function destroy(Year $year)
+    /**
+     * @throws PermissionException
+     */
+    public function destroy(Year $year): JsonResponse
     {
         return $this->yearService->destroyYear($year);
     }
 
-    public function forceDelete($id)
+    /**
+     * @throws PermissionException
+     */
+    public function forceDelete($id): JsonResponse
     {
         return $this->yearService->forceDeleteYear($id);
     }
 
-    public function restore($id)
+    /**
+     * @throws PermissionException
+     */
+    public function restore($id): JsonResponse
     {
         return $this->yearService->restoreYear($id);
     }
 
-    public function Active(Year $year)
+    /**
+     * @throws PermissionException
+     */
+    public function Active(Year $year): JsonResponse
     {
         return $this->yearService->ActiveYear($year);
     }

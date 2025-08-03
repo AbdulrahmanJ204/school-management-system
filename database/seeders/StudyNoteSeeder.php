@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\Student;
@@ -49,11 +48,11 @@ class StudyNoteSeeder extends Seeder
         foreach ($students as $student) {
             // Create 2-5 study notes per student
             $numNotes = rand(2, 5);
-            
+
             for ($i = 0; $i < $numNotes; $i++) {
                 $schoolDay = $schoolDays->random();
                 $subject = $subjects->random();
-                
+
                 $studyNotes[] = [
                     'student_id' => $student->id,
                     'school_day_id' => $schoolDay->id,
@@ -70,4 +69,4 @@ class StudyNoteSeeder extends Seeder
 
         DB::table('study_notes')->insert($studyNotes);
     }
-} 
+}

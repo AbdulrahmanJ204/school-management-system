@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PermissionException;
 use App\Http\Requests\StudyNoteRequest;
-use App\Http\Resources\StudyNoteResource;
 use App\Services\StudyNoteService;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
-/**
- * @OA\Tag(
- *     name="Study Notes",
- *     description="API Endpoints for Study Note management"
- * )
- */
 class StudyNoteController extends Controller
 {
-    protected $studyNoteService;
+    protected StudyNoteService $studyNoteService;
 
     public function __construct(StudyNoteService $studyNoteService)
     {
@@ -23,178 +17,90 @@ class StudyNoteController extends Controller
     }
 
     /**
-     * @OA\Get(
-     *     path="/study-notes",
-     *     tags={"Study Notes"},
-     *     summary="Get list of study notes",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function index()
+    public function index(): JsonResponse
     {
         return $this->studyNoteService->listStudyNotes();
     }
 
     /**
-     * @OA\Get(
-     *     path="/study-notes/trashed",
-     *     tags={"Study Notes"},
-     *     summary="Get list of trashed study notes",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function trashed()
+    public function trashed(): JsonResponse
     {
         return $this->studyNoteService->listTrashedStudyNotes();
     }
 
     /**
-     * @OA\Post(
-     *     path="/study-notes",
-     *     tags={"Study Notes"},
-     *     summary="Create a new study note",
-     *     @OA\Response(
-     *         response=201,
-     *         description="Created successfully"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function store(StudyNoteRequest $request)
+    public function store(StudyNoteRequest $request): JsonResponse
     {
         return $this->studyNoteService->createStudyNote($request);
     }
 
     /**
-     * @OA\Get(
-     *     path="/study-notes/{id}",
-     *     tags={"Study Notes"},
-     *     summary="Get a specific study note",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function show($id)
+    public function show($id): JsonResponse
     {
         return $this->studyNoteService->showStudyNote($id);
     }
 
     /**
-     * @OA\Put(
-     *     path="/study-notes/{id}",
-     *     tags={"Study Notes"},
-     *     summary="Update a study note",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Updated successfully"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function update(StudyNoteRequest $request, $id)
+    public function update(StudyNoteRequest $request, $id): JsonResponse
     {
         return $this->studyNoteService->updateStudyNote($request, $id);
     }
 
     /**
-     * @OA\Delete(
-     *     path="/study-notes/{id}",
-     *     tags={"Study Notes"},
-     *     summary="Delete a study note",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Deleted successfully"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         return $this->studyNoteService->deleteStudyNote($id);
     }
 
     /**
-     * @OA\Patch(
-     *     path="/study-notes/{id}/restore",
-     *     tags={"Study Notes"},
-     *     summary="Restore a trashed study note",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Restored successfully"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function restore($id)
+    public function restore($id): JsonResponse
     {
         return $this->studyNoteService->restoreStudyNote($id);
     }
 
     /**
-     * @OA\Delete(
-     *     path="/study-notes/{id}/force-delete",
-     *     tags={"Study Notes"},
-     *     summary="Force delete a study note",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Force deleted successfully"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function forceDelete($id)
+    public function forceDelete($id): JsonResponse
     {
         return $this->studyNoteService->forceDeleteStudyNote($id);
     }
 
     /**
-     * @OA\Get(
-     *     path="/study-notes/student/{studentId}",
-     *     tags={"Study Notes"},
-     *     summary="Get study notes by student",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function getByStudent($studentId)
+    public function getByStudent($studentId): JsonResponse
     {
         return $this->studyNoteService->getByStudent($studentId);
     }
 
     /**
-     * @OA\Get(
-     *     path="/study-notes/school-day/{schoolDayId}",
-     *     tags={"Study Notes"},
-     *     summary="Get study notes by school day",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function getBySchoolDay($schoolDayId)
+    public function getBySchoolDay($schoolDayId): JsonResponse
     {
         return $this->studyNoteService->getBySchoolDay($schoolDayId);
     }
 
     /**
-     * @OA\Get(
-     *     path="/study-notes/subject/{subjectId}",
-     *     tags={"Study Notes"},
-     *     summary="Get study notes by subject",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response"
-     *     )
-     * )
+     * @throws PermissionException
      */
-    public function getBySubject($subjectId)
+    public function getBySubject($subjectId): JsonResponse
     {
         return $this->studyNoteService->getBySubject($subjectId);
     }
-} 
+}
