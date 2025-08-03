@@ -20,6 +20,7 @@ enum FileStr: string
     case apiNoSubject = "no_subject";
     case apiSectionIds = 'section_ids';
     case apiGradeIds = 'grade_ids';
+    case apiCanDelete = 'can_delete';
     // Messages
     case messageUpdated = 'messages.file.updated';
     case messageStored = 'messages.file.stored';

@@ -4,9 +4,11 @@ namespace App\Traits\Files;
 
 use App\Enums\StringsManager\FileStr;
 use App\Enums\UserType;
+use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\FileResource;
 use App\Models\File;
+use App\Models\TeacherSectionSubject;
 use Illuminate\Http\JsonResponse;
 
 trait ListFiles
@@ -33,30 +35,53 @@ trait ListFiles
 
     private function getTeacherFiles(): JsonResponse
     {
-        // TODO : Edit logic according to Alaa
-        $files = File::all()->get();
+        $teacher = auth()->user()->teacher;
+
+        $files = File::withTrashed()->belongsToTeacher($teacher->id)->orderByDesc('created_at')->get();
+        $files->each(function ($file) {
+            $file->loadDeletedTargets();
+        });
         return ResponseHelper::jsonResponse(FileResource::collection($files), 'files retrieved successfully');
     }
 
     private function getStudentFiles(): JsonResponse
     {
-        // TODO Edit this to match student news logic
-        $enrollments = auth()->user()->student->currentEnrollments();
-        $sectionIds = $enrollments->pluck($this->dbSectionId);
-        $gradeId = $enrollments->pluck($this->dbGradeId)->unique();
-        $files = File::whereHas('targets', function ($query) use ($gradeId, $sectionIds) {
-            $query
-                ->whereIn($this->dbSectionId, $sectionIds)
-                ->orWhere($this->dbGradeId, $gradeId)
-                ->orWhere(function ($q) {
-                    $q->whereNull($this->dbSectionId)
-                        ->whereNull($this->dbGradeId);
-                }
-                );
-        })->orderByDesc('created_at')->get();
+        $files = $this->getStudentFilesCollection();
+        return ResponseHelper::jsonResponse(FileResource::collection($files), __(FileStr::messageFilesRetrieved->value));
 
-        $uniqueFiles = collect($files)->unique('id')->values();
-        return ResponseHelper::jsonResponse(FileResource::collection($uniqueFiles), __(FileStr::messageFilesRetrieved->value));
+    }
+
+    private function getStudentFilesCollection()
+    {
+        $enrollments = auth()->user()->student->currentYearEnrollments();
+
+        $files = collect();
+
+        foreach ($enrollments as $enrollment) {
+            $start_date = $enrollment->semester->start_date;
+            $end_date = $enrollment->semester->end_date;
+            $currentSemesterNews = File::where('publish_date', '>=', $start_date)
+                ->where('publish_date', '<=', $end_date)
+                ->whereHas('targets', function ($query) use ($enrollment) {
+                    $query->where('section_id', $enrollment->section_id);
+                })->get();
+            $files = $files->merge($currentSemesterNews);
+        }
+        $overallStartDate = $enrollments->min('semester.start_date');
+        $overallEndDate = $enrollments->max('semester.end_date');
+        $gradeId = $enrollments->pluck('grade_id')->first();
+        $gradeAndPublicNews =
+            File:: where('publish_date', '>=', $overallStartDate)
+                ->where('publish_date', '<=', $overallEndDate)->whereHas('targets', function ($query) use ($gradeId) {
+                    $query->where('grade_id', $gradeId)->orWhere(function ($q) {
+                        $q->whereNull('section_id')
+                            ->whereNull('grade_id');
+                    });
+                })->get();
+        return $files->merge($gradeAndPublicNews)
+            ->unique('id')
+            ->sortByDesc('publish_date')
+            ->values();
 
     }
 

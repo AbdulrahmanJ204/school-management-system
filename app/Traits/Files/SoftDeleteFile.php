@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Traits\Files;
 
 use App\Enums\Permissions\FilesPermission;
@@ -9,11 +10,13 @@ use App\Helpers\AuthHelper;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\FileResource;
 use App\Models\File;
+use App\Models\TeacherSectionSubject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-trait SoftDeleteFile{
+trait SoftDeleteFile
+{
 
     /**
      * @throws Throwable
@@ -28,7 +31,7 @@ trait SoftDeleteFile{
 
         return match ($userType) {
             UserType::Admin->value => $this->adminSoftDelete($file),
-            //TODO Add Teacher and authorize it
+            UserType::Teacher->value => $this->teacherSoftDelete($file),
             default => ResponseHelper::jsonResponse([], __(FileStr::messageUnknownType->value), 400),
         };
 
@@ -52,4 +55,25 @@ trait SoftDeleteFile{
 
         return ResponseHelper::jsonResponse(FileResource::make($data), __(FileStr::messageDeleted->value));
     }
+
+    private function teacherSoftDelete(File $file): JsonResponse
+    {
+        // Note : file would be for teacher only
+
+        $fileBelongsToOneTeacher = $file->belongsToOneTeacher();
+        if(!$fileBelongsToOneTeacher) {
+            throw new PermissionException();
+        }
+        $data = clone $file;
+
+        DB::
+        transaction(function () use ($file) {
+            $file->targets()->delete();
+            $file->delete();
+        });
+
+        return ResponseHelper::jsonResponse(FileResource::make($data), __(FileStr::messageDeleted->value));
+
+    }
+
 }
