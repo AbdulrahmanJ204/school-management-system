@@ -29,4 +29,10 @@ class Student extends Model
     {
         return $this->hasMany(StudentEnrollment::class, 'student_id');
     }
+    public function currentYearEnrollments(){
+        return StudentEnrollment::where('student_id', $this->id)
+            ->whereHas('semester.year', function ($query) {
+                $query->where('is_active', true);
+            })->get();
+    }
 }

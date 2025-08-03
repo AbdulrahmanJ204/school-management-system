@@ -47,6 +47,11 @@ class TeacherSectionSubject extends Model
         return $this->belongsTo(Section::class, 'section_id');
     }
 
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

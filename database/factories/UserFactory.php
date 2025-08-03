@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
+
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
@@ -78,6 +80,10 @@ class UserFactory extends Factory
                 'user_type' => 'teacher',
             ];
         })->afterCreating(function (User $user) {
+
+            $superAdminRole = Role::where('name', 'super_admin')->first();
+            $user->assignRole($superAdminRole);
+
             Teacher::create([
                 'user_id' => $user->id,
                 'created_by' => 1, // Or specify logic here

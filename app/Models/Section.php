@@ -43,5 +43,9 @@ class Section extends Model
     {
         return $this->hasMany(QuizTarget::class);
     }
+    public function schoolShiftTargets(): HasMany
+    {
+        return $this->hasMany(SchoolShiftTarget::class);
+    }
 }
 

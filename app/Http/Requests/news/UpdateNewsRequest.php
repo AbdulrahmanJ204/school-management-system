@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\news;
 
+use App\Enums\Permissions\NewsPermission;
 use App\Http\Requests\BaseRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateNewsRequest extends BaseRequest
 {
@@ -12,7 +12,7 @@ class UpdateNewsRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->can('update_news');
+        return auth()->user()->can(NewsPermission::update->value);
     }
 
     /**
@@ -25,11 +25,12 @@ class UpdateNewsRequest extends BaseRequest
         return [
            'title' => 'sometimes|string|max:255',
             'content' => 'sometimes|string',
-            'photo' => 'nullable|image|max:2048',
-            'section_ids' => 'nullable|array',
+            'photo' => 'sometimes|image|max:4096',
+            'section_ids' => 'sometimes|array',
             'section_ids.*' => 'exists:sections,id',
-            'grade_ids' => 'nullable|array',
+            'grade_ids' => 'sometimes|array',
             'grade_ids.*' => 'exists:grades,id',
+            'is_global' => 'sometimes|boolean',
         ];
     }
 }

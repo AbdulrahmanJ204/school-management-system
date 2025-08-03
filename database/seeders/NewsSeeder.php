@@ -5,11 +5,10 @@ namespace Database\Seeders;
 use App\Models\Grade;
 use App\Models\News;
 use App\Models\NewsTarget;
-use App\Models\SchoolDay;
 use App\Models\Section;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
+use Carbon\Carbon;
 class NewsSeeder extends Seeder
 {
     /**
@@ -17,14 +16,6 @@ class NewsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get some school days to associate with news
-        $schoolDays = SchoolDay::limit(10)->get();
-
-        if ($schoolDays->isEmpty()) {
-            // If no school days exist, create some basic news without school_day_id
-            return;
-        }
-
         $news = [
             [
                 'title' => 'Welcome Back to School!',
@@ -58,7 +49,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'school_day_id' => $schoolDays->first()->id,
+                'publish_date' => Carbon::now()->subDays(5),
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -94,7 +85,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'school_day_id' => $schoolDays->skip(1)->first()->id ?? $schoolDays->first()->id,
+                'publish_date' => Carbon::now()->subDays(3),
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -140,7 +131,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'school_day_id' => $schoolDays->skip(2)->first()->id ?? $schoolDays->first()->id,
+                'publish_date' => Carbon::now()->subDays(1),
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -183,7 +174,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'school_day_id' => $schoolDays->skip(3)->first()->id ?? $schoolDays->first()->id,
+                'publish_date' => Carbon::now(),
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -229,7 +220,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'school_day_id' => $schoolDays->where('type', 'exam')->first()->id ?? $schoolDays->first()->id,
+                'publish_date' => Carbon::now()->addDays(2),
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -293,3 +284,4 @@ class NewsSeeder extends Seeder
         }
     }
 }
+
