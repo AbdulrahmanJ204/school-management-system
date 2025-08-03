@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\PermissionEnum;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\YearRequest;
@@ -9,13 +10,18 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\YearResource;
 use App\Models\User;
 use App\Models\Year;
+use App\Traits\HasPermissionChecks;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class YearService
 {
+    use HasPermissionChecks;
+
     public function listYear()
     {
+        $this->checkPermission(PermissionEnum::VIEW_YEARS);
+
         $years = Year::with(['createdBy', 'semesters'])
             ->orderBy('start_date', 'desc')
             ->get();
@@ -27,6 +33,8 @@ class YearService
 
     public function listTrashedYears()
     {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_YEARS);
+
         $years = Year::with(['createdBy', 'semesters'])
             ->onlyTrashed()
             ->orderBy('start_date', 'desc')
@@ -39,6 +47,8 @@ class YearService
 
     public function createYear(YearRequest $request)
     {
+        $this->checkPermission(PermissionEnum::CREATE_YEAR);
+
         $admin = auth()->user();
         $credentials = $request->validated();
         $credentials['created_by'] = $admin->id;
@@ -54,6 +64,8 @@ class YearService
 
     public function showYear(Year $year)
     {
+        $this->checkPermission(PermissionEnum::VIEW_YEAR);
+
         $year->load(['createdBy', 'semesters.schoolDays', 'settingGradeYears.grade']);
 
         return ResponseHelper::jsonResponse(
@@ -63,6 +75,15 @@ class YearService
 
     public function updateYear($request,Year $year)
     {
+        $this->checkPermission(PermissionEnum::UPDATE_YEAR);
+
+        if($request->is_active){
+            $activeYears = Year::where('is_active',true)->get();
+            foreach ($activeYears as $activeYear){
+                $activeYear->update(['is_active' => false]);
+            }
+        }
+
         $year->update([
             'name' => $request->name,
             'start_date' => $request->start_date,
@@ -80,6 +101,8 @@ class YearService
 
     public function destroyYear(Year $year)
     {
+        $this->checkPermission(PermissionEnum::DELETE_YEAR);
+
         // Check if year has related data
         if ($year->semesters()->exists()) {
             return response()->json([
@@ -97,8 +120,10 @@ class YearService
 
     public function restoreYear($id)
     {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_YEARS);
+
         $year = Year::withTrashed()->findOrFail($id);
-        
+
         if (!$year->trashed()) {
             return ResponseHelper::jsonResponse(
                 null,
@@ -118,8 +143,10 @@ class YearService
 
     public function forceDeleteYear($id)
     {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_YEARS);
+
         $year = Year::withTrashed()->findOrFail($id);
-        
+
         // Check if year has related data
         if ($year->semesters()->exists()) {
             return ResponseHelper::jsonResponse(
@@ -140,6 +167,8 @@ class YearService
 
     public function ActiveYear(Year $year)
     {
+        $this->checkPermission(PermissionEnum::UPDATE_YEAR);
+
         $activeYears = Year::where('is_active',true)->get();
         foreach ($activeYears as $activeYear){
             $activeYear->update(['is_active' => false]);

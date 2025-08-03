@@ -37,6 +37,12 @@ class DatabaseSeeder extends Seeder
             SubjectSeeder::class,
             StudentEnrollmentSeeder::class,
             NewsSeeder::class,
+            GradeYearSettingSeeder::class,
+            TeacherSectionSubjectSeeder::class,
+            StudentMarkSeeder::class,
+            StudyNoteSeeder::class,
+            BehaviorNoteSeeder::class,
+            MessageSeeder::class,
         ]);
     }
 }

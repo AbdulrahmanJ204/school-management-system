@@ -25,19 +25,12 @@ class SubjectResource extends JsonResource
             'quiz_percentage' => $this->quiz_percentage,
             'exam_percentage' => $this->exam_percentage,
             'num_class_period' => $this->num_class_period,
+            'is_failed' => $this->is_failed,
+            'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
+
             'main_subject' => new MainSubjectResource($this->whenLoaded('mainSubject')),
             'grade' => new GradeResource($this->whenLoaded('mainSubject.grade')),
-            'created_by' => new UserResource($this->whenLoaded('createdBy')),
-            'percentages_summary' => [
-                'homework' => $this->homework_percentage . '%',
-                'oral' => $this->oral_percentage . '%',
-                'activity' => $this->activity_percentage . '%',
-                'quiz' => $this->quiz_percentage . '%',
-                'exam' => $this->exam_percentage . '%',
-                'total' => ($this->homework_percentage + $this->oral_percentage +
-                        $this->activity_percentage + $this->quiz_percentage +
-                        $this->exam_percentage) . '%'
-            ],
+
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];

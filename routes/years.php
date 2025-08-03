@@ -1,0 +1,18 @@
+<?php
+
+use App\Http\Controllers\YearController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('auth:api')->group(function () {
+    Route::prefix('years')->group(function () {
+        Route::get('/', [YearController::class, 'index']);
+        Route::get('/trashed', [YearController::class, 'trashed']);
+        Route::post('/', [YearController::class, 'store']);
+        Route::get('/{year}', [YearController::class, 'show']);
+        Route::put('/{year}', [YearController::class, 'update']);
+        Route::delete('/{year}', [YearController::class, 'destroy']);
+        Route::patch('/{year}/active', [YearController::class, 'Active']);
+        Route::patch('/{id}/restore', [YearController::class, 'restore']);
+        Route::delete('/{id}/force-delete', [YearController::class, 'forceDelete']);
+    });
+}); 

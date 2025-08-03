@@ -29,9 +29,9 @@ class SchoolDayController extends Controller
     /**
      * Display a listing of trashed resources.
      */
-    public function trashed()
+    public function trashed(Semester $semester)
     {
-        return $this->schoolDayService->listTrashedSchoolDays();
+        return $this->schoolDayService->listTrashedSchoolDays($semester);
     }
 
     /**

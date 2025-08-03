@@ -21,7 +21,7 @@ class MainSubjectResource extends JsonResource
             'success_rate' => $this->success_rate,
             'grade_id' => $this->grade_id,
             'grade' => new GradeResource($this->whenLoaded('grade')),
-            'created_by' => new UserResource($this->whenLoaded('createdBy')),
+            'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
             'subjects' => SubjectResource::collection($this->whenLoaded('subjects')),
             'subjects_count' => $this->when(
                 $this->relationLoaded('subjects'),

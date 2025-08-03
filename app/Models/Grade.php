@@ -33,9 +33,9 @@ class Grade extends Model
         return $this->hasMany(Section::class);
     }
 
-    public function subjectMajors(): HasMany
+    public function mainSubjects(): HasMany
     {
-        return $this->hasMany(SubjectMajor::class);
+        return $this->hasMany(MainSubject::class);
     }
 
     public function settingGradeYears(): HasMany

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->enum('behavior_type', ['positive', 'negative']);
             $table->string('note');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

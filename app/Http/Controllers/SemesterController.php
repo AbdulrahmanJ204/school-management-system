@@ -15,11 +15,6 @@ class SemesterController extends Controller
         $this->semesterService = $semesterService;
     }
 
-    public function trashed()
-    {
-        return $this->semesterService->listTrashedSemesters();
-    }
-
     public function store(SemesterRequest $request)
     {
         return $this->semesterService->createSemester($request);

@@ -71,4 +71,12 @@ class StudentMarkController extends Controller
     {
         return $this->studentMarkService->getMarksBySubject($subjectId);
     }
+
+    /**
+     * Get student marks by subject and section.
+     */
+    public function getBySubjectAndSection($subjectId, $sectionId)
+    {
+        return $this->studentMarkService->getMarksBySubjectAndSection($subjectId, $sectionId);
+    }
 } 

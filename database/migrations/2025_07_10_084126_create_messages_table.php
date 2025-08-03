@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('message');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }

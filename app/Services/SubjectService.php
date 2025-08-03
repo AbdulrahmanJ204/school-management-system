@@ -2,28 +2,29 @@
 
 namespace App\Services;
 
+use App\Enums\PermissionEnum;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\SubjectResource;
 use App\Models\Subject;
 use App\Exceptions\PermissionException;
-use Illuminate\Http\Response;
+use App\Traits\HasPermissionChecks;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class SubjectService
 {
+    use HasPermissionChecks;
+
     /**
      * Get list of all subjects.
+     * @throws PermissionException
      */
-    public function listSubjects()
+    public function listSubjects(): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('عرض المواد')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::VIEW_SUBJECTS);
 
         $subjects = Subject::with([
-            'mainSubject.grade',
-            'createdBy'
+//            'mainSubject.grade',
         ])->orderBy('name', 'asc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -33,17 +34,14 @@ class SubjectService
 
     /**
      * Create a new subject.
+     * @throws PermissionException
      */
-    public function createSubject($request)
+    public function createSubject($request): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('انشاء مادة')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::CREATE_SUBJECTS);
 
         $credentials = $request->validated();
-        $credentials['created_by'] = $user->id;
+        $credentials['created_by'] = auth()->id();
 
         // Validate that percentages sum to 100
         $totalPercentage = $credentials['homework_percentage'] +
@@ -56,36 +54,33 @@ class SubjectService
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.subject.percentage_sum_error'),
-                400,
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
 
         $subject = Subject::create($credentials);
-        $subject->load(['mainSubject.grade', 'createdBy']);
+        $subject->load([
+//            'mainSubject.grade',
+        ]);
 
         return ResponseHelper::jsonResponse(
             new SubjectResource($subject),
             __('messages.subject.created'),
-            201,
-            true
+            ResponseAlias::HTTP_CREATED,
         );
     }
 
     /**
      * Show a specific subject.
+     * @throws PermissionException
      */
-    public function showSubject(Subject $subject)
+    public function showSubject(Subject $subject): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('عرض المادة')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::VIEW_SUBJECTS);
 
         $subject->load([
-            'mainSubject.grade',
-            'createdBy'
+//            'mainSubject.grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -95,14 +90,11 @@ class SubjectService
 
     /**
      * Update a subject.
+     * @throws PermissionException
      */
-    public function updateSubject($request, Subject $subject)
+    public function updateSubject($request, Subject $subject): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('تعديل مادة')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::UPDATE_SUBJECTS);
 
         $credentials = $request->validated();
 
@@ -117,13 +109,15 @@ class SubjectService
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.subject.percentage_sum_error'),
-                400,
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
 
         $subject->update($credentials);
-        $subject->load(['mainSubject.grade', 'createdBy']);
+        $subject->load([
+//            'mainSubject.grade',
+        ]);
 
         return ResponseHelper::jsonResponse(
             new SubjectResource($subject),
@@ -133,26 +127,38 @@ class SubjectService
 
     /**
      * Delete a subject.
+     * @throws PermissionException
      */
-    public function destroySubject(Subject $subject)
+    public function destroySubject(Subject $subject): JsonResponse
     {
-        $user = auth()->user();
+        $this->checkPermission(PermissionEnum::DELETE_SUBJECTS);
 
-        if (!$user->hasPermissionTo('حذف مادة')) {
-            throw new PermissionException();
+        // Check if subject has related data
+        if ($subject->teacherSectionSubjects()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.subject.has_teacher_assignments'),
+                ResponseAlias::HTTP_BAD_REQUEST,
+                false
+            );
         }
 
-        // Check if there are related records
-        if ($subject->teacherSectionSubjects()->exists() ||
-            $subject->quizTargets()->exists() ||
-            $subject->assignments()->exists() ||
-            $subject->studentMarks()->exists() ||
-            $subject->studyNotes()->exists() ||
-            $subject->files()->exists()) {
+        if ($subject->studentMarks()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.subject.has_student_marks'),
+                ResponseAlias::HTTP_BAD_REQUEST,
+                false
+            );
+        }
 
-            return response()->json([
-                'message' => 'Cannot delete subject with existing related data'
-            ], Response::HTTP_CONFLICT);
+        if ($subject->studyNotes()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.subject.has_study_notes'),
+                ResponseAlias::HTTP_BAD_REQUEST,
+                false
+            );
         }
 
         $subject->delete();
@@ -164,23 +170,17 @@ class SubjectService
     }
 
     /**
-     * List trashed subjects.
+     * Get list of trashed subjects.
+     * @throws PermissionException
      */
-    public function listTrashedSubjects()
+    public function listTrashedSubjects(): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('عرض المواد')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SUBJECTS);
 
         $subjects = Subject::with([
             'mainSubject.grade',
             'createdBy'
-        ])
-            ->onlyTrashed()
-            ->orderBy('name', 'asc')
-            ->get();
+        ])->onlyTrashed()->orderBy('name', 'asc')->get();
 
         return ResponseHelper::jsonResponse(
             SubjectResource::collection($subjects)
@@ -188,28 +188,26 @@ class SubjectService
     }
 
     /**
-     * Restore a subject.
+     * Restore a trashed subject.
+     * @throws PermissionException
      */
-    public function restoreSubject($id)
+    public function restoreSubject($id): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('تعديل مادة')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SUBJECTS);
 
         $subject = Subject::withTrashed()->findOrFail($id);
-        
+
         if (!$subject->trashed()) {
             return ResponseHelper::jsonResponse(
                 null,
                 'Subject is not deleted',
-                400,
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
 
         $subject->restore();
+        $subject->load(['mainSubject.grade', 'createdBy']);
 
         return ResponseHelper::jsonResponse(
             new SubjectResource($subject),
@@ -218,30 +216,40 @@ class SubjectService
     }
 
     /**
-     * Force delete a subject.
+     * Force delete a trashed subject.
+     * @throws PermissionException
      */
-    public function forceDeleteSubject($id)
+    public function forceDeleteSubject($id): JsonResponse
     {
-        $user = auth()->user();
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SUBJECTS);
 
-        if (!$user->hasPermissionTo('حذف مادة')) {
-            throw new PermissionException();
-        }
+//        $subject = Subject::withTrashed()->findOrFail($id);
+        $subject = Subject::findOrFail($id);
 
-        $subject = Subject::withTrashed()->findOrFail($id);
-        
-        // Check if there are related records
-        if ($subject->teacherSectionSubjects()->exists() ||
-            $subject->quizTargets()->exists() ||
-            $subject->assignments()->exists() ||
-            $subject->studentMarks()->exists() ||
-            $subject->studyNotes()->exists() ||
-            $subject->files()->exists()) {
-
+        // Check if subject has related data
+        if ($subject->teacherSectionSubjects()->exists()) {
             return ResponseHelper::jsonResponse(
                 null,
-                __('messages.subject.cannot_delete_with_relations'),
-                400,
+                __('messages.subject.has_teacher_assignments'),
+                ResponseAlias::HTTP_BAD_REQUEST,
+                false
+            );
+        }
+
+        if ($subject->studentMarks()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.subject.has_student_marks'),
+                ResponseAlias::HTTP_BAD_REQUEST,
+                false
+            );
+        }
+
+        if ($subject->studyNotes()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.subject.has_study_notes'),
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }

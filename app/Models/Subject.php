@@ -14,7 +14,7 @@ class Subject extends Model
 
     protected $fillable = [
         'name',
-        'subject_major_id',
+        'main_subject_id',
         'code',
         'full_mark',
         'homework_percentage',
@@ -23,6 +23,7 @@ class Subject extends Model
         'quiz_percentage',
         'exam_percentage',
         'num_class_period',
+        'is_failed',
         'created_by'
     ];
 
@@ -33,7 +34,8 @@ class Subject extends Model
         'activity_percentage' => 'integer',
         'quiz_percentage' => 'integer',
         'exam_percentage' => 'integer',
-        'num_class_period' => 'integer'
+        'num_class_period' => 'integer',
+        'is_failed' => 'boolean'
     ];
 
     // Relations
@@ -79,7 +81,7 @@ class Subject extends Model
 
     public function getGrade()
     {
-        return $this->subjectMajor->grade;
+        return $this->mainSubject->grade;
     }
     // Func
 

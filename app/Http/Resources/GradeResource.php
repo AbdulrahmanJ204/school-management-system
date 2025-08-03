@@ -22,7 +22,7 @@ class GradeResource extends JsonResource
 
             'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
             'sections' => SectionResource::collection($this->whenLoaded('sections')),
-//            'subject_majors' => SubjectMajorResource::collection($this->whenLoaded('subjectMajors')),
+//            'main_subjects' => MainSubjectResource::collection($this->whenLoaded('Mainsubjects')),
 //            'setting_grade_years' => SettingGradeYearResource::collection($this->whenLoaded('settingGradeYears')),
 
         ];

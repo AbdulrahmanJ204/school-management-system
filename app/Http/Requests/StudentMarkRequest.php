@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use App\Models\StudentMark;
+use App\Models\Subject;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class StudentMarkRequest extends FormRequest
+class StudentMarkRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,11 +19,22 @@ class StudentMarkRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         $studentMarkId = $this->route('student_mark') ? $this->route('student_mark')->id : null;
+
+        $subject = null;
+        if ($this->has('subject_id')) {
+            $subject = Subject::find($this->subject_id);
+        }
+
+        $homeworkMax = $subject ? $subject->homework_percentage * $subject->full_mark / 100 : 100;
+        $oralMax     = $subject ? $subject->oral_percentage     * $subject->full_mark / 100 : 100;
+        $activityMax = $subject ? $subject->activity_percentage * $subject->full_mark / 100 : 100;
+        $quizMax     = $subject ? $subject->quiz_percentage     * $subject->full_mark / 100 : 100;
+        $examMax     = $subject ? $subject->exam_percentage     * $subject->full_mark / 100 : 100;
 
         return [
             'subject_id' => [
@@ -39,57 +51,51 @@ class StudentMarkRequest extends FormRequest
                 'nullable',
                 'integer',
                 'min:0',
-                'max:100'
+                'max:' . $homeworkMax
             ],
             'oral' => [
                 'nullable',
                 'integer',
                 'min:0',
-                'max:100'
+                'max:' . $oralMax
             ],
             'activity' => [
                 'nullable',
                 'integer',
                 'min:0',
-                'max:100'
+                'max:' . $activityMax
             ],
             'quiz' => [
                 'nullable',
                 'integer',
                 'min:0',
-                'max:100'
+                'max:' . $quizMax
             ],
             'exam' => [
                 'nullable',
                 'integer',
                 'min:0',
-                'max:100'
+                'max:' . $examMax
             ],
-            'total' => [
-                'nullable',
-                'numeric',
-                'min:0',
-                'max:100'
-            ]
         ];
     }
 
     /**
      * Configure the validator instance.
      */
-    public function withValidator($validator)
+    public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             // Check if at least one mark type is provided
             $hasMarks = $this->homework || $this->oral || $this->activity || $this->quiz || $this->exam;
-            
+
             if (!$hasMarks) {
                 $validator->errors()->add('marks', 'يجب إدخال درجة واحدة على الأقل');
             }
 
             // Check if enrollment and subject combination is unique (for create only)
             if (!$this->route('student_mark')) {
-                $existingMark = \App\Models\StudentMark::where('enrollment_id', $this->enrollment_id)
+                $existingMark = StudentMark::where('enrollment_id', $this->enrollment_id)
                     ->where('subject_id', $this->subject_id)
                     ->first();
 
@@ -105,6 +111,17 @@ class StudentMarkRequest extends FormRequest
      */
     public function messages(): array
     {
+        $subject = null;
+        if ($this->has('subject_id')) {
+            $subject = Subject::find($this->subject_id);
+        }
+
+        $homeworkMax = $subject ? $subject->homework_percentage * $subject->full_mark / 100 : 100;
+        $oralMax     = $subject ? $subject->oral_percentage     * $subject->full_mark / 100 : 100;
+        $activityMax = $subject ? $subject->activity_percentage * $subject->full_mark / 100 : 100;
+        $quizMax     = $subject ? $subject->quiz_percentage     * $subject->full_mark / 100 : 100;
+        $examMax     = $subject ? $subject->exam_percentage     * $subject->full_mark / 100 : 100;
+
         return [
             'subject_id.required' => 'المادة مطلوبة',
             'subject_id.integer' => 'المادة يجب أن تكون رقماً صحيحاً',
@@ -117,32 +134,27 @@ class StudentMarkRequest extends FormRequest
             'homework.nullable' => 'درجة الواجبات اختيارية',
             'homework.integer' => 'درجة الواجبات يجب أن تكون رقماً صحيحاً',
             'homework.min' => 'درجة الواجبات يجب أن تكون على الأقل 0',
-            'homework.max' => 'درجة الواجبات يجب ألا تتجاوز 100',
+            'homework.max' => 'درجة الواجبات يجب ألا تتجاوز ' . $homeworkMax,
 
             'oral.nullable' => 'درجة الشفوي اختيارية',
             'oral.integer' => 'درجة الشفوي يجب أن تكون رقماً صحيحاً',
             'oral.min' => 'درجة الشفوي يجب أن تكون على الأقل 0',
-            'oral.max' => 'درجة الشفوي يجب ألا تتجاوز 100',
+            'oral.max' => 'درجة الشفوي يجب ألا تتجاوز ' . $oralMax,
 
             'activity.nullable' => 'درجة الأنشطة اختيارية',
             'activity.integer' => 'درجة الأنشطة يجب أن تكون رقماً صحيحاً',
             'activity.min' => 'درجة الأنشطة يجب أن تكون على الأقل 0',
-            'activity.max' => 'درجة الأنشطة يجب ألا تتجاوز 100',
+            'activity.max' => 'درجة الأنشطة يجب ألا تتجاوز ' . $activityMax,
 
             'quiz.nullable' => 'درجة الاختبارات اختيارية',
             'quiz.integer' => 'درجة الاختبارات يجب أن تكون رقماً صحيحاً',
             'quiz.min' => 'درجة الاختبارات يجب أن تكون على الأقل 0',
-            'quiz.max' => 'درجة الاختبارات يجب ألا تتجاوز 100',
+            'quiz.max' => 'درجة الاختبارات يجب ألا تتجاوز ' . $quizMax,
 
             'exam.nullable' => 'درجة الامتحان اختيارية',
             'exam.integer' => 'درجة الامتحان يجب أن تكون رقماً صحيحاً',
             'exam.min' => 'درجة الامتحان يجب أن تكون على الأقل 0',
-            'exam.max' => 'درجة الامتحان يجب ألا تتجاوز 100',
-
-            'total.nullable' => 'الدرجة الإجمالية اختيارية',
-            'total.numeric' => 'الدرجة الإجمالية يجب أن تكون رقماً',
-            'total.min' => 'الدرجة الإجمالية يجب أن تكون على الأقل 0',
-            'total.max' => 'الدرجة الإجمالية يجب ألا تتجاوز 100',
+            'exam.max' => 'درجة الامتحان يجب ألا تتجاوز ' . $examMax,
         ];
     }
-} 
+}

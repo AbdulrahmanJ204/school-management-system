@@ -2,22 +2,32 @@
 
 namespace App\Services;
 
+use App\Enums\PermissionEnum;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\GradeRequest;
 use App\Http\Resources\GradeResource;
 use App\Models\Grade;
+use App\Traits\HasPermissionChecks;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class GradeService
 {
-    public function listGrade()
+    use HasPermissionChecks;
+
+    /**
+     * @throws PermissionException
+     */
+    public function listGrade(): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::VIEW_GRADES);
+
         $grades = Grade::with([
-            'createdBy',
 //            'sections',
-//            'subjectMajors'
+//            'mainSubjects'
         ])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -27,86 +37,16 @@ class GradeService
         );
     }
 
-    public function createGrade(GradeRequest $request)
+    /**
+     * @throws PermissionException
+     */
+    public function listTrashedGrades(): JsonResponse
     {
-        $admin = auth()->user();
-        $credentials = $request->validated();
-        $credentials['created_by'] = $admin->id;
-        $grade = Grade::create($credentials);
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADES);
 
-        return ResponseHelper::jsonResponse(
-            new GradeResource($grade),
-            __('messages.grade.created'),
-            201,
-            true
-        );
-    }
-
-    public function showGrade(Grade $grade)
-    {
-        $grade->load([
-            'createdBy',
-//            'sections',
-//            'subjectMajors.subjects',
-//            'settingGradeYears.year'
-        ]);
-
-        return ResponseHelper::jsonResponse(
-            new GradeResource($grade),
-        );
-    }
-
-    public function updateGrade($request, Grade $grade)
-    {
-        $grade->update([
-            'title' => $request->title,
-        ]);
-
-        $grade->load([
-            'createdBy',
-//            'sections',
-//            'subjectMajors'
-        ]);
-
-        return ResponseHelper::jsonResponse(
-            new GradeResource($grade),
-            __('messages.grade.updated'),
-        );
-    }
-
-    public function destroyGrade(Grade $grade)
-    {
-//        // Check if grade has related data
-//        if ($grade->sections()->exists()) {
-//            return response()->json([
-//                'message' => 'Cannot delete grade with existing sections'
-//            ], Response::HTTP_CONFLICT);
-//        }
-//
-//        if ($grade->subjectMajors()->exists()) {
-//            return response()->json([
-//                'message' => 'Cannot delete grade with existing subject majors'
-//            ], Response::HTTP_CONFLICT);
-//        }
-//
-//        if ($grade->settingGradeYears()->exists()) {
-//            return response()->json([
-//                'message' => 'Cannot delete grade with existing year settings'
-//            ], Response::HTTP_CONFLICT);
-//        }
-
-        $grade->delete();
-
-        return ResponseHelper::jsonResponse(
-            null,
-            __('messages.grade.deleted'),
-        );
-    }
-
-    public function listTrashedGrades()
-    {
         $grades = Grade::with([
-            'createdBy',
+//            'sections',
+//            'mainSubjects'
         ])
             ->onlyTrashed()
             ->orderBy('created_at', 'desc')
@@ -117,15 +57,95 @@ class GradeService
         );
     }
 
-    public function restoreGrade($id)
+    /**
+     * @throws PermissionException
+     */
+    public function createGrade(GradeRequest $request): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::CREATE_GRADE);
+
+        $admin = auth()->user();
+        $credentials = $request->validated();
+        $credentials['created_by'] = $admin->id;
+        $grade = Grade::create($credentials);
+
+        return ResponseHelper::jsonResponse(
+            new GradeResource($grade),
+            __('messages.grade.created'),
+            ResponseAlias::HTTP_CREATED,
+            true
+        );
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function showGrade(Grade $grade): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::VIEW_GRADE);
+
+        $grade->load([
+//            'sections',
+//            'mainSubjects.subjects',
+//            'settingGradeYears.year'
+        ]);
+
+        return ResponseHelper::jsonResponse(
+            new GradeResource($grade),
+        );
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function updateGrade($request, Grade $grade): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::UPDATE_GRADE);
+
+        $grade->update([
+            'title' => $request->title,
+        ]);
+
+        $grade->load([
+//            'sections',
+//            'mainSubjects'
+        ]);
+
+        return ResponseHelper::jsonResponse(
+            new GradeResource($grade),
+            __('messages.grade.updated'),
+        );
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function destroyGrade(Grade $grade): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::DELETE_GRADE);
+
+        $grade->delete();
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.grade.deleted'),
+        );
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function restoreGrade($id): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADES);
+
         $grade = Grade::withTrashed()->findOrFail($id);
-        
+
         if (!$grade->trashed()) {
             return ResponseHelper::jsonResponse(
                 null,
-                'Grade is not deleted',
-                400,
+                __('messages.grade.not_deleted'),
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
@@ -138,25 +158,30 @@ class GradeService
         );
     }
 
-    public function forceDeleteGrade($id)
+    /**
+     * @throws PermissionException
+     */
+    public function forceDeleteGrade($id): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADES);
+
         $grade = Grade::withTrashed()->findOrFail($id);
-        
+
         // Check if grade has related data
         if ($grade->sections()->exists()) {
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.grade.has_sections'),
-                400,
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
 
-        if ($grade->subjectMajors()->exists()) {
+        if ($grade->mainSubjects()->exists()) {
             return ResponseHelper::jsonResponse(
                 null,
-                __('messages.grade.has_subject_majors'),
-                400,
+                __('messages.grade.has_main_subjects'),
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
@@ -164,8 +189,8 @@ class GradeService
         if ($grade->settingGradeYears()->exists()) {
             return ResponseHelper::jsonResponse(
                 null,
-                __('messages.grade.has_settings'),
-                400,
+                __('messages.grade.has_year_settings'),
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }

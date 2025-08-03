@@ -2,33 +2,34 @@
 
 namespace App\Services;
 
+use App\Enums\PermissionEnum;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\StudentMarkResource;
 use App\Models\StudentMark;
 use App\Models\StudentEnrollment;
 use App\Models\Subject;
 use App\Exceptions\PermissionException;
-use Illuminate\Http\Response;
+use App\Traits\HasPermissionChecks;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class StudentMarkService
 {
+    use HasPermissionChecks;
+
     /**
      * Get list of all student marks.
+     * @throws PermissionException
      */
-    public function listStudentMarks()
+    public function listStudentMarks(): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('عرض درجات الطلاب')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
 
         $studentMarks = StudentMark::with([
-            'subject.mainSubject.grade',
-            'enrollment.student',
-            'enrollment.section',
-            'enrollment.semester',
-            'createdBy'
+//            'subject.mainSubject.grade',
+//            'enrollment.student',
+//            'enrollment.section',
+//            'enrollment.semester',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -38,17 +39,14 @@ class StudentMarkService
 
     /**
      * Create a new student mark.
+     * @throws PermissionException
      */
-    public function createStudentMark($request)
+    public function createStudentMark($request): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('انشاء درجة طالب')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::CREATE_STUDENT_MARK);
 
         $credentials = $request->validated();
-        $credentials['created_by'] = $user->id;
+        $credentials['created_by'] = auth()->id();
 
         // Check if mark already exists for this enrollment and subject
         $existingMark = StudentMark::where('enrollment_id', $credentials['enrollment_id'])
@@ -59,50 +57,42 @@ class StudentMarkService
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.student_mark.already_exists'),
-                400,
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
 
-        // Calculate total mark
-        $subject = Subject::find($credentials['subject_id']);
-        $total = $this->calculateTotalMark($credentials, $subject);
-        $credentials['total'] = $total;
+        $credentials['total'] = $this->calculateTotalMark($credentials);
 
         $studentMark = StudentMark::create($credentials);
         $studentMark->load([
-            'subject.mainSubject.grade',
-            'enrollment.student',
-            'enrollment.section',
-            'enrollment.semester',
-            'createdBy'
+//            'subject.mainSubject.grade',
+//            'enrollment.student',
+//            'enrollment.section',
+//            'enrollment.semester',
         ]);
 
         return ResponseHelper::jsonResponse(
             new StudentMarkResource($studentMark),
             __('messages.student_mark.created'),
-            201,
+            ResponseAlias::HTTP_CREATED,
             true
         );
     }
 
     /**
      * Show a specific student mark.
+     * @throws PermissionException
      */
-    public function showStudentMark(StudentMark $studentMark)
+    public function showStudentMark(StudentMark $studentMark): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('عرض درجة طالب')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARK);
 
         $studentMark->load([
-            'subject.mainSubject.grade',
-            'enrollment.student',
-            'enrollment.section',
-            'enrollment.semester',
-            'createdBy'
+//            'subject.mainSubject.grade',
+//            'enrollment.student',
+//            'enrollment.section',
+//            'enrollment.semester',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -112,29 +102,22 @@ class StudentMarkService
 
     /**
      * Update a student mark.
+     * @throws PermissionException
      */
-    public function updateStudentMark($request, StudentMark $studentMark)
+    public function updateStudentMark($request, StudentMark $studentMark): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('تعديل درجة طالب')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::UPDATE_STUDENT_MARK);
 
         $credentials = $request->validated();
 
-        // Calculate total mark
-        $subject = Subject::find($credentials['subject_id']);
-        $total = $this->calculateTotalMark($credentials, $subject);
-        $credentials['total'] = $total;
+        $credentials['total'] = $this->calculateTotalMark($credentials);
 
         $studentMark->update($credentials);
         $studentMark->load([
-            'subject.mainSubject.grade',
-            'enrollment.student',
-            'enrollment.section',
-            'enrollment.semester',
-            'createdBy'
+//            'subject.mainSubject.grade',
+//            'enrollment.student',
+//            'enrollment.section',
+//            'enrollment.semester',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -145,14 +128,11 @@ class StudentMarkService
 
     /**
      * Delete a student mark.
+     * @throws PermissionException
      */
-    public function destroyStudentMark(StudentMark $studentMark)
+    public function destroyStudentMark(StudentMark $studentMark): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('حذف درجة طالب')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::DELETE_STUDENT_MARK);
 
         $studentMark->delete();
 
@@ -163,28 +143,20 @@ class StudentMarkService
     }
 
     /**
-     * Get student marks by enrollment.
+     * Get marks by enrollment.
+     * @throws PermissionException
      */
-    public function getMarksByEnrollment($enrollmentId)
+    public function getMarksByEnrollment($enrollmentId): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->hasPermissionTo('عرض درجات الطلاب')) {
-            throw new PermissionException();
-        }
+        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
 
         $enrollment = StudentEnrollment::findOrFail($enrollmentId);
-        
-        $studentMarks = StudentMark::where('enrollment_id', $enrollmentId)
-            ->with([
-                'subject.mainSubject.grade',
-                'enrollment.student',
-                'enrollment.section',
-                'enrollment.semester',
-                'createdBy'
-            ])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $studentMarks = StudentMark::where('enrollment_id', $enrollmentId)->with([
+//            'subject.mainSubject.grade',
+//            'enrollment.student',
+//            'enrollment.section',
+//            'enrollment.semester',
+        ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
             StudentMarkResource::collection($studentMarks)
@@ -192,25 +164,43 @@ class StudentMarkService
     }
 
     /**
-     * Get student marks by subject.
+     * Get marks by subject.
+     * @throws PermissionException
      */
-    public function getMarksBySubject($subjectId)
+    public function getMarksBySubject($subjectId): JsonResponse
     {
-        $user = auth()->user();
+        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
 
-        if (!$user->hasPermissionTo('عرض درجات الطلاب')) {
-            throw new PermissionException();
-        }
+        $studentMarks = StudentMark::where('subject_id', $subjectId)->with([
+//            'subject.mainSubject.grade',
+//            'enrollment.student',
+//            'enrollment.section',
+//            'enrollment.semester',
+        ])->orderBy('created_at', 'desc')->get();
+
+        return ResponseHelper::jsonResponse(
+            StudentMarkResource::collection($studentMarks)
+        );
+    }
+
+    /**
+     * Get marks by subject and section.
+     * @throws PermissionException
+     */
+    public function getMarksBySubjectAndSection($subjectId, $sectionId): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
 
         $subject = Subject::findOrFail($subjectId);
-        
         $studentMarks = StudentMark::where('subject_id', $subjectId)
+            ->whereHas('enrollment', function ($query) use ($sectionId) {
+                $query->where('section_id', $sectionId);
+            })
             ->with([
-                'subject.mainSubject.grade',
-                'enrollment.student',
-                'enrollment.section',
-                'enrollment.semester',
-                'createdBy'
+//                'subject.mainSubject.grade',
+//                'enrollment.student',
+//                'enrollment.section',
+//                'enrollment.semester',
             ])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -223,26 +213,11 @@ class StudentMarkService
     /**
      * Calculate total mark based on subject percentages.
      */
-    private function calculateTotalMark($credentials, $subject)
+    private function calculateTotalMark($credentials)
     {
-        $total = 0;
+        $total = $credentials['homework'] + $credentials['oral'] + $credentials['activity']
+            + $credentials['quiz'] + $credentials['exam'];
 
-        if (isset($credentials['homework']) && $credentials['homework']) {
-            $total += ($credentials['homework'] * $subject->homework_percentage) / 100;
-        }
-        if (isset($credentials['oral']) && $credentials['oral']) {
-            $total += ($credentials['oral'] * $subject->oral_percentage) / 100;
-        }
-        if (isset($credentials['activity']) && $credentials['activity']) {
-            $total += ($credentials['activity'] * $subject->activity_percentage) / 100;
-        }
-        if (isset($credentials['quiz']) && $credentials['quiz']) {
-            $total += ($credentials['quiz'] * $subject->quiz_percentage) / 100;
-        }
-        if (isset($credentials['exam']) && $credentials['exam']) {
-            $total += ($credentials['exam'] * $subject->exam_percentage) / 100;
-        }
-
-        return round($total, 2);
+        return $total;
     }
-} 
+}

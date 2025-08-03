@@ -39,7 +39,7 @@ class Section extends Model
         return $this->hasMany(StudentEnrollment::class);
     }
 
-    public function quizTargets()
+    public function quizTargets(): HasMany
     {
         return $this->hasMany(QuizTarget::class);
     }

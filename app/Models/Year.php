@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Year extends Model
@@ -25,17 +27,17 @@ class Year extends Model
     ];
 
     // Relations
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function semesters()
+    public function semesters(): HasMany
     {
         return $this->hasMany(Semester::class);
     }
 
-    public function settingGradeYears()
+    public function settingGradeYears(): HasMany
     {
         return $this->hasMany(GradeYearSetting::class);
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StudentMark extends Model
 {
@@ -31,17 +32,17 @@ class StudentMark extends Model
     ];
 
     // Relations
-    public function subject()
+    public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
     }
 
-    public function enrollment()
+    public function enrollment(): BelongsTo
     {
         return $this->belongsTo(StudentEnrollment::class);
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -63,7 +64,7 @@ class StudentMark extends Model
     }
 
     // Methods
-    public function calculateTotal()
+    public function calculateTotal(): float|int
     {
         $subject = $this->subject;
         $total = 0;
@@ -85,21 +86,6 @@ class StudentMark extends Model
         }
 
         return $total;
-    }
-
-    public function isPass()
-    {
-        $subject = $this->subject;
-        $gradeYear = GradeYearSetting::where('year_id', $this->enrollment->semester->year_id)
-            ->where('grade_id', $subject->subjectMajor->grade_id)
-            ->first();
-
-        if (!$gradeYear) {
-            return false;
-        }
-
-        $passmark = ($subject->success_rate / 100) * $subject->full_mark;
-        return $this->total >= $passmark;
     }
 }
 

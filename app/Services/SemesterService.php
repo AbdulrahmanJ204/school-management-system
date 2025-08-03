@@ -2,18 +2,48 @@
 
 namespace App\Services;
 
+use App\Enums\PermissionEnum;
+use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\SemesterRequest;
 use App\Http\Resources\SemesterResource;
 use App\Models\Semester;
-use App\Models\Year;
-use Illuminate\Http\Response;
+use App\Traits\HasPermissionChecks;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class SemesterService
 {
-    public function listTrashedSemesters()
+    use HasPermissionChecks;
+
+    /**
+     * @throws PermissionException
+     */
+    public function listSemesters(): JsonResponse
     {
-        $semesters = Semester::with(['createdBy', 'year'])
+        $this->checkPermission(PermissionEnum::VIEW_SEMESTERS);
+
+        $semesters = Semester::with([
+//            'year'
+        ])
+            ->orderBy('start_date', 'desc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            SemesterResource::collection($semesters)
+        );
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function listTrashedSemesters(): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SEMESTERS);
+
+        $semesters = Semester::with([
+//            'year'
+        ])
             ->onlyTrashed()
             ->orderBy('start_date', 'desc')
             ->get();
@@ -23,8 +53,13 @@ class SemesterService
         );
     }
 
-    public function createSemester(SemesterRequest $request)
+    /**
+     * @throws PermissionException
+     */
+    public function createSemester(SemesterRequest $request): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::CREATE_SEMESTER);
+
         $admin = auth()->user();
         $credentials = $request->validated();
         $credentials['created_by'] = $admin->id;
@@ -33,13 +68,40 @@ class SemesterService
         return ResponseHelper::jsonResponse(
             new SemesterResource($semester),
             __('messages.semester.created'),
-            201,
-            true
+            ResponseAlias::HTTP_CREATED,
         );
     }
 
-    public function updateSemester($request, $semester)
+    /**
+     * @throws PermissionException
+     */
+    public function showSemester(Semester $semester): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::VIEW_SEMESTER);
+
+        $semester->load([
+//            'year',
+//            'schoolDays'
+        ]);
+
+        return ResponseHelper::jsonResponse(
+            new SemesterResource($semester),
+        );
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function updateSemester($request, $semester): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::UPDATE_SEMESTER);
+
+        if($request->is_active){
+            $activeSemesters = Semester::where('is_active',true)->get();
+            foreach ($activeSemesters as $activeSemester){
+                $activeSemester->update(['is_active' => false]);
+            }
+        }
         $semester->update([
             'name' => $request->name,
             'start_date' => $request->start_date,
@@ -47,21 +109,27 @@ class SemesterService
             'is_active' => $request->is_active ?? $semester->is_active,
         ]);
 
-        $semester->load(['createdBy']);
-
         return ResponseHelper::jsonResponse(
             new SemesterResource($semester),
             __('messages.semester.updated'),
         );
     }
 
-    public function destroySemester(Semester $semester)
+    /**
+     * @throws PermissionException
+     */
+    public function destroySemester(Semester $semester): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::DELETE_SEMESTER);
+
         // Check if semester has related data
         if ($semester->schoolDays()->exists()) {
-            return response()->json([
-                'message' => 'Cannot delete semester with existing school days'
-            ], 400);
+            return ResponseHelper::jsonResponse(
+                null,
+                'Cannot delete semester with existing school days',
+                ResponseAlias::HTTP_BAD_REQUEST,
+                false
+            );
         }
 
         $semester->delete();
@@ -72,15 +140,20 @@ class SemesterService
         );
     }
 
-    public function restoreSemester($id)
+    /**
+     * @throws PermissionException
+     */
+    public function restoreSemester($id): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SEMESTERS);
+
         $semester = Semester::withTrashed()->findOrFail($id);
-        
+
         if (!$semester->trashed()) {
             return ResponseHelper::jsonResponse(
                 null,
                 'Semester is not deleted',
-                400,
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
@@ -93,16 +166,22 @@ class SemesterService
         );
     }
 
-    public function forceDeleteSemester($id)
+    /**
+     * @throws PermissionException
+     */
+    public function forceDeleteSemester($id): JsonResponse
     {
-        $semester = Semester::withTrashed()->findOrFail($id);
-        
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SEMESTERS);
+
+//        $semester = Semester::withTrashed()->findOrFail($id);
+        $semester = Semester::findOrFail($id);
+
         // Check if semester has related data
         if ($semester->schoolDays()->exists()) {
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.semester.has_school_days'),
-                400,
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
@@ -111,7 +190,7 @@ class SemesterService
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.semester.has_enrollments'),
-                400,
+                ResponseAlias::HTTP_BAD_REQUEST,
                 false
             );
         }
@@ -124,15 +203,12 @@ class SemesterService
         );
     }
 
-    public function ActiveSemester(Semester $semester)
+    /**
+     * @throws PermissionException
+     */
+    public function ActiveSemester(Semester $semester): JsonResponse
     {
-
-        $activeYears = Year::where('is_active',true)->get();
-        foreach ($activeYears as $activeYear){
-            $activeYear->update(['is_active' => false]);
-        }
-        $year = $semester->year();
-        $year->update(['is_active' => true]);
+        $this->checkPermission(PermissionEnum::UPDATE_SEMESTER);
 
         $activeSemesters = Semester::where('is_active',true)->get();
         foreach ($activeSemesters as $activeSemester){

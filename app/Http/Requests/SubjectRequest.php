@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
-class SubjectRequest extends FormRequest
+class SubjectRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,7 +18,7 @@ class SubjectRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -82,6 +82,9 @@ class SubjectRequest extends FormRequest
                 'integer',
                 'min:1',
                 'max:50'
+            ],
+            'is_failed' => [
+                'boolean'
             ]
         ];
     }
@@ -89,7 +92,7 @@ class SubjectRequest extends FormRequest
     /**
      * Configure the validator instance.
      */
-    public function withValidator($validator)
+    public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             $total = $this->homework_percentage + $this->oral_percentage +
@@ -156,6 +159,7 @@ class SubjectRequest extends FormRequest
             'num_class_period.integer' => 'عدد الحصص يجب أن يكون رقماً صحيحاً',
             'num_class_period.min' => 'عدد الحصص يجب أن يكون على الأقل 1',
             'num_class_period.max' => 'عدد الحصص يجب ألا يتجاوز 50',
+            'is_failed.boolean' => 'حقل الرسوب يجب أن يكون صحيح أو خطأ',
         ];
     }
 }

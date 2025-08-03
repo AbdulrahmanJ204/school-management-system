@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PermissionEnum;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\YearRequest;
@@ -14,10 +15,12 @@ use Illuminate\Http\Response;
 class YearController extends Controller
 {
     protected YearService $yearService;
+    
     public function __construct(YearService $yearService)
     {
         $this->yearService = $yearService;
     }
+    
     /**
      * Display a listing of the resource.
      */
