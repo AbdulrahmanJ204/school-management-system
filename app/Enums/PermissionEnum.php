@@ -139,6 +139,22 @@ enum PermissionEnum: string
     case DELETE_BEHAVIOR_NOTE = 'حذف ملاحظة سلوك';
     case MANAGE_DELETED_BEHAVIOR_NOTES = 'إدارة ملاحظات السلوك المحذوفة';
 
+    // Exam Management
+    case VIEW_EXAMS = 'عرض الامتحانات';
+    case CREATE_EXAM = 'انشاء امتحان';
+    case VIEW_EXAM = 'عرض امتحان';
+    case UPDATE_EXAM = 'تعديل امتحان';
+    case DELETE_EXAM = 'حذف امتحان';
+    case MANAGE_DELETED_EXAMS = 'إدارة الامتحانات المحذوفة';
+
+    // Complaint Management
+    case VIEW_COMPLAINTS = 'عرض الشكاوى';
+    case CREATE_COMPLAINT = 'انشاء شكوى';
+    case VIEW_COMPLAINT = 'عرض شكوى';
+    case UPDATE_COMPLAINT = 'تعديل شكوى';
+    case DELETE_COMPLAINT = 'حذف شكوى';
+    case MANAGE_DELETED_COMPLAINTS = 'إدارة الشكاوى المحذوفة';
+
     // Messages Management
     case VIEW_MESSAGES = 'عرض الرسائل';
     case CREATE_MESSAGE = 'انشاء رسالة';
@@ -263,6 +279,22 @@ enum PermissionEnum: string
                 self::UPDATE_BEHAVIOR_NOTE->value,
                 self::DELETE_BEHAVIOR_NOTE->value,
                 self::MANAGE_DELETED_BEHAVIOR_NOTES->value,
+            ],
+            'exam' => [
+                self::VIEW_EXAMS->value,
+                self::CREATE_EXAM->value,
+                self::VIEW_EXAM->value,
+                self::UPDATE_EXAM->value,
+                self::DELETE_EXAM->value,
+                self::MANAGE_DELETED_EXAMS->value,
+            ],
+            'complaint' => [
+                self::VIEW_COMPLAINTS->value,
+                self::CREATE_COMPLAINT->value,
+                self::VIEW_COMPLAINT->value,
+                self::UPDATE_COMPLAINT->value,
+                self::DELETE_COMPLAINT->value,
+                self::MANAGE_DELETED_COMPLAINTS->value,
             ],
             'message' => [
                 self::VIEW_MESSAGES->value,

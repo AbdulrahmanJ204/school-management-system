@@ -64,6 +64,11 @@ class SchoolDay extends Model
         return $this->hasMany(News::class);
     }
 
+    public function exams(): HasMany
+    {
+        return $this->hasMany(Exam::class);
+    }
+
     // Scopes
     public function scopeStudyDays($query)
     {

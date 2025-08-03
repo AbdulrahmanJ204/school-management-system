@@ -8,12 +8,11 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('complaints', function (Blueprint $table) {
+        Schema::create('exams', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->string('title');
-            $table->text('content');
-            $table->text('answer')->nullable();
+            $table->foreignId('school_day_id')->constrained('school_days');
+            $table->foreignId('grade_id')->constrained('grades');
+            $table->foreignId('main_subject_id')->constrained('main_subjects');
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
@@ -22,6 +21,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('complaints');
+        Schema::dropIfExists('exams');
     }
-};
+}; 

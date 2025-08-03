@@ -24,6 +24,7 @@ class SchoolDayResource extends JsonResource
             'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
 
             'semester' => new SemesterResource($this->whenLoaded('semester')),
+            'exams' => ExamResource::collection($this->whenLoaded('exams')),
         ];
     }
 }

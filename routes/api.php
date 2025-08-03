@@ -68,4 +68,6 @@ require __DIR__.'/student-marks.php';
 require __DIR__.'/teacher-section-subjects.php';
 require __DIR__.'/study-notes.php';
 require __DIR__.'/behavior-notes.php';
+require __DIR__.'/exams.php';
+require __DIR__.'/complaints.php';
 require __DIR__.'/messages.php';

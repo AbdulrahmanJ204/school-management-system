@@ -42,6 +42,8 @@ class DatabaseSeeder extends Seeder
             StudentMarkSeeder::class,
             StudyNoteSeeder::class,
             BehaviorNoteSeeder::class,
+            ExamSeeder::class,
+            ComplaintSeeder::class,
             MessageSeeder::class,
         ]);
     }
