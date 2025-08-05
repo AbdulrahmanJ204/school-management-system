@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
-use App\Http\Requests\news\StoreNewsRequest;
-use App\Http\Requests\news\UpdateNewsRequest;
+use App\Http\Requests\News\ListNewsRequest;
+use App\Http\Requests\News\StoreNewsRequest;
+use App\Http\Requests\News\UpdateNewsRequest;
 use App\Models\News;
-use App\Services\NewsService;
+use App\Services\News\NewsService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class NewsController extends Controller
 {
@@ -22,9 +22,9 @@ class NewsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): ?JsonResponse
+    public function index(ListNewsRequest $request): ?JsonResponse
     {
-        return $this->newsService->listNews();
+        return $this->newsService->list($request);
     }
 
 
@@ -60,7 +60,7 @@ class NewsController extends Controller
      */
     public function destroy(News $news): JsonResponse
     {
-        return $this->newsService->destroy($news);
+        return $this->newsService->softDelete($news);
     }
 
     /**
