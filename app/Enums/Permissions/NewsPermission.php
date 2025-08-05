@@ -2,7 +2,10 @@
 
 namespace App\Enums\Permissions;
 
+use App\Traits\EnumHelper;
+
 enum NewsPermission : string{
+    use EnumHelper;
     case create ='انشاء خبر';
     case update = 'تحديث خبر';
     case softDelete = 'حذف خبر';

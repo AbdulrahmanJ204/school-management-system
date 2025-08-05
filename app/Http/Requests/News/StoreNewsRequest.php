@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests\news;
+namespace App\Http\Requests\News;
 
 use App\Enums\Permissions\NewsPermission;
+use App\Enums\StringsManager\NewsStr;
 use App\Http\Requests\BaseRequest;
 
 class StoreNewsRequest extends BaseRequest
@@ -23,13 +24,15 @@ class StoreNewsRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'photo' => 'sometimes|image|max:4096',
-            'section_ids' => 'sometimes|array',
-            'section_ids.*' => 'exists:sections,id',
-            'grade_ids' => 'sometimes|array',
-            'grade_ids.*' => 'exists:grades,id',
+            NewsStr::apiTitle->value => 'required|string|max:255',
+            NewsStr::apiContent->value => 'required|string',
+            NewsStr::apiPhoto->value => 'sometimes|image|max:4096',
+            NewsStr::apiSectionIds->value => 'array',
+            NewsStr::apiSectionIds->value . '.*' => 'exists:sections,id',
+            NewsStr::apiGradeIds->value => [
+                'missing_with:' . NewsStr::apiSectionIds->value, ','
+            ],
+            NewsStr::apiGradeIds->value . '.*' => 'exists:grades,id',
         ];
     }
 }

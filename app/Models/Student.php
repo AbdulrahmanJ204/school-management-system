@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
@@ -21,18 +22,25 @@ class Student extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by'); // Creator admin
     }
+
     public function studentEnrollments()
     {
         return $this->hasMany(StudentEnrollment::class, 'student_id');
     }
-    public function currentYearEnrollments(){
-        return StudentEnrollment::where('student_id', $this->id)
-            ->whereHas('semester.year', function ($query) {
-                $query->where('is_active', true);
+
+
+    public function yearEnrollments($yearId)
+    {
+
+        return $this->studentEnrollments()
+            ->whereHas('semester.year', function ($query) use ($yearId) {
+                $query->where('id', $yearId);
+
             })->get();
     }
 }
