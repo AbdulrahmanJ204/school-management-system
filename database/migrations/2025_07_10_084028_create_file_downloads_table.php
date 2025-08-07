@@ -15,7 +15,6 @@ return new class extends Migration
             $table->timestamp('downloaded_at');
             $table->string('ip_address', 45);
             $table->timestamps();
-            $table->foreignId('created_by')->constrained('users');
         });
     }
 

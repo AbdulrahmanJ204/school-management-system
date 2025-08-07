@@ -15,7 +15,9 @@ trait NewsHelpers
      */
     private function getYearId($request): mixed
     {
-        return $request->filled($this->apiYearId) ? $request->year_id : Year::active()->get()->first()->id;
+        $data = $request->validated();
+        return $request->filled($this->queryYear) ? $data[$this->queryYear] :
+            Year::select('id')->active()->get()->first()->id;
     }
 
     private function handlePhoto($request, $deletePath = null): ?string

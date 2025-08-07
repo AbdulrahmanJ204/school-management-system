@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Requests\News;
+namespace App\Http\Requests\File;
 
-use App\Enums\StringsManager\NewsStr;
+use App\Enums\StringsManager\FileStr;
 use App\Http\Requests\BaseRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
-class ListNewsRequest extends BaseRequest
+class ListFilesRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +23,8 @@ class ListNewsRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            NewsStr::queryYear->value => 'sometimes|exists:years,id',
+            FileStr::queryYear->value =>'sometimes|exists:years,id',
+            FileStr::querySubject->value=>'sometimes|nullable|exists:subjects,id',
         ];
     }
 }

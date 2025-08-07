@@ -1,13 +1,25 @@
 <?php
 
-namespace App\Traits\Files;
+namespace App\Services\Files;
 
 use App\Enums\StringsManager\FileStr;
 use App\Models\File;
+use App\Models\Year;
 use Illuminate\Support\Facades\Storage;
 
 trait FileHelpers
 {
+    /**
+     * @param $request
+     * @return int|mixed
+     */
+    private function getYearId($request): mixed
+    {
+        $data = $request->validated();
+        return $request->filled($this->queryYear) ? $data[$this->queryYear] :
+            Year::select('id')->active()->get()->first()->id;
+    }
+
     private function handleFile($request, $subjectCode, $deletePath = null): string
     {
         if ($deletePath) {
@@ -19,7 +31,7 @@ trait FileHelpers
 
         $fileName = $subjectCode . FileStr::Separator->value . $hashedWithoutExtension . '.' . $extension;
 
-        $path = FileStr::LibraryPath->value . '/' . $subjectCode;
+        $path = $this->libraryPath . '/' . $subjectCode;
         $filePath = $path . '/' . $fileName;
         if (!Storage::disk($this->storageDisk)->exists($filePath)) {
             $file->storeAs($path, $fileName, $this->storageDisk);
@@ -33,7 +45,7 @@ trait FileHelpers
         $oldName = basename($file->file);
         $nameWithoutCode = $this->removePrefixBeforeSeparator($oldName);
         $fileName = $subjectCode . FileStr::Separator->value . $nameWithoutCode;
-        $path = FileStr::LibraryPath->value . '/' . $subjectCode;
+        $path = $this->libraryPath . '/' . $subjectCode;
         $filePath = $path . '/' . $fileName;
         Storage::disk($this->storageDisk)->move($file->file, $filePath);
         return $filePath;
@@ -47,7 +59,6 @@ trait FileHelpers
 
     public function deleteFileFromStorage($path): void
     {
-        if (Storage::disk($this->storageDisk)->exists($path))
-            Storage::disk($this->storageDisk)->delete($path);
+        Storage::disk($this->storageDisk)->delete($path);
     }
 }

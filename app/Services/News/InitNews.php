@@ -16,7 +16,7 @@ trait InitNews
         $this->apiIsGeneral = NewsStr::apiIsGeneral->value;
         $this->apiPhoto = NewsStr::apiPhoto->value;
         $this->apiRemovePhoto = NewsStr::apiRemovePhoto->value;
-        $this->apiYearId = NewsStr::apiYearId->value;
+        $this->queryYear = NewsStr::queryYear->value;
         $this->apiSectionIds = NewsStr::apiSectionIds->value;
         $this->apiGradeIds = NewsStr::apiGradeIds->value;
     }

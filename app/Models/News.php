@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
@@ -34,11 +35,11 @@ class News extends Model
             }
         });
 
-        static::forceDeleting(function ($news) {
+        static::forceDeleting(function (News $news) {
             if ($news->photo) {
                 Storage::disk(NewsStr::StorageDisk->value)->delete($news->photo);
             }
-            $news->targets()->withTrashed()->forceDelete();
+            $news->allTargets()->forceDelete();
         });
     }
 
@@ -56,7 +57,9 @@ class News extends Model
             ->withTrashed()
             ->where('deleted_at', $this->deleted_at);
     }
-
+    public function allTargets(): HasMany{
+        return $this->hasMany(NewsTarget::class, 'news_id')->withTrashed();
+    }
 
     public function restoreWithTargets(): static
     {
@@ -67,5 +70,9 @@ class News extends Model
 
         $this->setRelation('targets', $targets);
         return $this;
+    }
+    public function loadTargets(): void
+    {
+        $this->setRelation('targets', $this->targets()->get());
     }
 }

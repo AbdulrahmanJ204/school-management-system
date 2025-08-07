@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\file;
+namespace App\Http\Requests\File;
 
 use App\Enums\FileType;
 use App\Enums\Permissions\FilesPermission;
@@ -42,7 +42,7 @@ class StoreFileRequest extends BaseRequest
     public function adminRules(): array
     {
         return [
-            FileStr::apiSubjectId->value => 'required|nullable|exists:subjects,id',
+            FileStr::apiSubjectId->value => 'sometimes|nullable|exists:subjects,id',
             FileStr::apiTitle->value => 'required|string|max:255',
             FileStr::apiDescription->value => 'sometimes|nullable|string',
             FileStr::apiFile->value => 'required|file',

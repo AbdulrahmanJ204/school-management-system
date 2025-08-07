@@ -59,7 +59,7 @@ trait ListNews
             ->belongsToYear($yearId)
             ->orderByPublishDate()
             ->get();
-
+        $news->each->loadTargets();
         return ResponseHelper::jsonResponse(NewsResource::collection($news), __(NewsStr::messageRetrieved->value));
     }
 

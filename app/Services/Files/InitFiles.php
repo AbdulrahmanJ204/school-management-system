@@ -1,5 +1,5 @@
 <?php
-namespace App\Traits\Files;
+namespace App\Services\Files;
 use App\Enums\StringsManager\FileStr;
 
 trait InitFiles {
@@ -17,6 +17,8 @@ trait InitFiles {
         $this->apiNoSubject = FileStr::apiNoSubject->value;
         $this->apiSectionIds = FileStr::apiSectionIds->value;
         $this->apiGradeIds = FileStr::apiGradeIds->value;
+        $this->queryYear = FileStr::queryYear->value;
+        $this->querySubject = FileStr::querySubject->value;
     }
 
 
@@ -25,7 +27,8 @@ trait InitFiles {
      */
     private function generalVariables(): void
     {
-        $this->storageDisk = 'public';
+        $this->storageDisk = FileStr::StorageDisk->value;
+        $this->libraryPath = FileStr::LibraryPath->value;
         $this->generalPath = FileStr::GeneralPath->value;
     }
 

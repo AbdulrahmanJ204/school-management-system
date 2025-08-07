@@ -10,7 +10,7 @@ enum NewsStr: string{
     case apiSectionIds = 'section_ids';
     case apiGradeIds = 'grade_ids';
     case apiIsGeneral = 'is_general';
-    case apiYearId = 'year_id';
+    case queryYear = 'year';
     case apiRemovePhoto = 'remove_photo';
     case StorageDisk = 'public';
 

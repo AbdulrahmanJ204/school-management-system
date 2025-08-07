@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\TargetsScopes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FileTarget extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes , TargetsScopes;
 
     protected $fillable = [
         'section_id', 'grade_id', 'file_id','created_by'

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits\Files;
+namespace App\Services\Files;
 
 use App\Enums\Permissions\FilesPermission;
 use App\Enums\StringsManager\FileStr;
@@ -10,7 +10,6 @@ use App\Helpers\AuthHelper;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\FileResource;
 use App\Models\File;
-use App\Models\TeacherSectionSubject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -22,7 +21,7 @@ trait SoftDeleteFile
      * @throws Throwable
      * @throws PermissionException
      */
-    public function destroy(File $file): JsonResponse
+    public function softDelete(File $file): JsonResponse
     {
 
         AuthHelper::authorize(FilesPermission::softDelete->value);
@@ -40,39 +39,31 @@ trait SoftDeleteFile
     /**
      * @param File $file
      * @return JsonResponse
-     * @throws PermissionException
-     * @throws Throwable
      */
     public function adminSoftDelete(File $file): JsonResponse
     {
-        $data = clone $file;
+        $data = $file->getDeleteSnapshot();
+        $file->delete();
 
-        DB::
-        transaction(function () use ($file) {
-            $file->targets()->delete();
-            $file->delete();
-        });
-
-        return ResponseHelper::jsonResponse(FileResource::make($data), __(FileStr::messageDeleted->value));
+        return ResponseHelper::jsonResponse(FileResource::make($data), __(FileStr::messageSoftDelete->value));
     }
 
+    /**
+     * @throws PermissionException
+     */
     private function teacherSoftDelete(File $file): JsonResponse
     {
         // Note : file would be for teacher only
 
         $fileBelongsToOneTeacher = $file->belongsToOneTeacher();
-        if(!$fileBelongsToOneTeacher) {
+        if (!$fileBelongsToOneTeacher) {
             throw new PermissionException();
         }
-        $data = clone $file;
+        $data = $file->getDeleteSnapshot();
+        $file->delete();
 
-        DB::
-        transaction(function () use ($file) {
-            $file->targets()->delete();
-            $file->delete();
-        });
 
-        return ResponseHelper::jsonResponse(FileResource::make($data), __(FileStr::messageDeleted->value));
+        return ResponseHelper::jsonResponse(FileResource::make($data), __(FileStr::messageSoftDelete->value));
 
     }
 
