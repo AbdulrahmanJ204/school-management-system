@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ClassPeriodType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +16,7 @@ return new class extends Migration
             $table->time('end_time');
             $table->foreignId('school_shift_id')->constrained('school_shifts');
             $table->integer('period_order');
+            $table->enum('type', ClassPeriodType::values())->default(ClassPeriodType::STUDY->value);
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
 

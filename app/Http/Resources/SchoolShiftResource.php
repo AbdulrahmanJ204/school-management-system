@@ -20,6 +20,7 @@ class SchoolShiftResource extends JsonResource
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'is_active' => $this->is_active,
+            'class_periods' => ClassPeriodResource::collection($this->whenLoaded('classPeriods')),
         ];
     }
 }

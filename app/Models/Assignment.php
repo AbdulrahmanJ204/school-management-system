@@ -11,36 +11,26 @@ class Assignment extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'school_day_id',
-        'class_session_id',
+        'assigned_session_id',
+        'due_session_id',
         'type',
         'title',
         'description',
         'photo',
         'subject_id',
         'section_id',
-        'due_date',
         'created_by'
     ];
 
-    protected $casts = [
-        'due_date' => 'date'
-    ];
-
     // Relations
-    public function schedule(): BelongsTo
+    public function assignedSession(): BelongsTo
     {
-        return $this->belongsTo(Schedule::class);
+        return $this->belongsTo(ClassSession::class, 'assigned_session_id');
     }
 
-    public function schoolDay(): BelongsTo
+    public function dueSession(): BelongsTo
     {
-        return $this->belongsTo(SchoolDay::class);
-    }
-
-    public function classSession(): BelongsTo
-    {
-        return $this->belongsTo(ClassSession::class);
+        return $this->belongsTo(ClassSession::class, 'due_session_id');
     }
 
     public function subject(): BelongsTo
