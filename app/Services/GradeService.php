@@ -26,6 +26,7 @@ class GradeService
         $this->checkPermission(PermissionEnum::VIEW_GRADES);
 
         $grades = Grade::with([
+            'year',
 //            'sections',
 //            'mainSubjects'
         ])
@@ -45,6 +46,7 @@ class GradeService
         $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADES);
 
         $grades = Grade::with([
+            'year',
 //            'sections',
 //            'mainSubjects'
         ])
@@ -85,6 +87,7 @@ class GradeService
         $this->checkPermission(PermissionEnum::VIEW_GRADE);
 
         $grade->load([
+            'year',
 //            'sections',
 //            'mainSubjects.subjects',
 //            'settingGradeYears.year'
@@ -104,9 +107,11 @@ class GradeService
 
         $grade->update([
             'title' => $request->title,
+            'year_id' => $request->year_id,
         ]);
 
         $grade->load([
+            'year',
 //            'sections',
 //            'mainSubjects'
         ]);

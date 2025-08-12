@@ -10,18 +10,18 @@ return new class extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('schedules_id')->constrained('schedules');
-            $table->foreignId('school_day_id')->constrained('school_days');
-            $table->enum('type', ['homework', 'oral']);
+            $table->foreignId('class_session_id')->constrained('class_sessions');
+            $table->enum('type', ['homework', 'oral', 'quiz', 'project']);
             $table->string('title');
             $table->text('description');
-            $table->string('photo');
+            $table->string('photo')->nullable();
             $table->foreignId('subject_id')->constrained('subjects');
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
 
-            $table->index(['school_day_id', 'subject_id']);
+            $table->index(['class_session_id', 'subject_id']);
+            $table->index(['class_session_id', 'type']);
         });
     }
 

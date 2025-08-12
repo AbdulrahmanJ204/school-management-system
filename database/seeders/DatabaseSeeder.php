@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
             ExamSeeder::class,
             ComplaintSeeder::class,
             MessageSeeder::class,
+            ClassSessionSeeder::class,
         ]);
     }
 }

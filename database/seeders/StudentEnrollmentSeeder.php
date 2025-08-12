@@ -37,6 +37,7 @@ class StudentEnrollmentSeeder extends Seeder
                     'section_id' => $randomSection->id,
                     'grade_id' => $gradeId,
                     'semester_id' => $currentSemester->id,
+                    'year_id' => $currentSemester->year_id,
                     'created_by' => 1,
                 ]);
             }

@@ -19,6 +19,7 @@ class StudentEnrollmentResource extends JsonResource
             'student_id' => $this->student_id,
             'section_id' => $this->section_id,
             'semester_id' => $this->semester_id,
+            'year_id' => $this->year_id,
             'enrollment_date' => $this->enrollment_date,
             'status' => $this->status,
             'created_by' => $this->created_by,
@@ -27,6 +28,7 @@ class StudentEnrollmentResource extends JsonResource
             // 'student' => new StudentResource($this->whenLoaded('student')),
             'section' => new SectionResource($this->whenLoaded('section')),
             'semester' => new SemesterResource($this->whenLoaded('semester')),
+            'year' => new YearResource($this->whenLoaded('year')),
             'created_by_user' => new UserResource($this->whenLoaded('createdBy')),
 
             // Computed properties

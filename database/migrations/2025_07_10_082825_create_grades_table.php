@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('grades', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->foreignId('year_id')->constrained('years');
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');

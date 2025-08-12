@@ -75,3 +75,4 @@ require __DIR__.'/behavior-notes.php';
 require __DIR__.'/exams.php';
 require __DIR__.'/complaints.php';
 require __DIR__.'/messages.php';
+require __DIR__.'/class-sessions.php';

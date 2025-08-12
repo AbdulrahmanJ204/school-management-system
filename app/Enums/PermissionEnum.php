@@ -163,6 +163,13 @@ enum PermissionEnum: string
     case DELETE_MESSAGE = 'حذف رسالة';
     case MANAGE_DELETED_MESSAGES = 'إدارة الرسائل المحذوفة';
 
+    // Class Session Management
+    case VIEW_CLASS_SESSIONS = 'عرض جلسات الفصول';
+    case CREATE_CLASS_SESSION = 'انشاء جلسة فصل';
+    case VIEW_CLASS_SESSION = 'عرض جلسة فصل';
+    case UPDATE_CLASS_SESSION = 'تعديل جلسة فصل';
+    case DELETE_CLASS_SESSION = 'حذف جلسة فصل';
+
     /**
      * Get all permissions as an array
      */
@@ -303,6 +310,13 @@ enum PermissionEnum: string
                 self::UPDATE_MESSAGE->value,
                 self::DELETE_MESSAGE->value,
                 self::MANAGE_DELETED_MESSAGES->value,
+            ],
+            'class_session' => [
+                self::VIEW_CLASS_SESSIONS->value,
+                self::CREATE_CLASS_SESSION->value,
+                self::VIEW_CLASS_SESSION->value,
+                self::UPDATE_CLASS_SESSION->value,
+                self::DELETE_CLASS_SESSION->value,
             ],
             default => [],
         };

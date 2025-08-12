@@ -42,6 +42,16 @@ class Year extends Model
         return $this->hasMany(GradeYearSetting::class);
     }
 
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class);
+    }
+
+    public function studentEnrollments(): HasMany
+    {
+        return $this->hasMany(StudentEnrollment::class);
+    }
+
     // Scopes
     public function scopeActive($query)
     {
