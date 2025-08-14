@@ -2,7 +2,7 @@
 
 namespace App\Enums\Permissions;
 
-enum FilesPermission : string{
+enum FilesPermission : string {
     case store ='تخزين ملف';
     case update = 'تحديث ملف';
     case delete = 'حذف ملف نهائي';
