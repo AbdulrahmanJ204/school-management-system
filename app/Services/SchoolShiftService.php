@@ -48,7 +48,7 @@ class SchoolShiftService
     }
     public function update($request, $id)
     {
-        //AuthHelper::authorize(TimetablePermission::update->value);
+        AuthHelper::authorize(TimetablePermission::update->value);
 
         $schoolShift = SchoolShift::with('targets')->find($id);
 
@@ -114,7 +114,7 @@ class SchoolShiftService
 
     public function delete($id)
     {
-        //AuthHelper::authorize(TimetablePermission::delete->value);
+        AuthHelper::authorize(TimetablePermission::delete->value);
 
         $schoolShift = SchoolShift::find($id);
 
@@ -142,7 +142,7 @@ class SchoolShiftService
     }
     public function get($id)
     {
-        //AuthHelper::authorize(TimetablePermission::get->value);
+        AuthHelper::authorize(TimetablePermission::get->value);
 
         $schoolShift = SchoolShift::find($id);
 
@@ -158,7 +158,7 @@ class SchoolShiftService
     }
     public function list()
     {
-        //AuthHelper::authorize(TimetablePermission::list->value);
+        AuthHelper::authorize(TimetablePermission::list->value);
 
         $shifts = SchoolShift::latest()->get();
 
