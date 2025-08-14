@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
 class GradeRequest extends BaseRequest
@@ -17,7 +18,7 @@ class GradeRequest extends BaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -29,6 +30,10 @@ class GradeRequest extends BaseRequest
                 'string',
                 'max:255',
                 Rule::unique('grades', 'title')->ignore($gradeId),
+            ],
+            'year_id' => [
+                'required',
+                'exists:years,id',
             ],
         ];
     }
@@ -42,6 +47,8 @@ class GradeRequest extends BaseRequest
             'title.required' => 'عنوان الصف مطلوب',
             'title.unique' => 'عنوان الصف موجود مسبقاً',
             'title.max' => 'عنوان الصف يجب أن يكون أقل من 255 حرف',
+            'year_id.required' => 'السنة الدراسية مطلوبة',
+            'year_id.exists' => 'السنة الدراسية غير موجودة',
         ];
     }
 }

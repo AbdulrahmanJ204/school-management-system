@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ClassPeriodType;
 use Illuminate\Database\Eloquent\Model;
 
 class ClassPeriod extends Model
@@ -12,6 +13,11 @@ class ClassPeriod extends Model
         'end_time',
         'school_shift_id',
         'period_order',
+        'type',
+    ];
+
+    protected $casts = [
+        'type' => ClassPeriodType::class,
     ];
     public function schoolShift()
     {

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PermissionException;
 use App\Http\Requests\SemesterRequest;
 use App\Models\Semester;
 use App\Services\SemesterService;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class SemesterController extends Controller
 {
@@ -15,22 +16,50 @@ class SemesterController extends Controller
         $this->semesterService = $semesterService;
     }
 
-    public function store(SemesterRequest $request)
+    /**
+     * @throws PermissionException
+     */
+    public function store(SemesterRequest $request): JsonResponse
     {
         return $this->semesterService->createSemester($request);
     }
 
-    public function update(Request $request, Semester $semester)
+    /**
+     * @throws PermissionException
+     */
+    public function update(SemesterRequest $request, Semester $semester): JsonResponse
     {
         return $this->semesterService->updateSemester($request, $semester);
     }
 
-    public function destroy(Semester $semester)
+    /**
+     * @throws PermissionException
+     */
+    public function destroy(Semester $semester): JsonResponse
     {
         return $this->semesterService->destroySemester($semester);
     }
 
-    public function Active(Semester $semester)
+    /**
+     * @throws PermissionException
+     */
+    public function forceDelete($id): JsonResponse
+    {
+        return $this->semesterService->forceDeleteSemester($id);
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function restore($id): JsonResponse
+    {
+        return $this->semesterService->restoreSemester($id);
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function Active(Semester $semester): JsonResponse
     {
         return $this->semesterService->ActiveSemester($semester);
     }

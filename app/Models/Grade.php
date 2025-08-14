@@ -6,13 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Grade extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'title',
+        'year_id',
         'created_by'
     ];
 
@@ -32,9 +34,9 @@ class Grade extends Model
         return $this->hasMany(Section::class);
     }
 
-    public function subjectMajors(): HasMany
+    public function mainSubjects(): HasMany
     {
-        return $this->hasMany(SubjectMajor::class);
+        return $this->hasMany(MainSubject::class);
     }
 
     public function settingGradeYears(): HasMany
@@ -44,6 +46,11 @@ class Grade extends Model
     public function schoolShiftTargets(): HasMany
     {
         return $this->hasMany(SchoolShiftTarget::class);
+    }
+
+    public function year(): BelongsTo
+    {
+        return $this->belongsTo(Year::class);
     }
 }
 

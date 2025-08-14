@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
-use App\Http\Requests\file\StoreFileRequest;
-use App\Http\Requests\file\UpdateFileRequest;
+
+use App\Http\Requests\File\ListFilesRequest;
+use App\Http\Requests\File\StoreFileRequest;
+use App\Http\Requests\File\UpdateFileRequest;
 use App\Models\File;
-use App\Services\FileService;
+use App\Services\Files\FileService;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 
@@ -20,11 +23,15 @@ class FileController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(ListFilesRequest $request): JsonResponse
     {
-        return $this->fileService->list();
+        return $this->fileService->list($request);
     }
 
+    public function bySubject(ListFilesRequest $request , $id): JsonResponse
+    {
+        return $this->fileService->list($request , $id);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -59,7 +66,7 @@ class FileController extends Controller
      */
     public function destroy(File $file): JsonResponse
     {
-        return $this->fileService->destroy($file);
+        return $this->fileService->softDelete($file);
     }
 
     /**

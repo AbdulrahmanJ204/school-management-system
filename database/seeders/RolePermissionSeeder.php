@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PermissionEnum;
 use App\Enums\NewsPermission;
 use App\Enums\Permissions\FilesPermission;
 use App\Enums\Permissions\TimetablePermission;
@@ -20,36 +21,13 @@ class RolePermissionSeeder extends Seeder
 
         $superAdminRole = Role::Create(['name' => 'super_admin', 'guard_name' => $guard]);
 
+        // Use the enum to get all permissions
+        $permissions = PermissionEnum::getAllPermissions();
         $permissions = [
-            'انشاء مستخدم',
-            'تعديل مستخدم',
-            'عرض المشرفين',
-            'عرض الاساتذة',
-            'عرض الطلاب',
-            'عرض المشرفين و الاساتذة',
-            'عرض مستخدم',
-            'حذف مستخدم',
-            'تغيير كلمة السر',
-            'انشاء اختبار مؤتمت',
-            'تفعيل اختبار مؤتمت',
-            'تعطيل اختبار مؤتمت',
-            'تعديل اختبار مؤتمت',
-            'حذف اختبار مؤتمت',
-            'انشاء سؤال',
-            'تعديل سؤال',
-            'حذف سؤال',
-            'انشاء نتيجة اختبار مؤتمت',
-            'عرض الاختبارات المؤتمتة',
-            'عرض الاختبار المؤتمت',
-            'انشاء دور',
-            'عرض الصلاحيات',
-            'تعديل دور',
-            'عرض ادوار',
-            'عرض دور',
-            'حذف دور',
-            ...array_map(fn($permission) => $permission->value, NewsPermission::cases()),
-            ...array_map(fn($permission) => $permission->value, FilesPermission::cases()),
-            ...array_map(fn($permission) => $permission->value, TimetablePermission::cases()),
+            ...$permissions,
+            ...NewsPermission::values(),
+            ...FilesPermission::values(),
+            ...TimetablePermission::values(),
         ];
 
         foreach ($permissions as $permission) {

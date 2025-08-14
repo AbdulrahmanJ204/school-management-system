@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('file_downloads', function (Blueprint $table) {
             $table->id();
@@ -15,11 +15,10 @@ return new class extends Migration
             $table->timestamp('downloaded_at');
             $table->string('ip_address', 45);
             $table->timestamps();
-            $table->foreignId('created_by')->constrained('users');
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('file_downloads');
     }

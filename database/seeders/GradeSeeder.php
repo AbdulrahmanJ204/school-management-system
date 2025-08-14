@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\Grade;
 
 class GradeSeeder extends Seeder
 {
@@ -18,36 +16,42 @@ class GradeSeeder extends Seeder
             // Primary School
             [
                 'title' => 'الصف الأول الابتدائي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'الصف الثاني الابتدائي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'الصف الثالث الابتدائي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'الصف الرابع الابتدائي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'الصف الخامس الابتدائي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'الصف السادس الابتدائي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -56,18 +60,21 @@ class GradeSeeder extends Seeder
             // Middle School
             [
                 'title' => 'الصف السابع الإعدادي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'الصف الثامن الإعدادي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'الصف التاسع الإعدادي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -76,18 +83,21 @@ class GradeSeeder extends Seeder
             // High School
             [
                 'title' => 'الصف العاشر الثانوي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'الصف الحادي عشر الثانوي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'الصف البكلوريا الثانوي',
+                'year_id' => 2, // 2024-2025 (active year)
                 'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),

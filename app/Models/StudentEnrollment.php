@@ -4,40 +4,50 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StudentEnrollment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'student_id',
+        'grade_id',
         'section_id',
         'semester_id',
+        'year_id',
         'created_by'
     ];
 
     // Relations
-    public function student()
+    public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
-    public function section()
+    public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
     }
 
-    public function semester()
+    public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
     }
 
-    public function createdBy()
+    public function year(): BelongsTo
+    {
+        return $this->belongsTo(Year::class);
+    }
+
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function studentMarks()
+    public function studentMarks(): HasMany
     {
         return $this->hasMany(StudentMark::class, 'enrollment_id');
     }
@@ -58,50 +68,6 @@ class StudentEnrollment extends Model
         return $this->student->user;
     }
 
-    // Methods
-    public function getSubjectsWithMarks()
-    {
-        return $this->studentMarks()
-            ->with('subject.subjectMajor')
-            ->get()
-            ->groupBy('subject.subject_major_id');
-    }
-
-    public function getTotalMarks()
-    {
-        return $this->studentMarks()->sum('total');
-    }
-
-    public function getAverageMarks()
-    {
-        $marks = $this->studentMarks()->whereNotNull('total');
-        return $marks->count() > 0 ? $marks->avg('total') : 0;
-    }
-
-    public function getFailedSubjects()
-    {
-        return $this->studentMarks()
-            ->with('subject.subjectMajor')
-            ->get()
-            ->filter(function($mark) {
-                return !$mark->isPass();
-            });
-    }
-
-    public function isPromoted()
-    {
-        $failedSubjects = $this->getFailedSubjects();
-        $gradeYear = GradeYearSetting::where('year_id', $this->semester->year_id)
-            ->where('grade_id', $this->section->grade_id)
-            ->first();
-
-        if (!$gradeYear) {
-            return false;
-        }
-
-        return $failedSubjects->count() <= $gradeYear->max_failed_subjects;
-    }
-
     // Scopes
     public function scopeForSemester($query, $semesterId)
     {
@@ -117,13 +83,6 @@ class StudentEnrollment extends Model
     {
         return $query->whereHas('section', function($q) use ($gradeId) {
             $q->where('grade_id', $gradeId);
-        });
-    }
-
-    public function scopeForYear($query, $yearId)
-    {
-        return $query->whereHas('semester', function($q) use ($yearId) {
-            $q->where('year_id', $yearId);
         });
     }
 }

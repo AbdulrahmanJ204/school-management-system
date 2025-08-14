@@ -12,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        //TODO: Register Services
     }
 
     /**
@@ -20,7 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
+        Route::pattern('id', '[0-9]+');
+        Route::pattern('news', '[0-9]+');
         Route::pattern('file', '[0-9]+');
     }
 }

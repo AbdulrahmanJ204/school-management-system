@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('behavior_notes', function (Blueprint $table) {
             $table->id();
@@ -15,11 +15,12 @@ return new class extends Migration
             $table->enum('behavior_type', ['positive', 'negative']);
             $table->string('note');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('behavior_notes');
     }

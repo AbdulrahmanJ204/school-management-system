@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Year;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
 class SemesterRequest extends BaseRequest
@@ -19,7 +19,7 @@ class SemesterRequest extends BaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -42,27 +42,27 @@ class SemesterRequest extends BaseRequest
                 'required',
                 'date',
                 'before:end_date',
-//                function ($attribute, $value, $fail) {
-//                    if ($this->year_id) {
-//                        $year = Year::find($this->year_id);
-//                        if ($year && $year->start_date && $value < $year->start_date->toDateString()) {
-//                            $fail('تاريخ بداية الفصل يجب أن يكون بعد تاريخ بداية السنة الدراسية');
-//                        }
-//                    }
-//                }
+                function ($attribute, $value, $fail) {
+                    if ($this->year_id) {
+                        $year = Year::findOrFail($this->year_id);
+                        if ($year && $year->start_date && $value < $year->start_date->toDateString()) {
+                            $fail('تاريخ بداية الفصل يجب أن يكون بعد تاريخ بداية السنة الدراسية');
+                        }
+                    }
+                }
             ],
             'end_date' => [
                 'required',
                 'date',
                 'after:start_date',
-//                function ($attribute, $value, $fail) {
-//                    if ($this->year_id) {
-//                        $year = Year::find($this->year_id);
-//                        if ($year && $year->end_date && $value > $year->end_date->toDateString()) {
-//                            $fail('تاريخ نهاية الفصل يجب أن يكون قبل تاريخ نهاية السنة الدراسية');
-//                        }
-//                    }
-//                }
+                function ($attribute, $value, $fail) {
+                    if ($this->year_id) {
+                        $year = Year::findOrFail($this->year_id);
+                        if ($year && $year->end_date && $value > $year->end_date->toDateString()) {
+                            $fail('تاريخ نهاية الفصل يجب أن يكون قبل تاريخ نهاية السنة الدراسية');
+                        }
+                    }
+                }
             ]
         ];
     }

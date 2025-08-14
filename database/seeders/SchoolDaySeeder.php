@@ -3,14 +3,9 @@
 namespace Database\Seeders;
 
 use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\SchoolDay;
-use App\Models\Semester;
-use DateTime;
-
-
 
 class SchoolDaySeeder extends Seeder
 {
@@ -29,7 +24,7 @@ class SchoolDaySeeder extends Seeder
 
         while ($currentDate->lte($endDate)) {
             // Skip Fridays and Saturdays (weekend in many Arab countries)
-            if (!in_array($currentDate->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY])) {
+            if (!in_array($currentDate->dayOfWeek, [CarbonInterface::FRIDAY, CarbonInterface::SATURDAY])) {
                 // Most days are study days
                 $type = 'study';
 

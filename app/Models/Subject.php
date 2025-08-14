@@ -4,14 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Subject extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
-        'subject_major_id',
+        'main_subject_id',
         'code',
         'full_mark',
         'homework_percentage',
@@ -20,6 +23,7 @@ class Subject extends Model
         'quiz_percentage',
         'exam_percentage',
         'num_class_period',
+        'is_failed',
         'created_by'
     ];
 
@@ -30,56 +34,62 @@ class Subject extends Model
         'activity_percentage' => 'integer',
         'quiz_percentage' => 'integer',
         'exam_percentage' => 'integer',
-        'num_class_period' => 'integer'
+        'num_class_period' => 'integer',
+        'is_failed' => 'boolean'
     ];
 
     // Relations
-    public function subjectMajor()
+    public function mainSubject(): BelongsTo
     {
-        return $this->belongsTo(SubjectMajor::class);
+        return $this->belongsTo(MainSubject::class);
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function assignments()
+    public function teacherSectionSubjects(): HasMany
+    {
+        return $this->hasMany(TeacherSectionSubject::class);
+    }
+
+    public function quizTargets(): HasMany
+    {
+        return $this->hasMany(QuizTarget::class);
+    }
+
+    public function assignments(): HasMany
     {
         return $this->hasMany(Assignment::class);
     }
 
-    public function studentMarks()
+    public function studentMarks(): HasMany
     {
         return $this->hasMany(StudentMark::class);
     }
 
-    public function studyNotes()
+    public function studyNotes(): HasMany
     {
         return $this->hasMany(StudyNote::class);
     }
 
-    public function files()
+    public function files(): HasMany
     {
         return $this->hasMany(File::class);
     }
 
-    public function getGradeAttribute()
+    public function getGrade()
     {
-        return $this->subjectMajor->grade;
+        return $this->mainSubject->grade;
     }
-
     // Func
-    public function calculateTotalPercentage()
+
+    public function TotalPercentage()
     {
         return $this->homework_percentage + $this->oral_percentage +
             $this->activity_percentage + $this->quiz_percentage +
             $this->exam_percentage;
-    }
-
-    public function quizTargets()
-    {
-        return $this->hasMany(QuizTarget::class);
     }
 }
 

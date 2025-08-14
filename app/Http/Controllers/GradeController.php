@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ResponseHelper;
-use App\Http\Controllers\Controller;
+use App\Exceptions\PermissionException;
 use App\Http\Requests\GradeRequest;
-use App\Http\Resources\GradeResource;
 use App\Models\Grade;
 use App\Services\GradeService;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 
 class GradeController extends Controller
 {
@@ -22,29 +19,66 @@ class GradeController extends Controller
 
     /**
      * Display a listing of the resource.
+     * @throws PermissionException
      */
-    public function index()
+    public function index(): JsonResponse
     {
         return $this->gradeService->listGrade();
     }
 
-    public function store(GradeRequest $request)
+    /**
+     * @throws PermissionException
+     */
+    public function store(GradeRequest $request): JsonResponse
     {
         return $this->gradeService->createGrade($request);
     }
 
-    public function show(Grade $grade)
+    /**
+     * @throws PermissionException
+     */
+    public function show(Grade $grade): JsonResponse
     {
         return $this->gradeService->showGrade($grade);
     }
 
-    public function update(Request $request, Grade $grade)
+    /**
+     * @throws PermissionException
+     */
+    public function update(GradeRequest $request, Grade $grade): JsonResponse
     {
         return $this->gradeService->updateGrade($request, $grade);
     }
 
-    public function destroy(Grade $grade)
+    /**
+     * @throws PermissionException
+     */
+    public function destroy(Grade $grade): JsonResponse
     {
         return $this->gradeService->destroyGrade($grade);
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function trashed(): JsonResponse
+    {
+        return $this->gradeService->listTrashedGrades();
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function restore($id): JsonResponse
+    {
+        return $this->gradeService->restoreGrade($id);
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function forceDelete($id): JsonResponse
+    {
+        return $this->gradeService->forceDeleteGrade($id);
     }
 }

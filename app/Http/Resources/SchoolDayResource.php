@@ -21,10 +21,10 @@ class SchoolDayResource extends JsonResource
             'type' => $this->type,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
-
             'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
-//            'created_by' => new UserResource($this->whenLoaded('createdBy')),
+
             'semester' => new SemesterResource($this->whenLoaded('semester')),
+            'exams' => ExamResource::collection($this->whenLoaded('exams')),
         ];
     }
 }

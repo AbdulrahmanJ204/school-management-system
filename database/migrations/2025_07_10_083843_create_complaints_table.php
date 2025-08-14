@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('complaints', function (Blueprint $table) {
             $table->id();
@@ -15,11 +15,12 @@ return new class extends Migration
             $table->text('content');
             $table->text('answer')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('complaints');
     }

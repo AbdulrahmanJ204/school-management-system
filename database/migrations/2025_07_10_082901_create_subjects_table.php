@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('subject_major_id')->constrained('subject_majors');
+            $table->foreignId('main_subject_id')->constrained('main_subjects');
             $table->string('code');
             $table->integer('full_mark');
             $table->integer('homework_percentage');
@@ -20,12 +20,14 @@ return new class extends Migration
             $table->integer('quiz_percentage');
             $table->integer('exam_percentage');
             $table->integer('num_class_period');
+            $table->boolean('is_failed')->default(false);
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('subjects');
     }

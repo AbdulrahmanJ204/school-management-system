@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->prefix('files')->controller(FileController::class)->group(function () {
     Route::get('/', 'index')->name('files.index');
+    Route::get('/subject/{id}', 'bySubject')->name('files.bySubject');
     Route::get('/download/{file}', 'download')->name('files.download');
     Route::get('/{file}', 'show')->name('files.show');
 

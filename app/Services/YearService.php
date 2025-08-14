@@ -2,21 +2,30 @@
 
 namespace App\Services;
 
+use App\Enums\PermissionEnum;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\YearRequest;
-use App\Http\Resources\UserResource;
 use App\Http\Resources\YearResource;
-use App\Models\User;
 use App\Models\Year;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
+use App\Traits\HasPermissionChecks;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class YearService
 {
-    public function listYear()
+    use HasPermissionChecks;
+
+    /**
+     * @throws PermissionException
+     */
+    public function listYear(): JsonResponse
     {
-        $years = Year::with(['createdBy', 'semesters'])
+        $this->checkPermission(PermissionEnum::VIEW_YEARS);
+
+        $years = Year::with([
+//            'semesters'
+        ])
             ->orderBy('start_date', 'desc')
             ->get();
 
@@ -25,8 +34,32 @@ class YearService
         );
     }
 
-    public function createYear(YearRequest $request)
+    /**
+     * @throws PermissionException
+     */
+    public function listTrashedYears(): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_YEARS);
+
+        $years = Year::with([
+//            'semesters'
+        ])
+            ->onlyTrashed()
+            ->orderBy('start_date', 'desc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            YearResource::collection($years)
+        );
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function createYear(YearRequest $request): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::CREATE_YEAR);
+
         $admin = auth()->user();
         $credentials = $request->validated();
         $credentials['created_by'] = $admin->id;
@@ -35,22 +68,40 @@ class YearService
         return ResponseHelper::jsonResponse(
             new YearResource($year),
             __('messages.year.created'),
-            201,
-            true
+            ResponseAlias::HTTP_CREATED,
         );
     }
 
-    public function showYear(Year $year)
+    /**
+     * @throws PermissionException
+     */
+    public function showYear(Year $year): JsonResponse
     {
-        $year->load(['createdBy', 'semesters.schoolDays', 'settingGradeYears.grade']);
+        $this->checkPermission(PermissionEnum::VIEW_YEAR);
 
+        $year->load([
+//            'semesters.schoolDays',
+//            'settingGradeYears.grade'
+        ]);
         return ResponseHelper::jsonResponse(
             new YearResource($year),
         );
     }
 
-    public function updateYear($request,Year $year)
+    /**
+     * @throws PermissionException
+     */
+    public function updateYear($request, Year $year): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::UPDATE_YEAR);
+
+        if($request->is_active){
+            $activeYears = Year::where('is_active',true)->get();
+            foreach ($activeYears as $activeYear){
+                $activeYear->update(['is_active' => false]);
+            }
+        }
+
         $year->update([
             'name' => $request->name,
             'start_date' => $request->start_date,
@@ -58,7 +109,9 @@ class YearService
             'is_active' => $request->is_active ?? $year->is_active,
         ]);
 
-        $year->load(['createdBy', 'semesters']);
+        $year->load([
+//            'semesters'
+        ]);
 
         return ResponseHelper::jsonResponse(
             new YearResource($year),
@@ -66,13 +119,18 @@ class YearService
         );
     }
 
-    public function destroyYear(Year $year)
+    /**
+     * @throws PermissionException
+     */
+    public function destroyYear(Year $year): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::DELETE_YEAR);
+
         // Check if year has related data
         if ($year->semesters()->exists()) {
             return response()->json([
                 'message' => 'Cannot delete year with existing semesters'
-            ], Response::HTTP_CONFLICT);
+            ], ResponseAlias::HTTP_CONFLICT);
         }
 
         $year->delete();
@@ -83,8 +141,67 @@ class YearService
         );
     }
 
-    public function ActiveYear(Year $year)
+    /**
+     * @throws PermissionException
+     */
+    public function restoreYear($id): JsonResponse
     {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_YEARS);
+
+        $year = Year::withTrashed()->findOrFail($id);
+
+        if (!$year->trashed()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'Year is not deleted',
+                ResponseAlias::HTTP_BAD_REQUEST,
+                false
+            );
+        }
+
+        $year->restore();
+
+        return ResponseHelper::jsonResponse(
+            new YearResource($year),
+            __('messages.year.restored'),
+        );
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function forceDeleteYear($id): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::MANAGE_DELETED_YEARS);
+
+//        $year = Year::withTrashed()->findOrFail($id);
+        $year = Year::findOrFail($id);
+
+        // Check if year has related data
+        if ($year->semesters()->exists()) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.year.has_semesters'),
+                ResponseAlias::HTTP_BAD_REQUEST,
+                false
+            );
+        }
+
+        $year->forceDelete();
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.year.force_deleted'),
+        );
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function ActiveYear(Year $year): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::UPDATE_YEAR);
+
         $activeYears = Year::where('is_active',true)->get();
         foreach ($activeYears as $activeYear){
             $activeYear->update(['is_active' => false]);

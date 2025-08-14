@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('subject_id')->nullable()->constrained('subjects');
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('type', ['public', 'helper'])->default('public');
+            $table->enum('type', ['public', 'helper'])->default('helper');
             $table->string('file');
             $table->unsignedBigInteger('size');
             $table->dateTime('publish_date');

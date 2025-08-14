@@ -7,7 +7,6 @@ use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\Year;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class StudentEnrollmentSeeder extends Seeder
@@ -38,6 +37,7 @@ class StudentEnrollmentSeeder extends Seeder
                     'section_id' => $randomSection->id,
                     'grade_id' => $gradeId,
                     'semester_id' => $currentSemester->id,
+                    'year_id' => $currentSemester->year_id,
                     'created_by' => 1,
                 ]);
             }

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
@@ -14,11 +14,12 @@ return new class extends Migration
             $table->string('title');
             $table->text('message');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('messages');
     }

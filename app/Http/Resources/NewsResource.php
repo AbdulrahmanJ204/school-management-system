@@ -19,7 +19,7 @@ class NewsResource extends JsonResource
         $user = auth()->user();
 
         if ($user->user_type === UserType::Admin->value) {
-            $targets = $this->whenLoaded('newsTargets');
+            $targets = $this->whenLoaded('targets');
 
             $grades = GradeResource::collection($targets->whereNotNull('grade')->pluck('grade')->unique()->values());
             $sections = SectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());

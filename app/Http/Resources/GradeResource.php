@@ -17,12 +17,22 @@ class GradeResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'year_id' => $this->year_id,
+            'year' => $this->whenLoaded('year', function () {
+                return [
+                    'id' => $this->year->id,
+                    'name' => $this->year->name,
+                    'start_date' => $this->year->start_date?->format('Y-m-d'),
+                    'end_date' => $this->year->end_date?->format('Y-m-d'),
+                    'is_active' => $this->year->is_active,
+                ];
+            }),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
 
             'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
             'sections' => SectionResource::collection($this->whenLoaded('sections')),
-//            'subject_majors' => SubjectMajorResource::collection($this->whenLoaded('subjectMajors')),
+//            'main_subjects' => MainSubjectResource::collection($this->whenLoaded('Mainsubjects')),
 //            'setting_grade_years' => SettingGradeYearResource::collection($this->whenLoaded('settingGradeYears')),
 
         ];

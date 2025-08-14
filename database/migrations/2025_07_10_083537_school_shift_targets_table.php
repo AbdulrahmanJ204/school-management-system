@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('school_shift_targets', function (Blueprint $table) {
             $table->id();
@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('school_shift_targets');
     }
