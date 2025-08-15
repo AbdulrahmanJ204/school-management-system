@@ -13,6 +13,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScoreQuizController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('roles', RoleController::class);
     Route::get('permissions', [PermissionController::class, 'show']);
     Route::resource('school_shifts', SchoolShiftController::class);
+    Route::resource('timetable', TimeTableController::class);
 })->middleware(['user_type:admin', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {

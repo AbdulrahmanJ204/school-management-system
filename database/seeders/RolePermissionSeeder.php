@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Enums\PermissionEnum;
-use App\Enums\NewsPermission;
 use App\Enums\Permissions\FilesPermission;
+use App\Enums\Permissions\NewsPermission;
 use App\Enums\Permissions\TimetablePermission;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;

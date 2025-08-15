@@ -12,8 +12,7 @@ class UpdateSchoolShiftRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
-        //return auth()->user()->hasPermissionTo(TimetablePermission::update->value);
+        return auth()->user()->hasPermissionTo(TimetablePermission::update->value);
     }
 
     /**
