@@ -8,6 +8,7 @@ use App\Helpers\AuthHelper;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\SchoolShiftResource;
 use App\Models\SchoolShift;
+use App\Models\Section;
 use Illuminate\Support\Facades\DB;
 
 class SchoolShiftService
@@ -19,6 +20,22 @@ class SchoolShiftService
         AuthHelper::authorize(TimetablePermission::create->value);
 
         $credentials = $request->validated();
+
+        $overlappingShift = SchoolShift::where(function($query) use ($credentials) {
+            $query->where(function($q) use ($credentials) {
+                $q->where('start_time', '<', $credentials['end_time'])
+                    ->where('end_time', '>', $credentials['start_time']);
+            });
+        })->first();
+
+        if ($overlappingShift) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.school_shift.overlapped'),
+                201
+            );
+        }
+
         $credentials['created_by'] = $user->id;
 
         DB::beginTransaction();
@@ -32,10 +49,19 @@ class SchoolShiftService
         ]);
 
         foreach ($credentials['targets'] as $target) {
-            $shift->targets()->create([
-                'grade_id'   => $target['grade_id'],
-                'section_id' => $target['section_id'],
-            ]);
+            $gradeId = $target['grade_id'];
+
+            // If sections is missing or empty → get all sections for this grade
+            $sections = !empty($target['sections'])
+                ? $target['sections']
+                : Section::where('grade_id', $gradeId)->pluck('id')->toArray();
+
+            foreach ($sections as $sectionId) {
+                $shift->targets()->create([
+                    'grade_id'  => $gradeId,
+                    'section_id'=> $sectionId,
+                ]);
+            }
         }
 
         DB::commit();
@@ -58,9 +84,26 @@ class SchoolShiftService
 
         $credentials = $request->validated();
 
+        // Check for overlapping shifts (exclude the current one)
+        $overlappingShift = SchoolShift::where('id', '!=', $id)
+            ->where(function($query) use ($credentials) {
+                $query->where('start_time', '<', $credentials['end_time'])
+                    ->where('end_time', '>', $credentials['start_time']);
+            })
+            ->first();
+
+        if ($overlappingShift) {
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.school_shift.overlapped'),
+                201
+            );
+        }
+
         try {
             DB::beginTransaction();
 
+            // Update main shift fields
             $schoolShift->update([
                 'name'       => $credentials['name'] ?? $schoolShift->name,
                 'start_time' => $credentials['start_time'] ?? $schoolShift->start_time,
@@ -68,40 +111,44 @@ class SchoolShiftService
                 'is_active'  => $credentials['is_active'] ?? $schoolShift->is_active,
             ]);
 
-            $existingIds = [];
+            // Sync targets if provided
+            if (isset($credentials['targets'])) {
+                $existingIds = [];
 
-            if (!empty($credentials['targets'])) {
                 foreach ($credentials['targets'] as $target) {
-                    if (isset($target['id'])) {
-                        // Update existing
-                        $shiftTarget = $schoolShift->targets()
-                            ->where('id', $target['id'])
+                    $gradeId = $target['grade_id'];
+
+                    // Use provided sections or all sections for the grade
+                    $sections = !empty($target['sections'])
+                        ? $target['sections']
+                        : Section::where('grade_id', $gradeId)->pluck('id')->toArray();
+
+                    foreach ($sections as $sectionId) {
+                        $existing = $schoolShift->targets()
+                            ->where('grade_id', $gradeId)
+                            ->where('section_id', $sectionId)
                             ->first();
 
-                        if ($shiftTarget) {
-                            $shiftTarget->update([
-                                'grade_id'   => $target['grade_id'],
-                                'section_id' => $target['section_id'],
+                        if (!$existing) {
+                            $newTarget = $schoolShift->targets()->create([
+                                'grade_id'  => $gradeId,
+                                'section_id'=> $sectionId,
                             ]);
-                            $existingIds[] = $shiftTarget->id;
+                            $existingIds[] = $newTarget->id;
+                        } else {
+                            $existingIds[] = $existing->id;
                         }
-                    } else {
-                        // Create new
-                        $newTarget = $schoolShift->targets()->create([
-                            'grade_id'   => $target['grade_id'],
-                            'section_id' => $target['section_id'],
-                        ]);
-                        $existingIds[] = $newTarget->id;
                     }
                 }
 
-                // Delete removed ones
+                // Remove any old targets not included in this update
                 $schoolShift->targets()->whereNotIn('id', $existingIds)->delete();
             }
 
             DB::commit();
 
             $schoolShift->load('targets');
+
             return ResponseHelper::jsonResponse(
                 new SchoolShiftResource($schoolShift),
                 __('messages.school_shift.updated'),
@@ -109,9 +156,9 @@ class SchoolShiftService
             );
         } catch (\Throwable $e) {
             DB::rollBack();
+            throw $e; // Re-throw so your global handler can catch it
         }
     }
-
     public function delete($id)
     {
         AuthHelper::authorize(TimetablePermission::delete->value);

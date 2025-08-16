@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClassPeriodController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SchoolDayController;
 use App\Http\Controllers\SchoolShiftController;
@@ -39,6 +40,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('permissions', [PermissionController::class, 'show']);
     Route::resource('school_shifts', SchoolShiftController::class);
     Route::resource('timetable', TimeTableController::class);
+    Route::resource('class_period', ClassPeriodController::class);
 })->middleware(['user_type:admin', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {
