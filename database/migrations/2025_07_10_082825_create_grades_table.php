@@ -6,21 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::create('sections', function (Blueprint $table) {
+        Schema::create('grades', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->foreignId('grade_id')->constrained('grades');
+            $table->foreignId('year_id')->constrained('years');
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }
 
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('sections');
+        Schema::dropIfExists('grades');
     }
-
 };

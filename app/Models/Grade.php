@@ -14,6 +14,7 @@ class Grade extends Model
 
     protected $fillable = [
         'title',
+        'year_id',
         'created_by'
     ];
 
@@ -45,6 +46,11 @@ class Grade extends Model
     public function schoolShiftTargets(): HasMany
     {
         return $this->hasMany(SchoolShiftTarget::class);
+    }
+
+    public function year(): BelongsTo
+    {
+        return $this->belongsTo(Year::class);
     }
 }
 

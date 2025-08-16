@@ -6,22 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('student_attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained('students');
-            $table->foreignId('school_day_id')->constrained('school_days');
-            $table->foreignId('class_period_id')->nullable()->constrained('class_periods');
-            $table->enum('status', ['Excused absence', 'Unexcused absence', 'late']);
+            $table->foreignId('class_session_id')->constrained('class_sessions');
+            $table->enum('status', ['Excused absence', 'Unexcused absence', 'Late']);
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
 
-            $table->index(['student_id', 'school_day_id']);
+            $table->index(['class_session_id', 'student_id']);
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('student_attendances');
     }

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('student_enrollments', function (Blueprint $table) {
             $table->id();
@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('section_id')->constrained('sections');
             $table->foreignId('grade_id')->constrained('grades');
             $table->foreignId('semester_id')->constrained('semesters');
+            $table->foreignId('year_id')->constrained('years');
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
@@ -22,7 +23,7 @@ return new class extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('student_enrollments');
     }

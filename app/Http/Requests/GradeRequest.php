@@ -31,6 +31,10 @@ class GradeRequest extends BaseRequest
                 'max:255',
                 Rule::unique('grades', 'title')->ignore($gradeId),
             ],
+            'year_id' => [
+                'required',
+                'exists:years,id',
+            ],
         ];
     }
 
@@ -43,6 +47,8 @@ class GradeRequest extends BaseRequest
             'title.required' => 'عنوان الصف مطلوب',
             'title.unique' => 'عنوان الصف موجود مسبقاً',
             'title.max' => 'عنوان الصف يجب أن يكون أقل من 255 حرف',
+            'year_id.required' => 'السنة الدراسية مطلوبة',
+            'year_id.exists' => 'السنة الدراسية غير موجودة',
         ];
     }
 }

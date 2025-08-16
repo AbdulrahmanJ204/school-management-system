@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::create('class_period_targets', function (Blueprint $table) {
+        Schema::create('school_shift_targets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('school_shift_id')->constrained('school_shifts');
             $table->foreignId('section_id')->nullable()->constrained('sections');
@@ -16,8 +16,8 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('class_period_targets');
+        Schema::dropIfExists('school_shift_targets');
     }
 };

@@ -17,6 +17,7 @@ class StudentEnrollment extends Model
         'grade_id',
         'section_id',
         'semester_id',
+        'year_id',
         'created_by'
     ];
 
@@ -34,6 +35,11 @@ class StudentEnrollment extends Model
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
+    }
+
+    public function year(): BelongsTo
+    {
+        return $this->belongsTo(Year::class);
     }
 
     public function createdBy(): BelongsTo
