@@ -29,10 +29,12 @@ trait ListFiles
         $query = File::withTrashed()
             ->belongsToYear($yearId)
             ->orderByPublishDate();
-        if($request->has($this->querySubject)) {
+        if ($request->has($this->querySubject)) {
             $query->forSubject($data[$this->querySubject]);
         }
-
+        if ($request->has($this->apiType)) {
+            $query->forType($data[$this->apiType]);
+        }
         $files = $query->get();
         $files->each->loadTargets();
         return ResponseHelper::jsonResponse(FileResource::collection($files), __(FileStr::messageRetrieved->value));
@@ -42,7 +44,7 @@ trait ListFiles
     {
         // Teacher Can Access Only Current Assignments Files
         $teacher = auth()->user()->teacher;
-        $files = File::belongsToTeacher($teacher->id , $subjectID)
+        $files = File::belongsToTeacher($teacher->id, $subjectID)
             ->orderByPublishDate()
             ->get();
 
@@ -76,11 +78,14 @@ trait ListFiles
         $overallStartDate = $enrollments->min('semester.start_date');
         $overallEndDate = $enrollments->max('semester.end_date');
         $gradeId = $enrollments->pluck('grade_id')->first();
+        $query = File::inDateRange($overallStartDate, $overallEndDate)
+            ->forGradeOrPublic($gradeId)
+            ->forSubject($subjectId);
+        if($request->has($this->apiType)) {
+            $query->forType($data[$this->apiType]);
+        }
         $gradeAndPublicFiles =
-            File::inDateRange($overallStartDate, $overallEndDate)
-                ->forGradeOrPublic($gradeId)
-                ->forSubject($subjectId)
-                ->get();
+            $query->get();
         $files = $files->merge($gradeAndPublicFiles)
             ->unique('id')
             ->sortByDesc('publish_date')

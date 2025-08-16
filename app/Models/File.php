@@ -144,5 +144,10 @@ class File extends Model
     {
         return $query->where('subject_id', $subjectID);
     }
+    #[Scope]
+    protected function forType(Builder $query , $type): Builder
+    {
+        return $query->where('type', $type);
+    }
 
 }
