@@ -29,6 +29,7 @@ class StudentEnrollmentService
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_ENROLLMENTS);
 
         $enrollments = StudentEnrollment::with([
+            'year',
 //            'student.user',
 //            'section.grade',
 //            'semester.year',
@@ -49,7 +50,10 @@ class StudentEnrollmentService
 
         $credentials = $request->validated();
         $section = Section::findOrFail($credentials['section_id']);
-        $credentials['grade_id'] = $section->id;
+        $semester = Semester::findOrFail($credentials['semester_id']);
+        
+        $credentials['grade_id'] = $section->grade_id;
+        $credentials['year_id'] = $semester->year_id;
         $credentials['created_by'] = auth()->id();
 
         // Check if enrollment already exists for this student and semester
@@ -68,6 +72,7 @@ class StudentEnrollmentService
 
         $enrollment = StudentEnrollment::create($credentials);
         $enrollment->load([
+            'year',
 //            'student.user',
 //            'section.grade',
 //            'semester.year',
@@ -90,6 +95,7 @@ class StudentEnrollmentService
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_ENROLLMENT);
 
         $studentEnrollment->load([
+            'year',
 //            'student.user',
 //            'section.grade',
 //            'semester.year',
@@ -112,7 +118,10 @@ class StudentEnrollmentService
         $credentials = $request->validated();
 
         $section = Section::findOrFail($credentials['section_id']);
-        $credentials['grade_id'] = $section->id;
+        $semester = Semester::findOrFail($credentials['semester_id']);
+        
+        $credentials['grade_id'] = $section->grade_id;
+        $credentials['year_id'] = $semester->year_id;
 
         // Check if enrollment already exists for this student and semester (excluding current enrollment)
         $existingEnrollment = StudentEnrollment::where('student_id', $credentials['student_id'])
@@ -131,6 +140,7 @@ class StudentEnrollmentService
 
         $studentEnrollment->update($credentials);
         $studentEnrollment->load([
+            'year',
 //            'student.user',
 //            'section.grade',
 //            'semester.year',
@@ -176,6 +186,7 @@ class StudentEnrollmentService
         $this->checkPermission(PermissionEnum::MANAGE_DELETED_STUDENT_ENROLLMENTS);
 
         $enrollments = StudentEnrollment::with([
+            'year',
 //            'student.user',
 //            'section.grade',
 //            'semester.year',
@@ -208,6 +219,7 @@ class StudentEnrollmentService
 
         $enrollment->restore();
         $enrollment->load([
+            'year',
 //            'student.user',
 //            'section.grade',
 //            'semester.year',
@@ -256,6 +268,7 @@ class StudentEnrollmentService
 
         $student = Student::findOrFail($studentId);
         $enrollments = StudentEnrollment::where('student_id', $studentId)->with([
+            'year',
 //            'student.user',
 //            'section.grade',
 //            'semester.year',
@@ -275,6 +288,7 @@ class StudentEnrollmentService
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_ENROLLMENTS);
 
         $enrollments = StudentEnrollment::where('section_id', $sectionId)->with([
+            'year',
 //            'student.user',
 //            'section.grade',
 //            'semester.year',
@@ -294,6 +308,7 @@ class StudentEnrollmentService
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_ENROLLMENTS);
 
         $enrollments = StudentEnrollment::where('semester_id', $semesterId)->with([
+            'year',
 //            'student.user',
 //            'section.grade',
 //            'semester.year',

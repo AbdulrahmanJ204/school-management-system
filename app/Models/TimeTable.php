@@ -12,6 +12,12 @@ class TimeTable extends Model
         'is_active',
         'created_by',
     ];
+
+    protected $casts = [
+        'valid_from' => 'date',
+        'valid_to'   => 'date',
+        'is_active'  => 'boolean',
+    ];
     public function schedules()
     {
         return $this->hasMany(Schedule::class);

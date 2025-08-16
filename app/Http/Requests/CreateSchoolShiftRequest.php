@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Permissions\TimetablePermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateSchoolShiftRequest extends FormRequest
@@ -11,7 +12,7 @@ class CreateSchoolShiftRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth('api')->check();
+        return auth()->user()->hasPermissionTo(TimetablePermission::create->value);
     }
 
     /**
@@ -26,6 +27,9 @@ class CreateSchoolShiftRequest extends FormRequest
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'is_active' => 'required|boolean',
+            'targets'                => 'required|array',
+            'targets.*.grade_id'     => 'required|exists:grades,id',
+            'targets.*.section_id'   => 'nullable|exists:sections,id',
         ];
     }
 }

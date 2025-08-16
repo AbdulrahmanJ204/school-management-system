@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('teacher_section_subjects', function (Blueprint $table) {
             $table->id();
             $table->foreignId('teacher_id')->constrained('teachers');
-            $table->foreignId('grade_id')->constrained('grades');
             $table->foreignId('subject_id')->constrained('subjects');
+            $table->foreignId('grade_id')->constrained('grades');
             $table->foreignId('section_id')->constrained('sections');
             $table->boolean('is_active');
             $table->integer('num_class_period');
@@ -22,7 +22,7 @@ return new class extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('teacher_section_subjects');
     }

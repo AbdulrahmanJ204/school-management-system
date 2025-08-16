@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\PermissionEnum;
 use App\Enums\Permissions\FilesPermission;
 use App\Enums\Permissions\NewsPermission;
+use App\Enums\Permissions\TimetablePermission;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -24,9 +25,9 @@ class RolePermissionSeeder extends Seeder
         $permissions = PermissionEnum::getAllPermissions();
         $permissions = [
             ...$permissions,
-            'انشاء فترة دوام',
             ...NewsPermission::values(),
             ...FilesPermission::values(),
+            ...TimetablePermission::values(),
         ];
 
         foreach ($permissions as $permission) {
