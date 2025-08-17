@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\File;
 
+use App\Enums\FileType;
 use App\Enums\StringsManager\FileStr;
 use App\Http\Requests\BaseRequest;
+use Illuminate\Validation\Rule;
 
 class ListFilesRequest extends BaseRequest
 {
@@ -25,6 +27,7 @@ class ListFilesRequest extends BaseRequest
         return [
             FileStr::queryYear->value =>'sometimes|exists:years,id',
             FileStr::querySubject->value=>'sometimes|nullable|exists:subjects,id',
+            FileStr::apiType->value=>['sometimes' , Rule::enum(FileType::class)],
         ];
     }
 }
