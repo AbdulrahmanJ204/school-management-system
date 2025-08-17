@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateClassPeriodRequest;
 use App\Http\Requests\UpdateClassPeriodRequest;
 use App\Services\ClassPeriodService;
-use Illuminate\Http\Request;
 
 class ClassPeriodController extends Controller
 {

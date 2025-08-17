@@ -22,7 +22,8 @@ return new class extends Migration
                 WeekDay::THURSDAY->value,
                 WeekDay::FRIDAY->value,
                 WeekDay::SATURDAY->value,
-            ]);            $table->timestamps();
+            ]);
+            $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
         });
     }

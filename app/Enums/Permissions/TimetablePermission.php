@@ -21,4 +21,9 @@ enum TimetablePermission : string {
     case delete_class_period = 'حذف حصة دراسية';
     case get_class_period = 'عرض حصة دراسية';
     case list_class_period = 'عرض حصص دراسية';
+    case create_schedule = 'انشاء جدول دراسي';
+    case update_schedule = 'تعديل جدول دراسي';
+    case delete_schedule = 'حذف جدول دراسي';
+    case get_schedule = 'عرض جدول دراسي';
+    case list_schedule = 'عرض جداول دراسية';
 }

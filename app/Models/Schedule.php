@@ -11,6 +11,7 @@ class Schedule extends Model
         'teacher_section_subject_id',
         'timetable_id',
         'week_day',
+        'created_by'
     ];
     public function timetable()
     {
