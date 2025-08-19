@@ -4,7 +4,7 @@ namespace App\Http\Requests\File;
 
 use App\Enums\FileType;
 use App\Enums\Permissions\FilesPermission;
-use App\Enums\StringsManager\FileStr;
+use App\Enums\StringsManager\Files\FileApi;
 use App\Enums\UserType;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -42,30 +42,30 @@ class StoreFileRequest extends BaseRequest
     public function adminRules(): array
     {
         return [
-            FileStr::apiSubjectId->value => 'sometimes|nullable|exists:subjects,id',
-            FileStr::apiTitle->value => 'required|string|max:255',
-            FileStr::apiDescription->value => 'sometimes|nullable|string',
-            FileStr::apiFile->value => 'required|file',
-            FileStr::apiType->value => ['required', Rule::enum(FileType::class)],
-            FileStr::apiSectionIds->value => 'sometimes|array',
-            FileStr::apiSectionIds->value . '.*' => 'exists:sections,id',
-            FileStr::apiGradeIds->value => ['missing_with:' . FileStr::apiSectionIds->value, 'array'],
-            FileStr::apiGradeIds->value . '.*' => 'exists:grades,id',
+            FileApi::apiSubjectId->value => 'sometimes|nullable|exists:subjects,id',
+            FileApi::apiTitle->value => 'required|string|max:255',
+            FileApi::apiDescription->value => 'sometimes|nullable|string',
+            FileApi::apiFile->value => 'required|file',
+            FileApi::apiType->value => ['required', Rule::enum(FileType::class)],
+            FileApi::apiSectionIds->value => 'sometimes|array',
+            FileApi::apiSectionIds->value . '.*' => 'exists:sections,id',
+            FileApi::apiGradeIds->value => ['missing_with:' . FileApi::apiSectionIds->value, 'array'],
+            FileApi::apiGradeIds->value . '.*' => 'exists:grades,id',
         ];
     }
 
     private function teacherRules(): array
     {
         return [
-            FileStr::apiSubjectId->value => 'required|exists:subjects,id',
-            FileStr::apiTitle->value => 'required|string|max:255',
-            FileStr::apiDescription->value => 'sometimes|nullable|string',
-            FileStr::apiFile->value => 'required|file',
-            FileStr::apiSectionIds->value => 'required|array',
-            FileStr::apiSectionIds->value . '.*' => 'exists:sections,id',
+            FileApi::apiSubjectId->value => 'required|exists:subjects,id',
+            FileApi::apiTitle->value => 'required|string|max:255',
+            FileApi::apiDescription->value => 'sometimes|nullable|string',
+            FileApi::apiFile->value => 'required|file',
+            FileApi::apiSectionIds->value => 'required|array',
+            FileApi::apiSectionIds->value . '.*' => 'exists:sections,id',
 
-            FileStr::apiType->value => 'missing',
-            FileStr::apiGradeIds->value => 'missing',
+            FileApi::apiType->value => 'missing',
+            FileApi::apiGradeIds->value => 'missing',
         ];
     }
 }

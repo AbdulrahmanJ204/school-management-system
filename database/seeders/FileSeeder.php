@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\StringsManager\FileStr;
+use App\Enums\StringsManager\Files\FileStr;
 use App\Enums\UserType;
 use App\Models\File;
 use App\Models\FileTarget;
@@ -11,9 +11,7 @@ use App\Models\Section;
 use App\Models\Subject;
 use App\Models\User;
 use App\Models\Year;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 

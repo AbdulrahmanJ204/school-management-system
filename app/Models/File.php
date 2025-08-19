@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\StringsManager\FileStr;
+use App\Enums\StringsManager\Files\FileStr;
 use App\Traits\NewsAndFilesScopes;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -118,7 +118,7 @@ class File extends Model
     }
 
     #[Scope]
-    protected function belongsToTeacher(Builder $query, $teacherId , $subjectId = null): void
+    protected function belongsToTeacher(Builder $query, $teacherId ,$subjectID ,  $SectionId): void
     {
         // This scope for files that targets teachers sections in his subjects ,
         // Note: The file could be for multiple teachers
@@ -127,25 +127,28 @@ class File extends Model
             $join->on('files.id', '=', 'file_targets.file_id')
                 ->whereNull('file_targets.deleted_at');
         })
-            ->join('teacher_section_subjects as tss', function ($join) use ($subjectId, $teacherId) {
+            ->join('teacher_section_subjects as tss', function ($join) use ($SectionId, $subjectID, $teacherId) {
                 $join->on('tss.subject_id', '=', 'files.subject_id')
                     ->on('tss.section_id', '=', 'file_targets.section_id')
                     ->where('tss.teacher_id', $teacherId)
                     ->where('tss.is_active', true);
-                if($subjectId)
-                    $join->where('tss.subject_id', $subjectId);
+
+                if($subjectID) $join->where('tss.subject_id', $subjectID);
+                if($SectionId) $join->where('tss.section_id', $SectionId);
+
             })
             ->select('files.*')
             ->distinct();
     }
 
     #[Scope]
-    protected function forSubject(Builder $query , $subjectID): Builder
+    protected function forSubject(Builder $query, $subjectID): Builder
     {
         return $query->where('subject_id', $subjectID);
     }
+
     #[Scope]
-    protected function forType(Builder $query , $type): Builder
+    protected function forType(Builder $query, $type): Builder
     {
         return $query->where('type', $type);
     }

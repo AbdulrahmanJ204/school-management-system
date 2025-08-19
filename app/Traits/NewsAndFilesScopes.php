@@ -71,5 +71,22 @@ trait NewsAndFilesScopes
                 });
         });
     }
+    #[Scope]
+    protected function forSectionOrPublic($query, $sectionId)
+    {
+        return $query->whereHas('targets', function ($q) use ($sectionId) {
+            $q->where('section_id', $sectionId)
+                ->orWhere(function ($subQ) {
+                    $subQ->generalTargets();
+                });
+        });
+    }
 
+    #[Scope]
+    protected function forPublic($query)
+    {
+        return $query->whereHas('targets', function ($q) {
+            $q->generalTargets();
+        });
+    }
 }

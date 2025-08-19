@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\Permissions\FilesPermission;
-use App\Enums\StringsManager\FileStr;
+use App\Enums\StringsManager\Files\FileApi;
 use App\Enums\UserType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,7 +23,7 @@ class FileResource extends JsonResource
         if ($user_type === UserType::Admin->value || $user_type === UserType::Teacher->value) {
             $array = array_merge($array, $this->adminAdditionalAttributes());
             if($user_type === UserType::Teacher->value) {
-                $array[FileStr::apiCanDelete->value] =
+                $array[FileApi::apiCanDelete->value] =
                     auth()->user()->hasPermissionTo(FilesPermission::softDelete->value)
                     && $this->belongsToOneTeacher()
                     && !$array['deleted_at'];
