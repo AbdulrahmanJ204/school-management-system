@@ -29,7 +29,7 @@ class CreateSchoolShiftRequest extends FormRequest
             'is_active' => 'required|boolean',
             'targets'                => 'required|array',
             'targets.*.grade_id'     => 'required|exists:grades,id',
-            'targets.*.section_id'   => 'required|exists:sections,id',
+            'targets.*.section_id'   => 'nullable|exists:sections,id',
         ];
     }
 }

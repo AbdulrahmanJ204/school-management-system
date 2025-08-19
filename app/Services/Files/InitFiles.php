@@ -1,6 +1,8 @@
 <?php
 namespace App\Services\Files;
-use App\Enums\StringsManager\FileStr;
+use App\Enums\StringsManager\Files\FileStr;
+use App\Enums\StringsManager\Files\FileApi;
+use App\Enums\StringsManager\QueryParams;
 
 trait InitFiles {
     /**
@@ -8,17 +10,21 @@ trait InitFiles {
      */
     private function apiKeys(): void
     {
-        $this->apiTitle = FileStr::apiTitle->value;
-        $this->apiDescription = FileStr::apiDescription->value;
-        $this->apiSubjectId = FileStr::apiSubjectId->value;
-        $this->apiIsGeneral = FileStr::apiIsGeneral->value;
-        $this->apiType = FileStr::apiType->value;
-        $this->apiFile = FileStr::apiFile->value;
-        $this->apiNoSubject = FileStr::apiNoSubject->value;
-        $this->apiSectionIds = FileStr::apiSectionIds->value;
-        $this->apiGradeIds = FileStr::apiGradeIds->value;
-        $this->queryYear = FileStr::queryYear->value;
-        $this->querySubject = FileStr::querySubject->value;
+        $this->apiTitle = FileApi::apiTitle->value;
+        $this->apiDescription = FileApi::apiDescription->value;
+        $this->apiSubjectId = FileApi::apiSubjectId->value;
+        $this->apiIsGeneral = FileApi::apiIsGeneral->value;
+        $this->apiType = FileApi::apiType->value;
+        $this->apiFile = FileApi::apiFile->value;
+        $this->apiNoSubject = FileApi::apiNoSubject->value;
+        $this->apiSectionIds = FileApi::apiSectionIds->value;
+        $this->apiGradeIds = FileApi::apiGradeIds->value;
+        $this->queryYear = QueryParams::Year->value;
+        $this->queryType = QueryParams::Type->value;
+        $this->querySubject = QueryParams::Subject->value;
+        $this->queryGrade = QueryParams::Grade->value;
+        $this->querySection = QueryParams::Section->value;
+        $this->queryGeneral = QueryParams::General->value;
     }
 
 

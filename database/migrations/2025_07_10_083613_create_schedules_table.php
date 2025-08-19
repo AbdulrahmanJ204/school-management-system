@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('class_period_id')->constrained('class_periods');
             $table->foreignId('teacher_section_subject_id')->constrained('teacher_section_subjects');
-            $table->foreignId('timetable_id')->constrained('timetables');
+            $table->foreignId('timetable_id')->constrained('time_tables');
             $table->enum('week_day', [
                 WeekDay::SUNDAY->value,
                 WeekDay::MONDAY->value,
@@ -22,7 +22,8 @@ return new class extends Migration
                 WeekDay::THURSDAY->value,
                 WeekDay::FRIDAY->value,
                 WeekDay::SATURDAY->value,
-            ]);            $table->timestamps();
+            ]);
+            $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
         });
     }

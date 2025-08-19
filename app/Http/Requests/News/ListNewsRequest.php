@@ -3,6 +3,7 @@
 namespace App\Http\Requests\News;
 
 use App\Enums\StringsManager\NewsStr;
+use App\Enums\StringsManager\QueryParams;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,7 +25,10 @@ class ListNewsRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            NewsStr::queryYear->value => 'sometimes|exists:years,id',
-        ];
+            QueryParams::Year->value => 'sometimes|exists:years,id',
+            QueryParams::Section->value => 'sometimes|exists:sections,id',
+            QueryParams::Grade->value => 'sometimes|exists:grades,id',
+            QueryParams::General->value => 'sometimes'
+            ];
     }
 }

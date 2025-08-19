@@ -9,7 +9,7 @@ Route::middleware('auth:api')->prefix('files')->controller(FileController::class
     Route::get('/download/{file}', 'download')->name('files.download');
     Route::get('/{file}', 'show')->name('files.show');
 
-    Route::post('/store', 'store')->name('files.store');
+    Route::post('/', 'store')->name('files.store');
     Route::post('/restore/{file}', 'restore')->name('files.store');
     Route::post('/{file}', 'update')->name('files.update');
 

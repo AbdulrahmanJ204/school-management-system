@@ -97,7 +97,7 @@ class QuizService
             DB::commit();
 
             return ResponseHelper::jsonResponse(
-                null,
+                new DetailedQuizResource($quiz),
                 __('messages.quiz.created'),
                 201
             );

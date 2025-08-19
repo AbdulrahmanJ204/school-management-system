@@ -14,6 +14,8 @@ class ClassPeriod extends Model
         'school_shift_id',
         'period_order',
         'type',
+        'created_by',
+        'duration_minutes'
     ];
 
     protected $casts = [

@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Http\Requests\file;
+namespace App\Http\Requests\File;
 
 use App\Enums\FileType;
 use App\Enums\Permissions\FilesPermission;
-use App\Enums\StringsManager\FileStr;
+use App\Enums\StringsManager\Files\FileApi;
 use App\Enums\UserType;
+use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Validator;
 
-class UpdateFileRequest extends FormRequest
+class UpdateFileRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -42,34 +41,34 @@ class UpdateFileRequest extends FormRequest
     public function adminRules(): array
     {
         return [
-            FileStr::apiSubjectId->value => 'sometimes|nullable|exists:subjects,id',
-            FileStr::apiTitle->value => 'sometimes|string|max:255',
-            FileStr::apiDescription->value => 'sometimes|nullable|string',
-            FileStr::apiFile->value => 'sometimes|file',
-            FileStr::apiType->value => ['sometimes', Rule::enum(FileType::class)],
-            FileStr::apiSectionIds->value => 'sometimes|array',
-            FileStr::apiSectionIds->value . '.*' => 'exists:sections,id',
-            FileStr::apiGradeIds->value => ['array', 'missing_with:' . FileStr::apiSectionIds->value],
-            FileStr::apiGradeIds->value . '.*' => 'exists:grades,id',
-            FileStr::apiIsGeneral->value => ['boolean','missing_with:'.FileStr::apiGradeIds->value.','.FileStr::apiSectionIds->value],
-            FileStr::apiNoSubject->value => ['boolean','missing_with:'.FileStr::apiSubjectId->value],
+            FileApi::apiSubjectId->value => 'sometimes|nullable|exists:subjects,id',
+            FileApi::apiTitle->value => 'sometimes|string|max:255',
+            FileApi::apiDescription->value => 'sometimes|nullable|string',
+            FileApi::apiFile->value => 'sometimes|file',
+            FileApi::apiType->value => ['sometimes', Rule::enum(FileType::class)],
+            FileApi::apiSectionIds->value => 'sometimes|array',
+            FileApi::apiSectionIds->value . '.*' => 'exists:sections,id',
+            FileApi::apiGradeIds->value => ['array', 'missing_with:' . FileApi::apiSectionIds->value],
+            FileApi::apiGradeIds->value . '.*' => 'exists:grades,id',
+            FileApi::apiIsGeneral->value => ['boolean','missing_with:'.FileApi::apiGradeIds->value.','.FileApi::apiSectionIds->value],
+            FileApi::apiNoSubject->value => ['boolean','missing_with:'.FileApi::apiSubjectId->value],
         ];
     }
 
     private function teacherRules(): array
     {
         return [
-            FileStr::apiSubjectId->value => 'sometimes|exists:subjects,id',
-            FileStr::apiTitle->value => 'sometimes|string|max:255',
-            FileStr::apiDescription->value => 'sometimes|nullable|string',
-            FileStr::apiFile->value => 'sometimes|file',
-            FileStr::apiSectionIds->value => ['array', 'required_with:' . FileStr::apiSubjectId->value],
-            FileStr::apiSectionIds->value . '.*' => 'exists:sections,id',
+            FileApi::apiSubjectId->value => 'sometimes|exists:subjects,id',
+            FileApi::apiTitle->value => 'sometimes|string|max:255',
+            FileApi::apiDescription->value => 'sometimes|nullable|string',
+            FileApi::apiFile->value => 'sometimes|file',
+            FileApi::apiSectionIds->value => ['array', 'required_with:' . FileApi::apiSubjectId->value],
+            FileApi::apiSectionIds->value . '.*' => 'exists:sections,id',
 
-            FileStr::apiType->value => 'missing',
-            FileStr::apiGradeIds->value => 'missing',
-            FileStr::apiIsGeneral->value => 'missing',
-            FileStr::apiNoSubject->value => 'missing',
+            FileApi::apiType->value => 'missing',
+            FileApi::apiGradeIds->value => 'missing',
+            FileApi::apiIsGeneral->value => 'missing',
+            FileApi::apiNoSubject->value => 'missing',
         ];
     }
 }

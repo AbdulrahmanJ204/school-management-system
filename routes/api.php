@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClassPeriodController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SchoolDayController;
 use App\Http\Controllers\SchoolShiftController;
 use App\Http\Controllers\SectionController;
@@ -13,6 +15,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScoreQuizController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +39,9 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('roles', RoleController::class);
     Route::get('permissions', [PermissionController::class, 'show']);
     Route::resource('school_shifts', SchoolShiftController::class);
+    Route::resource('timetable', TimeTableController::class);
+    Route::resource('class_period', ClassPeriodController::class);
+    Route::resource('schedules', ScheduleController::class);
 })->middleware(['user_type:admin', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {
@@ -80,3 +86,4 @@ require __DIR__.'/student-attendances.php';
 require __DIR__.'/teacher-attendances.php';
 require __DIR__.'/assignments.php';
 require __DIR__.'/logs.php';
+

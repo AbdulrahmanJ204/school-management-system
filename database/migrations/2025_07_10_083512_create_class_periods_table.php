@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('type', ClassPeriodType::values())->default(ClassPeriodType::STUDY->value);
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
-
+            $table->integer('duration_minutes');
             $table->unique(['school_shift_id', 'period_order']);
         });
     }

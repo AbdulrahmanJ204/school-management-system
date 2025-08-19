@@ -110,7 +110,7 @@ class YearService
         ]);
 
         $year->load([
-//            'semesters'
+            'semesters'
         ]);
 
         return ResponseHelper::jsonResponse(

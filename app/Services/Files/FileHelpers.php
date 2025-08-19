@@ -2,7 +2,7 @@
 
 namespace App\Services\Files;
 
-use App\Enums\StringsManager\FileStr;
+use App\Enums\StringsManager\Files\FileStr;
 use App\Models\File;
 use App\Models\Year;
 use Illuminate\Support\Facades\Storage;
