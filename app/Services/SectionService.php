@@ -24,7 +24,7 @@ class SectionService
         $this->checkPermission(PermissionEnum::VIEW_SECTIONS);
 
         $sections = Section::with([
-//            'grade'
+            'grade'
         ])
             ->orderBy('title', 'asc')
             ->get();
@@ -42,7 +42,7 @@ class SectionService
         $this->checkPermission(PermissionEnum::MANAGE_DELETED_SECTIONS);
 
         $sections = Section::with([
-//            'grade'
+            'grade'
         ])
             ->onlyTrashed()
             ->orderBy('title', 'asc')
@@ -66,7 +66,7 @@ class SectionService
         $section = Section::create($credentials);
 
         $section->load([
-//            'grade'
+            'grade'
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -85,9 +85,9 @@ class SectionService
         $this->checkPermission(PermissionEnum::VIEW_SECTION);
 
         $section->load([
-//            'grade',
-//            'studentEnrollments.student',
-//            'teacherSectionSubjects.teacher'
+            'grade',
+            'studentEnrollments.student',
+            'teacherSectionSubjects.teacher'
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -105,7 +105,7 @@ class SectionService
         $section->update($request->validated());
 
         $section->load([
-//            'grade'
+            'grade'
         ]);
 
         return ResponseHelper::jsonResponse(

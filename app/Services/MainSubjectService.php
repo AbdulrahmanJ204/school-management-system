@@ -26,8 +26,8 @@ class MainSubjectService
         $this->checkPermission(PermissionEnum::VIEW_MAIN_SUBJECTS);
 
         $mainSubjects = MainSubject::with([
-//            'grade',
-//            'subjects'
+            'grade',
+            'subjects'
         ])->orderBy('name', 'asc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -48,7 +48,7 @@ class MainSubjectService
 
         $mainSubject = MainSubject::create($credentials);
         $mainSubject->load([
-//            'grade',
+            'grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -68,8 +68,8 @@ class MainSubjectService
         $this->checkPermission(PermissionEnum::VIEW_MAIN_SUBJECT);
 
         $mainSubject->load([
-//            'grade',
-//            'subjects'
+            'grade',
+            'subjects'
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -89,7 +89,7 @@ class MainSubjectService
         $mainSubject->update($credentials);
 
         $mainSubject->load([
-//            'grade',
+            'grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -133,7 +133,7 @@ class MainSubjectService
         $this->checkPermission(PermissionEnum::MANAGE_DELETED_MAIN_SUBJECTS);
 
         $mainSubjects = MainSubject::with([
-//            'grade',
+            'grade',
         ])
             ->onlyTrashed()
             ->orderBy('name', 'asc')
@@ -165,7 +165,7 @@ class MainSubjectService
 
         $mainSubject->restore();
         $mainSubject->load([
-//            'grade',
+            'grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -248,8 +248,8 @@ class MainSubjectService
 
             // Load relationships
             $mainSubject->load([
-//                'grade',
-//                'subjects'
+                'grade',
+                'subjects'
             ]);
 
             \DB::commit();

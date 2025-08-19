@@ -26,7 +26,7 @@ class SchoolDayService
         $this->checkPermission(PermissionEnum::VIEW_SCHOOL_DAYS);
 
         $schoolDays = SchoolDay::with([
-//            'semester'
+            'semester'
         ])
             ->orderBy('date', 'desc')
             ->get();
@@ -44,7 +44,7 @@ class SchoolDayService
         $this->checkPermission(PermissionEnum::MANAGE_DELETED_SCHOOL_DAYS);
 
         $schoolDays = SchoolDay::with([
-//            'semester'
+            'semester'
         ])
             ->where('semester_id', $semester->id)
             ->onlyTrashed()
@@ -90,27 +90,27 @@ class SchoolDayService
         );
     }
 
-//    /**
-//     * @throws PermissionException
-//     */
-//    public function showSchoolDay(SchoolDay $schoolDay): JsonResponse
-//    {
-//        $this->checkPermission(PermissionEnum::VIEW_SCHOOL_DAY);
-//
-//        $schoolDay->load([
-////            'semester.year',
-////            'assignments.subject',
-////            'behaviorNotes.student',
-////            'studyNotes.student',
-////            'studentAttendances.student',
-////            'teacherAttendances.teacher',
-////            'news'
-//        ]);
-//
-//        return ResponseHelper::jsonResponse(
-//            new SchoolDayResource($schoolDay),
-//        );
-//    }
+    /**
+     * @throws PermissionException
+     */
+    public function showSchoolDay(SchoolDay $schoolDay): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::VIEW_SCHOOL_DAY);
+
+        $schoolDay->load([
+            'semester.year',
+            'assignments.subject',
+            'behaviorNotes.student',
+            'studyNotes.student',
+            'studentAttendances.student',
+            'teacherAttendances.teacher',
+            'news'
+        ]);
+
+        return ResponseHelper::jsonResponse(
+            new SchoolDayResource($schoolDay),
+        );
+    }
 
     /**
      * @throws PermissionException
@@ -126,7 +126,7 @@ class SchoolDayService
         ]);
 
         $schoolDay->load([
-//            'semester'
+            'semester'
         ]);
 
         return ResponseHelper::jsonResponse(

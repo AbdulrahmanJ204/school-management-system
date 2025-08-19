@@ -27,8 +27,8 @@ class GradeService
 
         $grades = Grade::with([
             'year',
-//            'sections',
-//            'mainSubjects'
+            'sections',
+            'mainSubjects'
         ])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -47,8 +47,8 @@ class GradeService
 
         $grades = Grade::with([
             'year',
-//            'sections',
-//            'mainSubjects'
+            'sections',
+            'mainSubjects'
         ])
             ->onlyTrashed()
             ->orderBy('created_at', 'desc')
@@ -88,9 +88,9 @@ class GradeService
 
         $grade->load([
             'year',
-//            'sections',
-//            'mainSubjects.subjects',
-//            'settingGradeYears.year'
+            'sections',
+            'mainSubjects.subjects',
+            'settingGradeYears.year'
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -112,8 +112,8 @@ class GradeService
 
         $grade->load([
             'year',
-//            'sections',
-//            'mainSubjects'
+            'sections',
+            'mainSubjects'
         ]);
 
         return ResponseHelper::jsonResponse(

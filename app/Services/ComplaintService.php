@@ -23,7 +23,7 @@ class ComplaintService
         $this->checkPermission(PermissionEnum::VIEW_COMPLAINTS);
 
         $complaints = Complaint::with([
-            // 'user',
+             'user',
         ])
             ->orderBy('id', 'desc')
             ->get();
@@ -43,7 +43,7 @@ class ComplaintService
 
         $complaints = Complaint::onlyTrashed()
             ->with([
-                // 'user',
+                 'user',
             ])
             ->orderBy('id', 'desc')
             ->get();
@@ -86,7 +86,7 @@ class ComplaintService
         $this->checkPermission(PermissionEnum::VIEW_COMPLAINT);
 
         $complaint = Complaint::with([
-            // 'user',
+                'user',
             ])->findOrFail($id);
 
         return ResponseHelper::jsonResponse(
@@ -111,7 +111,7 @@ class ComplaintService
             'answer' => $request->answer,
         ]);
 
-        // $complaint->load(['user']);
+         $complaint->load(['user']);
 
         return ResponseHelper::jsonResponse(
             new ComplaintResource($complaint),
@@ -207,11 +207,11 @@ class ComplaintService
             'answer' => $request->answer,
         ]);
 
-        // $complaint->load(['user']);
+         $complaint->load(['user']);
 
         return ResponseHelper::jsonResponse(
             new ComplaintResource($complaint),
             __('messages.complaint.answered')
         );
     }
-} 
+}

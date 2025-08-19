@@ -30,9 +30,9 @@ class StudentEnrollmentService
 
         $enrollments = StudentEnrollment::with([
             'year',
-//            'student.user',
-//            'section.grade',
-//            'semester.year',
+            'student.user',
+            'section.grade',
+            'semester.year',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -51,7 +51,7 @@ class StudentEnrollmentService
         $credentials = $request->validated();
         $section = Section::findOrFail($credentials['section_id']);
         $semester = Semester::findOrFail($credentials['semester_id']);
-        
+
         $credentials['grade_id'] = $section->grade_id;
         $credentials['year_id'] = $semester->year_id;
         $credentials['created_by'] = auth()->id();
@@ -73,9 +73,9 @@ class StudentEnrollmentService
         $enrollment = StudentEnrollment::create($credentials);
         $enrollment->load([
             'year',
-//            'student.user',
-//            'section.grade',
-//            'semester.year',
+            'student.user',
+            'section.grade',
+            'semester.year',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -96,10 +96,10 @@ class StudentEnrollmentService
 
         $studentEnrollment->load([
             'year',
-//            'student.user',
-//            'section.grade',
-//            'semester.year',
-//            'studentMarks.subject.mainSubject'
+            'student.user',
+            'section.grade',
+            'semester.year',
+            'studentMarks.subject.mainSubject'
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -119,7 +119,7 @@ class StudentEnrollmentService
 
         $section = Section::findOrFail($credentials['section_id']);
         $semester = Semester::findOrFail($credentials['semester_id']);
-        
+
         $credentials['grade_id'] = $section->grade_id;
         $credentials['year_id'] = $semester->year_id;
 
@@ -141,9 +141,9 @@ class StudentEnrollmentService
         $studentEnrollment->update($credentials);
         $studentEnrollment->load([
             'year',
-//            'student.user',
-//            'section.grade',
-//            'semester.year',
+            'student.user',
+            'section.grade',
+            'semester.year',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -187,9 +187,9 @@ class StudentEnrollmentService
 
         $enrollments = StudentEnrollment::with([
             'year',
-//            'student.user',
-//            'section.grade',
-//            'semester.year',
+            'student.user',
+            'section.grade',
+            'semester.year',
         ])->onlyTrashed()->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -220,9 +220,9 @@ class StudentEnrollmentService
         $enrollment->restore();
         $enrollment->load([
             'year',
-//            'student.user',
-//            'section.grade',
-//            'semester.year',
+            'student.user',
+            'section.grade',
+            'semester.year',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -269,9 +269,9 @@ class StudentEnrollmentService
         $student = Student::findOrFail($studentId);
         $enrollments = StudentEnrollment::where('student_id', $studentId)->with([
             'year',
-//            'student.user',
-//            'section.grade',
-//            'semester.year',
+            'student.user',
+            'section.grade',
+            'semester.year',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -289,9 +289,9 @@ class StudentEnrollmentService
 
         $enrollments = StudentEnrollment::where('section_id', $sectionId)->with([
             'year',
-//            'student.user',
-//            'section.grade',
-//            'semester.year',
+            'student.user',
+            'section.grade',
+            'semester.year',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -309,9 +309,9 @@ class StudentEnrollmentService
 
         $enrollments = StudentEnrollment::where('semester_id', $semesterId)->with([
             'year',
-//            'student.user',
-//            'section.grade',
-//            'semester.year',
+            'student.user',
+            'section.grade',
+            'semester.year',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(

@@ -24,7 +24,7 @@ class YearService
         $this->checkPermission(PermissionEnum::VIEW_YEARS);
 
         $years = Year::with([
-//            'semesters'
+            'semesters'
         ])
             ->orderBy('start_date', 'desc')
             ->get();
@@ -42,7 +42,7 @@ class YearService
         $this->checkPermission(PermissionEnum::MANAGE_DELETED_YEARS);
 
         $years = Year::with([
-//            'semesters'
+            'semesters'
         ])
             ->onlyTrashed()
             ->orderBy('start_date', 'desc')
@@ -80,8 +80,8 @@ class YearService
         $this->checkPermission(PermissionEnum::VIEW_YEAR);
 
         $year->load([
-//            'semesters.schoolDays',
-//            'settingGradeYears.grade'
+            'semesters.schoolDays',
+            'settingGradeYears.grade'
         ]);
         return ResponseHelper::jsonResponse(
             new YearResource($year),

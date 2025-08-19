@@ -25,9 +25,9 @@ class ExamService
         $this->checkPermission(PermissionEnum::VIEW_EXAMS);
 
         $exams = Exam::with([
-            // 'schoolDay',
-            // 'grade',
-            // 'mainSubject',
+             'schoolDay',
+             'grade',
+             'mainSubject',
         ])
             ->orderBy('id', 'desc')
             ->get();
@@ -47,9 +47,9 @@ class ExamService
 
         $exams = Exam::onlyTrashed()
             ->with([
-                // 'schoolDay',
-                // 'grade',
-                // 'mainSubject',
+                 'schoolDay',
+                 'grade',
+                 'mainSubject',
             ])
             ->orderBy('id', 'desc')
             ->get();
@@ -74,7 +74,7 @@ class ExamService
             'created_by' => auth()->id(),
         ]);
 
-        // $exam->load(['schoolDay', 'grade', 'subject']);
+         $exam->load(['schoolDay', 'grade', 'subject']);
 
         return ResponseHelper::jsonResponse(
             new ExamResource($exam),
@@ -91,9 +91,9 @@ class ExamService
         $this->checkPermission(PermissionEnum::VIEW_EXAM);
 
         $exam = Exam::with([
-            // 'schoolDay',
-            // 'grade',
-            // 'mainSubject',
+             'schoolDay',
+             'grade',
+             'mainSubject',
         ])->findOrFail($id);
 
         return ResponseHelper::jsonResponse(
@@ -117,7 +117,7 @@ class ExamService
             'main_subject_id' => $request->main_subject_id,
         ]);
 
-        // $exam->load(['schoolDay', 'grade', 'subject']);
+         $exam->load(['schoolDay', 'grade', 'subject']);
 
         return ResponseHelper::jsonResponse(
             new ExamResource($exam),
@@ -182,9 +182,9 @@ class ExamService
         $this->checkPermission(PermissionEnum::VIEW_EXAMS);
 
         $exams = Exam::with([
-            // 'schoolDay',
-            // 'grade',
-            // 'mainSubject',
+             'schoolDay',
+             'grade',
+             'mainSubject',
         ])
             ->where('school_day_id', $schoolDayId)
             ->orderBy('id', 'desc')
@@ -204,9 +204,9 @@ class ExamService
         $this->checkPermission(PermissionEnum::VIEW_EXAMS);
 
         $exams = Exam::with([
-            // 'schoolDay',
-            // 'grade',
-            // 'mainSubject',
+             'schoolDay',
+             'grade',
+             'mainSubject',
         ])
             ->where('grade_id', $gradeId)
             ->orderBy('id', 'desc')
