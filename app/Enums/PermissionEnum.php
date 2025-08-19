@@ -170,6 +170,28 @@ enum PermissionEnum: string
     case UPDATE_CLASS_SESSION = 'تعديل جلسة فصل';
     case DELETE_CLASS_SESSION = 'حذف جلسة فصل';
 
+    // Student Attendance Management
+    case VIEW_STUDENT_ATTENDANCES = 'عرض حضور الطلاب';
+    case CREATE_STUDENT_ATTENDANCE = 'إضافة حضور الطلاب';
+    case VIEW_STUDENT_ATTENDANCE = 'عرض حضور الطالب';
+    case UPDATE_STUDENT_ATTENDANCE = 'تعديل حضور الطلاب';
+    case DELETE_STUDENT_ATTENDANCE = 'حذف حضور الطلاب';
+
+    // Teacher Attendance Management
+    case VIEW_TEACHER_ATTENDANCES = 'عرض حضور المعلمين';
+    case CREATE_TEACHER_ATTENDANCE = 'إضافة حضور المعلمين';
+    case VIEW_TEACHER_ATTENDANCE = 'عرض حضور المعلم';
+    case UPDATE_TEACHER_ATTENDANCE = 'تعديل حضور المعلمين';
+    case DELETE_TEACHER_ATTENDANCE = 'حذف حضور المعلمين';
+
+    // Assignment Management
+    case VIEW_ASSIGNMENTS = 'عرض الواجبات';
+    case CREATE_ASSIGNMENT = 'انشاء واجب';
+    case VIEW_ASSIGNMENT = 'عرض واجب';
+    case UPDATE_ASSIGNMENT = 'تعديل واجب';
+    case DELETE_ASSIGNMENT = 'حذف واجب';
+    case MANAGE_DELETED_ASSIGNMENTS = 'إدارة الواجبات المحذوفة';
+
     /**
      * Get all permissions as an array
      */
@@ -317,6 +339,28 @@ enum PermissionEnum: string
                 self::VIEW_CLASS_SESSION->value,
                 self::UPDATE_CLASS_SESSION->value,
                 self::DELETE_CLASS_SESSION->value,
+            ],
+            'student_attendance' => [
+                self::VIEW_STUDENT_ATTENDANCES->value,
+                self::CREATE_STUDENT_ATTENDANCE->value,
+                self::VIEW_STUDENT_ATTENDANCE->value,
+                self::UPDATE_STUDENT_ATTENDANCE->value,
+                self::DELETE_STUDENT_ATTENDANCE->value,
+            ],
+            'teacher_attendance' => [
+                self::VIEW_TEACHER_ATTENDANCES->value,
+                self::CREATE_TEACHER_ATTENDANCE->value,
+                self::VIEW_TEACHER_ATTENDANCE->value,
+                self::UPDATE_TEACHER_ATTENDANCE->value,
+                self::DELETE_TEACHER_ATTENDANCE->value,
+            ],
+            'assignment' => [
+                self::VIEW_ASSIGNMENTS->value,
+                self::CREATE_ASSIGNMENT->value,
+                self::VIEW_ASSIGNMENT->value,
+                self::UPDATE_ASSIGNMENT->value,
+                self::DELETE_ASSIGNMENT->value,
+                self::MANAGE_DELETED_ASSIGNMENTS->value,
             ],
             default => [],
         };

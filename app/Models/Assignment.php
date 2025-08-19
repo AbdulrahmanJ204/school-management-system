@@ -22,7 +22,6 @@ class Assignment extends Model
         'created_by'
     ];
 
-    // Relations
     public function assignedSession(): BelongsTo
     {
         return $this->belongsTo(ClassSession::class, 'assigned_session_id');

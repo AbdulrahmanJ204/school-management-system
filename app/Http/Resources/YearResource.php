@@ -23,9 +23,8 @@ class YearResource extends JsonResource
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
             'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
-
-//            'created_by' => new UserResource($this->whenLoaded('createdBy')),
             'semesters' => SemesterResource::collection($this->whenLoaded('semesters')),
+            'grades' => GradeResource::collection($this->whenLoaded('grades')),
         ];
     }
 }

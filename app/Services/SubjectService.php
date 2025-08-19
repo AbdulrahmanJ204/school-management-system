@@ -24,7 +24,7 @@ class SubjectService
         $this->checkPermission(PermissionEnum::VIEW_SUBJECTS);
 
         $subjects = Subject::with([
-//            'mainSubject.grade',
+            'mainSubject.grade',
         ])->orderBy('name', 'asc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -61,7 +61,7 @@ class SubjectService
 
         $subject = Subject::create($credentials);
         $subject->load([
-//            'mainSubject.grade',
+            'mainSubject.grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -80,7 +80,7 @@ class SubjectService
         $this->checkPermission(PermissionEnum::VIEW_SUBJECTS);
 
         $subject->load([
-//            'mainSubject.grade',
+            'mainSubject.grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -116,7 +116,7 @@ class SubjectService
 
         $subject->update($credentials);
         $subject->load([
-//            'mainSubject.grade',
+            'mainSubject.grade',
         ]);
 
         return ResponseHelper::jsonResponse(

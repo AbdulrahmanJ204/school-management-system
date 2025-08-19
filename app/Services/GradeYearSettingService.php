@@ -28,8 +28,8 @@ class GradeYearSettingService
         $this->checkPermission(PermissionEnum::VIEW_GRADE_YEAR_SETTINGS);
 
         $settings = GradeYearSetting::with([
-//            'year',
-//            'grade',
+            'year',
+            'grade',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -64,8 +64,8 @@ class GradeYearSettingService
 
         $setting = GradeYearSetting::create($credentials);
         $setting->load([
-//            'year',
-//            'grade',
+            'year',
+            'grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -85,8 +85,8 @@ class GradeYearSettingService
         $this->checkPermission(PermissionEnum::VIEW_GRADE_YEAR_SETTING);
 
         $gradeYearSetting->load([
-//            'year',
-//            'grade',
+            'year',
+            'grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -121,8 +121,8 @@ class GradeYearSettingService
 
         $gradeYearSetting->update($credentials);
         $gradeYearSetting->load([
-//            'year',
-//            'grade',
+            'year',
+            'grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -156,8 +156,8 @@ class GradeYearSettingService
         $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADE_YEAR_SETTINGS);
 
         $settings = GradeYearSetting::with([
-//            'year',
-//            'grade',
+            'year',
+            'grade',
         ])->onlyTrashed()->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -186,8 +186,8 @@ class GradeYearSettingService
 
         $setting->restore();
         $setting->load([
-//            'year',
-//            'grade',
+            'year',
+            'grade',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -223,8 +223,8 @@ class GradeYearSettingService
         $this->checkPermission(PermissionEnum::VIEW_GRADE_YEAR_SETTINGS);
 
         $settings = GradeYearSetting::where('grade_id', $gradeId)->with([
-//            'year',
-//            'grade',
+            'year',
+            'grade',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -241,8 +241,8 @@ class GradeYearSettingService
         $this->checkPermission(PermissionEnum::VIEW_GRADE_YEAR_SETTINGS);
 
         $settings = GradeYearSetting::where('year_id', $yearId)->with([
-//            'year',
-//            'grade',
+            'year',
+            'grade',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(

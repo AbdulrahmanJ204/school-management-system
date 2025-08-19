@@ -24,7 +24,7 @@ class SemesterService
         $this->checkPermission(PermissionEnum::VIEW_SEMESTERS);
 
         $semesters = Semester::with([
-//            'year'
+            'year'
         ])
             ->orderBy('start_date', 'desc')
             ->get();
@@ -42,7 +42,7 @@ class SemesterService
         $this->checkPermission(PermissionEnum::MANAGE_DELETED_SEMESTERS);
 
         $semesters = Semester::with([
-//            'year'
+            'year'
         ])
             ->onlyTrashed()
             ->orderBy('start_date', 'desc')
@@ -80,8 +80,8 @@ class SemesterService
         $this->checkPermission(PermissionEnum::VIEW_SEMESTER);
 
         $semester->load([
-//            'year',
-//            'schoolDays'
+            'year',
+            'schoolDays'
         ]);
 
         return ResponseHelper::jsonResponse(

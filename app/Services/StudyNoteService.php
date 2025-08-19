@@ -23,9 +23,9 @@ class StudyNoteService
         $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTES);
 
         $studyNotes = StudyNote::with([
-//            'student',
-//            'schoolDay',
-//            'subject',
+            'student',
+            'schoolDay',
+            'subject',
         ])
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -45,9 +45,9 @@ class StudyNoteService
 
         $studyNotes = StudyNote::onlyTrashed()
             ->with([
-//                'student',
-//                'schoolDay',
-//                'subject',
+                'student',
+                'schoolDay',
+                'subject',
             ])
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -72,9 +72,9 @@ class StudyNoteService
 
         return ResponseHelper::jsonResponse(
             new StudyNoteResource($studyNote->load([
-//                'student',
-//                'schoolDay',
-//                'subject',
+                'student',
+                'schoolDay',
+                'subject',
             ])),
             __('messages.study_note.created'),
             ResponseAlias::HTTP_CREATED,
@@ -89,9 +89,9 @@ class StudyNoteService
         $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTE);
 
         $studyNote = StudyNote::with([
-//            'student',
-//            'schoolDay',
-//            'subject',
+            'student',
+            'schoolDay',
+            'subject',
         ])
             ->findOrFail($id);
 
@@ -115,9 +115,9 @@ class StudyNoteService
 
         return ResponseHelper::jsonResponse(
             new StudyNoteResource($studyNote->load([
-//                'student',
-//                'schoolDay',
-//                'subject',
+                'student',
+                'schoolDay',
+                'subject',
             ])),
             __('messages.study_note.updated')
         );
@@ -151,9 +151,9 @@ class StudyNoteService
 
         return ResponseHelper::jsonResponse(
             new StudyNoteResource($studyNote->load([
-//                'student',
-//                'schoolDay',
-//                'subject',
+                'student',
+                'schoolDay',
+                'subject',
             ])),
             __('messages.study_note.restored')
         );
@@ -185,9 +185,9 @@ class StudyNoteService
 
         $studyNotes = StudyNote::where('student_id', $studentId)
             ->with([
-//                'student',
-//                'schoolDay',
-//                'subject',
+                'student',
+                'schoolDay',
+                'subject',
             ])
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -207,9 +207,9 @@ class StudyNoteService
 
         $studyNotes = StudyNote::where('school_day_id', $schoolDayId)
             ->with([
-//                'student',
-//                'schoolDay',
-//                'subject',
+                'student',
+                'schoolDay',
+                'subject',
             ])
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -229,9 +229,9 @@ class StudyNoteService
 
         $studyNotes = StudyNote::where('subject_id', $subjectId)
             ->with([
-//                'student',
-//                'schoolDay',
-//                'subject',
+                'student',
+                'schoolDay',
+                'subject',
             ])
             ->orderBy('id', 'desc')
             ->paginate(15);

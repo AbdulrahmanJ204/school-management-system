@@ -19,7 +19,7 @@ class RolePermissionSeeder extends Seeder
     {
         $guard = 'api';
 
-        $superAdminRole = Role::Create(['name' => 'super_admin', 'guard_name' => $guard]);
+        $superAdminRole = Role::Create(['name' => 'Owner', 'guard_name' => $guard]);
 
         // Use the enum to get all permissions
         $permissions = PermissionEnum::getAllPermissions();
