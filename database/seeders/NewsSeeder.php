@@ -6,9 +6,11 @@ use App\Models\Grade;
 use App\Models\News;
 use App\Models\NewsTarget;
 use App\Models\Section;
+use App\Models\Year;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+
 class NewsSeeder extends Seeder
 {
     /**
@@ -16,6 +18,14 @@ class NewsSeeder extends Seeder
      */
     public function run(): void
     {
+        $firstYearStartDate = Year::find(1)->start_date;
+        $secondYearStartDate = Year::find(2)->start_date;
+        $thirdYearStartDate = Year::find(3)->start_date;
+        $dates = [
+            1 => $firstYearStartDate->addDays(5),
+            2 => $secondYearStartDate->addDays(5),
+            3=>$thirdYearStartDate->addDays(5),
+        ];
         $news = [
             [
                 'title' => 'Welcome Back to School!',
@@ -49,7 +59,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'publish_date' => Carbon::now()->subDays(5),
+                'publish_date' => $dates[random_int(1, 3)],
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -85,7 +95,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'publish_date' => Carbon::now()->subDays(3),
+                'publish_date' => $dates[random_int(1, 3)],
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -131,7 +141,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'publish_date' => Carbon::now()->subDays(1),
+                'publish_date' => $dates[random_int(1, 3)],
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -174,7 +184,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'publish_date' => Carbon::now(),
+                'publish_date' => $dates[random_int(1, 3)],
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -220,7 +230,7 @@ class NewsSeeder extends Seeder
                         ]
                     ]
                 ]),
-                'publish_date' => Carbon::now()->addDays(2),
+                'publish_date' => $dates[random_int(1, 3)],
                 'photo' => null,
                 'created_by' => 1,
             ],
@@ -249,7 +259,7 @@ class NewsSeeder extends Seeder
                 ]);
                 break;
 
-            case 2: // Target specific grade (e.g., Grade 5)
+            case 2:
                 NewsTarget::create([
                     'news_id' => $newsId,
                     'grade_id' => 5,
@@ -258,7 +268,7 @@ class NewsSeeder extends Seeder
                 ]);
                 break;
 
-            case 3: // Target specific section (e.g., Grade 3, Section A)
+            case 3:
                 $section = Section::where('grade_id', 3)->where('title', 'A')->first();
                 if ($section) {
                     NewsTarget::create([
