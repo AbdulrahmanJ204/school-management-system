@@ -17,6 +17,7 @@ return new class extends Migration
             $table->timestamps();
             $table->date('taken_at')->nullable();
             $table->boolean('is_active')->default(false);
+            $table->unsignedBigInteger('full_score');
             $table->foreignId('created_by')->constrained('users');
         });
     }

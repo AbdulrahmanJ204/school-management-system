@@ -9,6 +9,7 @@ use App\Exceptions\QuestionAlreadyExistsException;
 use App\Exceptions\QuestionNotFoundException;
 use App\Exceptions\QuizNotFoundException;
 use App\Helpers\ResponseHelper;
+use App\Http\Resources\QuestionResource;
 use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Support\Facades\Storage;
@@ -109,10 +110,11 @@ class QuestionService
                 false
             );
         }
-        Question::create($credentials);
+
+        $question = Question::create($credentials);
 
         return ResponseHelper::jsonResponse(
-            null,
+            new QuestionResource($question),
             __('messages.question.created'),
         );
     }
@@ -176,7 +178,8 @@ class QuestionService
 
         $question->update($credentials);
 
-        return ResponseHelper::jsonResponse([],
+        return ResponseHelper::jsonResponse(
+            new QuestionResource($question),
             __('messages.question.updated'),
             201
         );

@@ -22,7 +22,7 @@ class Section extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
+    protected $with =['grade'];
     // Relations
     public function grade(): BelongsTo
     {

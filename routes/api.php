@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassPeriodController;
+use App\Http\Controllers\ClassSessionController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SchoolDayController;
@@ -42,6 +43,9 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('timetable', TimeTableController::class);
     Route::resource('class_period', ClassPeriodController::class);
     Route::resource('schedules', ScheduleController::class);
+    Route::post('class-sessions', [ClassSessionController::class, 'create']);
+    Route::put('class-sessions/{id}', [ClassSessionController::class, 'update']);
+    Route::delete('class-sessions/{id}', [ClassSessionController::class, 'destroy']);
 })->middleware(['user_type:admin', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {

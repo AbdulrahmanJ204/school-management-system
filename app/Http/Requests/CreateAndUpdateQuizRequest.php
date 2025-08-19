@@ -20,13 +20,15 @@ class CreateAndUpdateQuizRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
             'is_active' => 'prohibited',
             'taken_at' => 'prohibited',
-            'targets'                 => 'required|array|min:1',
-            'targets.*.subject_id'    => 'required|exists:subjects,id',
-            'targets.*.section_id'    => 'required|exists:sections,id',
-            'targets.*.semester_id'   => 'required|exists:semesters,id',
+            'name'        => 'required|string|max:255',
+            'full_score'  => 'required|integer|min:1',
+            'grade_id'    => 'required|exists:grades,id',
+            'subject_id'  => 'required|exists:subjects,id',
+            'semester_id' => 'required|exists:semesters,id',
+            'section_ids' => 'nullable|array',
+            'section_ids.*' => 'exists:sections,id',
         ];
     }
 }
