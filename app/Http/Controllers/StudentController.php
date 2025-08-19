@@ -2,23 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PermissionException;
 use App\Services\StudentService;
 use App\Http\Requests\GetStudentsBySectionSemesterRequest;
+use Illuminate\Http\JsonResponse;
 
 class StudentController extends Controller
 {
-    protected $studentService;
+    protected StudentService $studentService;
     public function __construct(StudentService $studentService)
     {
         $this->studentService = $studentService;
     }
 
-    public function show()
+    /**
+     * @throws PermissionException
+     */
+    public function show(): JsonResponse
     {
         return $this->studentService->listStudents();
     }
 
-    public function getBySectionAndSemester(GetStudentsBySectionSemesterRequest $request)
+    /**
+     * @throws PermissionException
+     */
+    public function getBySectionAndSemester(GetStudentsBySectionSemesterRequest $request): JsonResponse
     {
         return $this->studentService->getStudentsBySectionAndSemester(
             $request->section_id,

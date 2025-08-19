@@ -6,17 +6,20 @@ use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 
 class TeacherService
 {
-    public function listTeachers()
+    /**
+     * @throws PermissionException
+     */
+    public function listTeachers(): JsonResponse
     {
         if (!auth()->user()->hasPermissionTo('عرض الاساتذة')) {
             throw new PermissionException();
         }
 
-        $teachers = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'user_type', 'image')
-            ->where('user_type', 'teacher')
+        $teachers = User::where('user_type', 'teacher')
             ->with(['teacher'])
             ->orderBy('id', 'asc')
             ->paginate(15);

@@ -6,17 +6,20 @@ use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 
 class AdminService
 {
-    public function listAdmins()
+    /**
+     * @throws PermissionException
+     */
+    public function listAdmins(): JsonResponse
     {
         if (!auth()->user()->hasPermissionTo('عرض المشرفين')) {
             throw new PermissionException();
         }
 
-        $admins = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'user_type', 'image')
-            ->where('user_type', 'admin')
+        $admins = User::where('user_type', 'admin')
             ->with(['admin'])
             ->orderBy('id', 'asc')
             ->paginate(15);
