@@ -10,15 +10,20 @@ class Device_info extends Model
     use HasFactory;
 
     protected $fillable = [
-        'device_id',
-        'platform',
-        'type',
+        'brand',
+        'device',
+        'manufacturer',
+        'model',
+        'product',
         'name',
+        'identifier',
+        'os_version',
+        'os_name',
     ];
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_device', 'device_info_id', 'user_id')
+        return $this->belongsToMany(User::class, 'user_devices', 'device_id', 'user_id')
             ->withTimestamps();
     }
 }

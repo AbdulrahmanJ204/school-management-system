@@ -13,10 +13,15 @@ return new class extends Migration
     {
         Schema::create('device_infos', function (Blueprint $table) {
             $table->id();
-            $table->string('platform');
-            $table->string('type');
-            $table->string('name');
-            $table->string('device_id')->unique();
+            $table->string('brand')->nullable();
+            $table->string('device')->nullable();
+            $table->string('manufacturer')->nullable();
+            $table->string('model')->nullable();
+            $table->string('product')->nullable();
+            $table->string('name')->nullable();
+            $table->string('identifier')->nullable();
+            $table->string('os_version')->nullable();
+            $table->string('os_name')->nullable();
             $table->timestamps();
         });
     }

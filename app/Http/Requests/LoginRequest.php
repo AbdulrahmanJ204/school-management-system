@@ -22,10 +22,15 @@ class  LoginRequest extends BaseRequest
         return [
             'user_name'   => 'required|string',
             'password'    => 'required|string',
-            'platform'    => 'required|string|in:android,ios,web,windows,macos,linux',
-            'device_type' => 'required|string|in:mobile,desktop,tablet',
-            'device_name' => 'required|string',
-            'device_id'   => 'required|string',
+            'brand'       => 'nullable|string',
+            'device'      => 'nullable|string',
+            'manufacturer'=> 'nullable|string',
+            'model'       => 'nullable|string',
+            'product'     => 'nullable|string',
+            'name'        => 'nullable|string',
+            'identifier'  => 'nullable|string',
+            'os_version'  => 'nullable|string',
+            'os_name'     => 'nullable|string',
         ];
     }
 }
