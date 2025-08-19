@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\StudentAttendance;
 use App\Models\ClassSession;
 use App\Models\Student;
-use App\Models\StudentAttendance;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\StudentEnrollment;
 use Illuminate\Database\Seeder;
-use Carbon\Carbon;
 
 class StudentAttendanceSeeder extends Seeder
 {
@@ -16,61 +15,42 @@ class StudentAttendanceSeeder extends Seeder
      */
     public function run(): void
     {
+        $classSessions = ClassSession::where('status', 'completed')->get();
         $students = Student::all();
-        $classSessions = ClassSession::all();
-        $statuses = ['Excused absence', 'Unexcused absence', 'Late'];
 
-        // Create sample attendance records for the last 30 days
-        for ($i = 0; $i < 100; $i++) {
-            $student = $students->random();
-            $classSession = $classSessions->random();
-            $status = $statuses[array_rand($statuses)];
-
-            // Check if attendance record already exists for this student and class session
-            $existingAttendance = StudentAttendance::where('student_id', $student->id)
-                ->where('class_session_id', $classSession->id)
-                ->first();
-
-            if (!$existingAttendance) {
-                StudentAttendance::create([
-                    'student_id' => $student->id,
-                    'class_session_id' => $classSession->id,
-                    'status' => $status,
-                    'created_by' => 1, // Assuming admin user ID is 1
-                ]);
-            }
+        if ($classSessions->isEmpty() || $students->isEmpty()) {
+            return;
         }
 
-        // Create some specific attendance patterns
-        $this->createSpecificAttendancePatterns($students, $classSessions);
-    }
+        foreach ($classSessions as $classSession) {
+            // Get students enrolled in this section for the current year/semester
+            $enrolledStudents = StudentEnrollment::where('section_id', $classSession->section_id)
+                ->whereHas('semester', function($query) use ($classSession) {
+                    $query->whereHas('year', function($yearQuery) {
+                        $yearQuery->where('is_active', true);
+                    });
+                })
+                ->with('student')
+                ->get();
 
-    private function createSpecificAttendancePatterns($students, $classSessions)
-    {
-        // Create attendance for specific students with different patterns
-        $specificStudents = $students->take(5); // Take first 5 students
-        $recentSessions = $classSessions->where('date', '>=', Carbon::now()->subDays(7));
+            if ($enrolledStudents->isEmpty()) {
+                continue;
+            }
 
-        foreach ($specificStudents as $index => $student) {
-            foreach ($recentSessions as $session) {
-                // Create different attendance patterns based on student index
-                $status = match ($index) {
-                    0 => 'Late', // First student is often late
-                    1 => 'Excused absence', // Second student has excused absences
-                    2 => 'Unexcused absence', // Third student has unexcused absences
-                    default => $this->getRandomStatus(),
-                };
-
-                // Check if attendance record already exists
+            // Create attendance records for each enrolled student
+            foreach ($enrolledStudents as $enrollment) {
+                $student = $enrollment->student;
+                
+                // Check if attendance record already exists for this student and session
                 $existingAttendance = StudentAttendance::where('student_id', $student->id)
-                    ->where('class_session_id', $session->id)
+                    ->where('class_session_id', $classSession->id)
                     ->first();
 
                 if (!$existingAttendance) {
                     StudentAttendance::create([
                         'student_id' => $student->id,
-                        'class_session_id' => $session->id,
-                        'status' => $status,
+                        'class_session_id' => $classSession->id,
+                        'status' => $this->getRandomAttendanceStatus(),
                         'created_by' => 1,
                     ]);
                 }
@@ -78,9 +58,23 @@ class StudentAttendanceSeeder extends Seeder
         }
     }
 
-    private function getRandomStatus(): string
+    /**
+     * Get random attendance status with realistic distribution
+     */
+    private function getRandomAttendanceStatus(): string
     {
-        $statuses = ['Excused absence', 'Unexcused absence', 'Late'];
-        return $statuses[array_rand($statuses)];
+        $rand = rand(1, 100);
+        
+        if ($rand <= 75) {
+            return 'present'; // 75% present
+        } elseif ($rand <= 85) {
+            return 'absent'; // 10% absent
+        } elseif ($rand <= 90) {
+            return 'late'; // 5% late
+        } elseif ($rand <= 95) {
+            return 'excused'; // 5% excused
+        } else {
+            return 'sick'; // 5% sick
+        }
     }
 }

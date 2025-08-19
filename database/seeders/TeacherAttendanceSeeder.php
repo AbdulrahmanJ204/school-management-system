@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\TeacherAttendance;
 use App\Models\ClassSession;
 use App\Models\Teacher;
-use App\Models\TeacherAttendance;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Carbon\Carbon;
 
 class TeacherAttendanceSeeder extends Seeder
 {
@@ -16,71 +14,45 @@ class TeacherAttendanceSeeder extends Seeder
      */
     public function run(): void
     {
+        $classSessions = ClassSession::where('status', 'completed')->get();
         $teachers = Teacher::all();
-        $classSessions = ClassSession::all();
-        $statuses = ['Excused absence', 'Unexcused absence', 'Late'];
 
-        // Create sample attendance records for the last 30 days
-        for ($i = 0; $i < 50; $i++) {
-            $teacher = $teachers->random();
-            $classSession = $classSessions->random();
-            $status = $statuses[array_rand($statuses)];
+        if ($classSessions->isEmpty() || $teachers->isEmpty()) {
+            return;
+        }
 
-            // Check if attendance record already exists for this teacher and class session
-            $existingAttendance = TeacherAttendance::where('teacher_id', $teacher->id)
-                ->where('class_session_id', $classSession->id)
+        foreach ($classSessions as $classSession) {
+            // Check if teacher attendance record already exists for this session
+            $existingAttendance = TeacherAttendance::where('class_session_id', $classSession->id)
+                ->where('teacher_id', $classSession->teacher_id)
                 ->first();
 
             if (!$existingAttendance) {
                 TeacherAttendance::create([
-                    'teacher_id' => $teacher->id,
                     'class_session_id' => $classSession->id,
-                    'status' => $status,
-                    'created_by' => 1, // Assuming admin user ID is 1
+                    'teacher_id' => $classSession->teacher_id,
+                    'status' => $this->getRandomTeacherAttendanceStatus(),
+                    'created_by' => 1,
                 ]);
             }
         }
-
-        // Create some specific attendance patterns
-        $this->createSpecificAttendancePatterns($teachers, $classSessions);
     }
 
-    private function createSpecificAttendancePatterns($teachers, $classSessions)
+    /**
+     * Get random teacher attendance status with realistic distribution
+     */
+    private function getRandomTeacherAttendanceStatus(): string
     {
-        // Create attendance for specific teachers with different patterns
-        $specificTeachers = $teachers->take(3); // Take first 3 teachers
-        $recentSessions = $classSessions->where('date', '>=', Carbon::now()->subDays(7));
-
-        foreach ($specificTeachers as $index => $teacher) {
-            foreach ($recentSessions as $session) {
-                // Create different attendance patterns based on teacher index
-                $status = match ($index) {
-                    0 => 'Late', // First teacher is sometimes late
-                    1 => 'Excused absence', // Second teacher has occasional excused absences
-                    2 => 'Unexcused absence', // Third teacher has rare unexcused absences
-                    default => $this->getRandomStatus(),
-                };
-
-                // Check if attendance record already exists
-                $existingAttendance = TeacherAttendance::where('teacher_id', $teacher->id)
-                    ->where('class_session_id', $session->id)
-                    ->first();
-
-                if (!$existingAttendance) {
-                    TeacherAttendance::create([
-                        'teacher_id' => $teacher->id,
-                        'class_session_id' => $session->id,
-                        'status' => $status,
-                        'created_by' => 1,
-                    ]);
-                }
-            }
+        $rand = rand(1, 100);
+        
+        if ($rand <= 85) {
+            return 'present'; // 85% present (teachers have higher attendance rate)
+        } elseif ($rand <= 90) {
+            return 'absent'; // 5% absent
+        } elseif ($rand <= 95) {
+            return 'late'; // 5% late
+        } else {
+            return 'excused'; // 5% excused
         }
-    }
-
-    private function getRandomStatus(): string
-    {
-        $statuses = ['Excused absence', 'Unexcused absence', 'Late'];
-        return $statuses[array_rand($statuses)];
     }
 }
