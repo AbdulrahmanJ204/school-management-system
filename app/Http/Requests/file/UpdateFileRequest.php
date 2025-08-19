@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Requests\file;
+namespace App\Http\Requests\File;
 
 use App\Enums\FileType;
 use App\Enums\Permissions\FilesPermission;
 use App\Enums\StringsManager\Files\FileApi;
 use App\Enums\UserType;
+use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateFileRequest extends FormRequest
+class UpdateFileRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
