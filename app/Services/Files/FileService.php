@@ -32,6 +32,10 @@ class FileService
     private string $libraryPath;
     private string $queryYear;
     private string $querySubject;
+    private string $querySection;
+    private string $queryGrade;
+    private string $queryType;
+    private string $queryGeneral;
 
 
     public function __construct()

@@ -9,8 +9,6 @@ class StudentAttendance extends Model
 {
     protected $fillable = [
         'student_id',
-        'school_day_id',
-        'class_period_id',
         'class_session_id',
         'status',
         'created_by'
@@ -20,16 +18,6 @@ class StudentAttendance extends Model
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
-    }
-
-    public function schoolDay(): BelongsTo
-    {
-        return $this->belongsTo(SchoolDay::class);
-    }
-
-    public function classPeriod(): BelongsTo
-    {
-        return $this->belongsTo(ClassPeriod::class);
     }
 
     public function classSession(): BelongsTo

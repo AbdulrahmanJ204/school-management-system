@@ -10,7 +10,7 @@ Route::prefix('news')
         Route::get('/', 'index');
         Route::get('/{news}', 'show');
 
-        Route::post('/store', 'store');
+        Route::post('/', 'store');
         Route::post('/restore/{news}', 'restore');
         Route::post('/{news}', 'update');
 

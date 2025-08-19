@@ -26,10 +26,10 @@ class StudentMarkService
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
 
         $studentMarks = StudentMark::with([
-//            'subject.mainSubject.grade',
-//            'enrollment.student',
-//            'enrollment.section',
-//            'enrollment.semester',
+            'subject.mainSubject.grade',
+            'enrollment.student',
+            'enrollment.section',
+            'enrollment.semester',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -66,10 +66,10 @@ class StudentMarkService
 
         $studentMark = StudentMark::create($credentials);
         $studentMark->load([
-//            'subject.mainSubject.grade',
-//            'enrollment.student',
-//            'enrollment.section',
-//            'enrollment.semester',
+            'subject.mainSubject.grade',
+            'enrollment.student',
+            'enrollment.section',
+            'enrollment.semester',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -89,10 +89,10 @@ class StudentMarkService
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARK);
 
         $studentMark->load([
-//            'subject.mainSubject.grade',
-//            'enrollment.student',
-//            'enrollment.section',
-//            'enrollment.semester',
+            'subject.mainSubject.grade',
+            'enrollment.student',
+            'enrollment.section',
+            'enrollment.semester',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -114,10 +114,10 @@ class StudentMarkService
 
         $studentMark->update($credentials);
         $studentMark->load([
-//            'subject.mainSubject.grade',
-//            'enrollment.student',
-//            'enrollment.section',
-//            'enrollment.semester',
+            'subject.mainSubject.grade',
+            'enrollment.student',
+            'enrollment.section',
+            'enrollment.semester',
         ]);
 
         return ResponseHelper::jsonResponse(
@@ -152,10 +152,10 @@ class StudentMarkService
 
         $enrollment = StudentEnrollment::findOrFail($enrollmentId);
         $studentMarks = StudentMark::where('enrollment_id', $enrollmentId)->with([
-//            'subject.mainSubject.grade',
-//            'enrollment.student',
-//            'enrollment.section',
-//            'enrollment.semester',
+            'subject.mainSubject.grade',
+            'enrollment.student',
+            'enrollment.section',
+            'enrollment.semester',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -172,10 +172,10 @@ class StudentMarkService
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
 
         $studentMarks = StudentMark::where('subject_id', $subjectId)->with([
-//            'subject.mainSubject.grade',
-//            'enrollment.student',
-//            'enrollment.section',
-//            'enrollment.semester',
+            'subject.mainSubject.grade',
+            'enrollment.student',
+            'enrollment.section',
+            'enrollment.semester',
         ])->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
@@ -197,10 +197,10 @@ class StudentMarkService
                 $query->where('section_id', $sectionId);
             })
             ->with([
-//                'subject.mainSubject.grade',
-//                'enrollment.student',
-//                'enrollment.section',
-//                'enrollment.semester',
+                'subject.mainSubject.grade',
+                'enrollment.student',
+                'enrollment.section',
+                'enrollment.semester',
             ])
             ->orderBy('created_at', 'desc')
             ->get();

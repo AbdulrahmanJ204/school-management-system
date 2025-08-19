@@ -2,7 +2,7 @@
 
 namespace App\Services\Files;
 
-use App\Enums\StringsManager\FileStr;
+use App\Enums\StringsManager\Files\FileStr;
 use App\Enums\UserType;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
@@ -10,7 +10,6 @@ use App\Http\Requests\File\StoreFileRequest;
 use App\Http\Resources\FileResource;
 use App\Models\File;
 use App\Models\FileTarget;
-use App\Models\NewsTarget;
 use App\Models\Subject;
 use App\Models\TeacherSectionSubject;
 use Illuminate\Http\JsonResponse;

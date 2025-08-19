@@ -24,10 +24,10 @@ class TeacherSectionSubjectService
         $this->checkPermission(PermissionEnum::VIEW_TEACHER_SECTION_SUBJECTS);
 
         $teacherSectionSubjects = TeacherSectionSubject::with([
-//            'teacher',
-//            'grade',
-//            'subject',
-//            'section',
+            'teacher',
+            'grade',
+            'subject',
+            'section',
         ])
             ->orderBy('id', 'desc')
             ->get();
@@ -47,10 +47,10 @@ class TeacherSectionSubjectService
 
         $teacherSectionSubjects = TeacherSectionSubject::onlyTrashed()
             ->with([
-//                'teacher',
-//                'grade',
-//                'subject',
-//                'section',
+                'teacher',
+                'grade',
+                'subject',
+                'section',
             ])
             ->orderBy('id', 'desc')
             ->get();
@@ -76,10 +76,10 @@ class TeacherSectionSubjectService
 
         return ResponseHelper::jsonResponse(
             new TeacherSectionSubjectResource($teacherSectionSubject->load([
-//                'teacher',
-//                'grade',
-//                'subject',
-//                'section',
+                'teacher',
+                'grade',
+                'subject',
+                'section',
             ])),
             __('messages.teacher_section_subject.created'),
             ResponseAlias::HTTP_CREATED,
@@ -94,10 +94,10 @@ class TeacherSectionSubjectService
         $this->checkPermission(PermissionEnum::VIEW_TEACHER_SECTION_SUBJECT);
 
         $teacherSectionSubject = TeacherSectionSubject::with([
-//            'teacher',
-//            'grade',
-//            'subject',
-//            'section',
+            'teacher',
+            'grade',
+            'subject',
+            'section',
         ])
             ->findOrFail($id);
 
@@ -122,10 +122,10 @@ class TeacherSectionSubjectService
 
         return ResponseHelper::jsonResponse(
             new TeacherSectionSubjectResource($teacherSectionSubject->load([
-//                'teacher',
-//                'grade',
-//                'subject',
-//                'section',
+                'teacher',
+                'grade',
+                'subject',
+                'section',
             ])),
             __('messages.teacher_section_subject.updated')
         );
@@ -159,10 +159,10 @@ class TeacherSectionSubjectService
 
         return ResponseHelper::jsonResponse(
             new TeacherSectionSubjectResource($teacherSectionSubject->load([
-//                'teacher',
-//                'grade',
-//                'subject',
-//                'section',
+                'teacher',
+                'grade',
+                'subject',
+                'section',
             ])),
             __('messages.teacher_section_subject.restored')
         );
@@ -194,10 +194,10 @@ class TeacherSectionSubjectService
 
         $teacherSectionSubjects = TeacherSectionSubject::where('teacher_id', $teacherId)
             ->with([
-//                'teacher',
-//                'grade',
-//                'subject',
-//                'section',
+                'teacher',
+                'grade',
+                'subject',
+                'section',
             ])
             ->orderBy('id', 'desc')
             ->get();
@@ -217,10 +217,10 @@ class TeacherSectionSubjectService
 
         $teacherSectionSubjects = TeacherSectionSubject::where('section_id', $sectionId)
             ->with([
-//                'teacher',
-//                'grade',
-//                'subject',
-//                'section',
+                'teacher',
+                'grade',
+                'subject',
+                'section',
             ])
             ->orderBy('id', 'desc')
             ->get();
@@ -240,10 +240,10 @@ class TeacherSectionSubjectService
 
         $teacherSectionSubjects = TeacherSectionSubject::where('subject_id', $subjectId)
             ->with([
-//                'teacher',
-//                'grade',
-//                'subject',
-//                'section',
+                'teacher',
+                'grade',
+                'subject',
+                'section',
             ])
             ->orderBy('id', 'desc')
             ->get();

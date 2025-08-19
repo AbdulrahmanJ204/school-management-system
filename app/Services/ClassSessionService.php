@@ -23,7 +23,7 @@ class ClassSessionService
      * Get list of all class sessions.
      * @throws PermissionException
      */
-    public function listClassSessions()
+    public function listClassSessions(): void
     {
         $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSIONS);
         //
@@ -33,7 +33,7 @@ class ClassSessionService
      * Create a new class session.
      * @throws PermissionException
      */
-    public function createClassSession(ClassSessionRequest $request)
+    public function createClassSession(ClassSessionRequest $request): void
     {
         $this->checkPermission(PermissionEnum::CREATE_CLASS_SESSION);
         //
@@ -43,7 +43,7 @@ class ClassSessionService
      * Show a specific class session.
      * @throws PermissionException
      */
-    public function showClassSession(ClassSession $classSession)
+    public function showClassSession(ClassSession $classSession): void
     {
         $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSION);
         //
@@ -53,7 +53,7 @@ class ClassSessionService
      * Update a class session.
      * @throws PermissionException
      */
-    public function updateClassSession(ClassSessionRequest $request, ClassSession $classSession)
+    public function updateClassSession(ClassSessionRequest $request, ClassSession $classSession): void
     {
         $this->checkPermission(PermissionEnum::UPDATE_CLASS_SESSION);
         //
@@ -63,7 +63,7 @@ class ClassSessionService
      * Delete a class session.
      * @throws PermissionException
      */
-    public function destroyClassSession(ClassSession $classSession)
+    public function destroyClassSession(ClassSession $classSession): void
     {
         $this->checkPermission(PermissionEnum::DELETE_CLASS_SESSION);
         //
@@ -75,7 +75,7 @@ class ClassSessionService
      * Cancel a class session.
      * @throws PermissionException
      */
-    public function cancelClassSession(ClassSession $classSession)
+    public function cancelClassSession(ClassSession $classSession): void
     {
         $this->checkPermission(PermissionEnum::UPDATE_CLASS_SESSION);
         //
@@ -85,7 +85,7 @@ class ClassSessionService
      * Get class sessions by teacher.
      * @throws PermissionException
      */
-    public function getClassSessionsByTeacher($teacherId)
+    public function getClassSessionsByTeacher($teacherId): void
     {
         $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSIONS);
         //
@@ -95,7 +95,7 @@ class ClassSessionService
      * Get class sessions by section.
      * @throws PermissionException
      */
-    public function getClassSessionsBySection($sectionId)
+    public function getClassSessionsBySection($sectionId): void
     {
         $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSIONS);
         //
@@ -105,7 +105,7 @@ class ClassSessionService
      * Get class sessions by school day.
      * @throws PermissionException
      */
-    public function getClassSessionsBySchoolDay($schoolDayId)
+    public function getClassSessionsBySchoolDay($schoolDayId): void
     {
         $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSIONS);
         //

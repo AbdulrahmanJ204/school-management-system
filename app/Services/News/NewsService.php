@@ -23,6 +23,10 @@ class NewsService
     private string $imagesPath;
     private string $queryYear;
     private string $apiRemovePhoto;
+    private string $querySection;
+    private string $queryGrade;
+    private string $queryGeneral;
+
 
     public function __construct()
     {

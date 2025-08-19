@@ -15,6 +15,8 @@ return new class extends Migration
             $table->enum('status', ['Excused absence', 'Unexcused absence', 'Late']);
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
+
+            $table->index(['class_session_id', 'teacher_id']);
         });
     }
 

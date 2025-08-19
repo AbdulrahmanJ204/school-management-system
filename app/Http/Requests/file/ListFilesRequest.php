@@ -3,8 +3,11 @@
 namespace App\Http\Requests\File;
 
 use App\Enums\FileType;
-use App\Enums\StringsManager\FileStr;
+use App\Enums\StringsManager\Files\FileApi;
+use App\Enums\StringsManager\QueryParams;
+use App\Enums\UserType;
 use App\Http\Requests\BaseRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class ListFilesRequest extends BaseRequest
@@ -24,10 +27,47 @@ class ListFilesRequest extends BaseRequest
      */
     public function rules(): array
     {
+        $usertype = Auth::user()->user_type;
+        return match ($usertype) {
+            UserType::Admin->value => $this->adminRules(),
+            UserType::Teacher->value => $this->teacherRules(),
+            UserType::Student->value => $this->studentRules(),
+        };
+
+    }
+
+    private function teacherRules(): array
+    {
         return [
-            FileStr::queryYear->value =>'sometimes|exists:years,id',
-            FileStr::querySubject->value=>'sometimes|nullable|exists:subjects,id',
-            FileStr::apiType->value=>['sometimes' , Rule::enum(FileType::class)],
+            QueryParams::Subject->value => 'sometimes|nullable|exists:subjects,id',
+            QueryParams::Section->value => 'sometimes|exists:sections,id',
+            QueryParams::Year->value => 'missing',
+            QueryParams::Type->value => 'missing',
+            QueryParams::Grade->value => 'missing',
+            QueryParams::General->value => 'missing'
+        ];
+    }
+
+    private function adminRules(): array
+    {
+        return [
+            QueryParams::Year->value => 'sometimes|exists:years,id',
+            QueryParams::Subject->value => 'sometimes|nullable|exists:subjects,id',
+            QueryParams::Type->value => ['sometimes', Rule::enum(FileType::class)],
+            QueryParams::Section->value => 'sometimes|exists:sections,id',
+            QueryParams::Grade->value => 'sometimes|exists:grades,id',
+            QueryParams::General->value => 'sometimes'
+            ,
+        ];
+    }
+
+    private function studentRules(): array
+    {
+        return [
+            QueryParams::Year->value => 'sometimes|exists:years,id',
+            QueryParams::Subject->value => 'sometimes|nullable|exists:subjects,id',
+            QueryParams::Type->value => ['sometimes', Rule::enum(FileType::class)],
+
         ];
     }
 }

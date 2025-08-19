@@ -23,8 +23,8 @@ class BehaviorNoteService
         $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTES);
 
         $behaviorNotes = BehaviorNote::with([
-//            'student',
-//            'schoolDay',
+           'student',
+           'schoolDay',
         ])
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -43,8 +43,8 @@ class BehaviorNoteService
 
         $behaviorNotes = BehaviorNote::onlyTrashed()
             ->with([
-//                'student',
-//                'schoolDay',
+                'student',
+                'schoolDay',
             ])
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -68,8 +68,8 @@ class BehaviorNoteService
 
         return ResponseHelper::jsonResponse(
             new BehaviorNoteResource($behaviorNote->load([
-//                'student',
-//                'schoolDay',
+                'student',
+                'schoolDay',
             ])),
             __('messages.behavior_note.created'),
             ResponseAlias::HTTP_CREATED,
@@ -84,8 +84,8 @@ class BehaviorNoteService
         $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTE);
 
         $behaviorNote = BehaviorNote::with([
-//            'student',
-//            'schoolDay',
+            'student',
+            'schoolDay',
         ])
             ->findOrFail($id);
 
@@ -108,8 +108,8 @@ class BehaviorNoteService
 
         return ResponseHelper::jsonResponse(
             new BehaviorNoteResource($behaviorNote->load([
-//                'student',
-//                'schoolDay',
+                'student',
+                'schoolDay',
             ])),
             __('messages.behavior_note.updated'),
         );
@@ -143,8 +143,8 @@ class BehaviorNoteService
 
         return ResponseHelper::jsonResponse(
             new BehaviorNoteResource($behaviorNote->load([
-//                'student',
-//                'schoolDay',
+                'student',
+                'schoolDay',
             ])),
             __('messages.behavior_note.restore'),
         );
@@ -176,8 +176,8 @@ class BehaviorNoteService
 
         $behaviorNotes = BehaviorNote::where('student_id', $studentId)
             ->with([
-//                'student',
-//                'schoolDay',
+                'student',
+                'schoolDay',
             ])
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -196,8 +196,8 @@ class BehaviorNoteService
 
         $behaviorNotes = BehaviorNote::where('school_day_id', $schoolDayId)
             ->with([
-//                'student',
-//                'schoolDay',
+                'student',
+                'schoolDay',
             ])
             ->orderBy('id', 'desc')
             ->paginate(15);

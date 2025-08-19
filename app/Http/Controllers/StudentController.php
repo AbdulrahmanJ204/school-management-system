@@ -3,17 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\StudentService;
-/**
- * @OA\Get(
- *     path="/students",
- *     tags={"Students"},
- *     summary="Get list of students",
- *     @OA\Response(
- *         response=200,
- *         description="Successful response"
- *     )
- * )
- */
+use App\Http\Requests\GetStudentsBySectionSemesterRequest;
+
 class StudentController extends Controller
 {
     protected $studentService;
@@ -25,5 +16,13 @@ class StudentController extends Controller
     public function show()
     {
         return $this->studentService->listStudents();
+    }
+
+    public function getBySectionAndSemester(GetStudentsBySectionSemesterRequest $request)
+    {
+        return $this->studentService->getStudentsBySectionAndSemester(
+            $request->section_id,
+            $request->semester_id
+        );
     }
 }

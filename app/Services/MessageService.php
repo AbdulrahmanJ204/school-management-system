@@ -23,7 +23,7 @@ class MessageService
         $this->checkPermission(PermissionEnum::VIEW_MESSAGES);
 
         $messages = Message::with([
-//            'user',
+            'user',
         ])
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -43,7 +43,7 @@ class MessageService
 
         $messages = Message::onlyTrashed()
             ->with([
-//                'user',
+                'user',
             ])
             ->orderBy('id', 'desc')
             ->paginate(15);
@@ -83,7 +83,7 @@ class MessageService
         $this->checkPermission(PermissionEnum::VIEW_MESSAGE);
 
         $message = Message::with([
-//            'user',
+            'user',
         ])
             ->findOrFail($id);
 
@@ -107,7 +107,7 @@ class MessageService
 
         return ResponseHelper::jsonResponse(
             new MessageResource($message->load([
-//                'user',
+                'user',
             ])),
             __('messages.message.updated')
         );
@@ -141,7 +141,7 @@ class MessageService
 
         return ResponseHelper::jsonResponse(
             new MessageResource($message->load([
-//                'user',
+                'user',
             ])),
             __('messages.message.restored')
         );
@@ -173,7 +173,7 @@ class MessageService
 
         $messages = Message::where('user_id', $userId)
             ->with([
-//                'user',
+                'user',
             ])
             ->orderBy('id', 'desc')
             ->paginate(15);

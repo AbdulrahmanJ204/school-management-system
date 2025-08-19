@@ -12,12 +12,13 @@ use Illuminate\Http\JsonResponse;
 
 trait ListNews
 {
+
     public function list($request): JsonResponse
     {
         $yearId = $this->getYearId($request);
         $user_type = auth()->user()->user_type;
         return match ($user_type) {
-            UserType::Admin->value => $this->listAdminNews($yearId),
+            UserType::Admin->value => $this->listAdminNews($yearId , $request),
             UserType::Student->value => $this->listStudentNews($yearId),
             default => throw new PermissionException(),
         };
@@ -53,15 +54,22 @@ trait ListNews
         return ResponseHelper::jsonResponse(NewsResource::collection($news), __(NewsStr::messageRetrieved->value));
     }
 
-    private function listAdminNews($yearId): JsonResponse
+    private function listAdminNews($yearId ,$request): JsonResponse
     {
-        $news = News::withTrashed()
+        $data = $request->validated();
+        $query = News::withTrashed()
             ->belongsToYear($yearId)
-            ->orderByPublishDate()
-            ->get();
+            ->orderByPublishDate();
+        if($request->has($this->querySection)) {
+            $query->forSection($data[$this->querySection]);
+        }else if($request->has($this->queryGrade)) {
+            $query->forGrade($data[$this->queryGrade]);
+        }
+        else if($request->has($this->queryGeneral)) {
+            $query->forPublic();
+        }
+        $news = $query->get();
         $news->each->loadTargets();
         return ResponseHelper::jsonResponse(NewsResource::collection($news), __(NewsStr::messageRetrieved->value));
     }
-
-
 }

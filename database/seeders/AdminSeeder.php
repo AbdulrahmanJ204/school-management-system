@@ -23,7 +23,7 @@ class AdminSeeder extends Seeder
             'last_name' => 'ruler',
             'gender' => 'male',
             'birth_date' => '2003-01-01',
-            'email' => 'admin@gmail.com',
+            'email' => 'magholm302@gmail.com',
             'phone' => '0935946431',
             'password' => '1234567890',
             'image' => 'user_images/default.png',
@@ -35,7 +35,7 @@ class AdminSeeder extends Seeder
 
         Hash::make('password');
 
-        $superAdminRole = Role::where('name', 'super_admin')->first();
+        $superAdminRole = Role::where('name', 'Owner')->first();
         $superAdminUser->assignRole($superAdminRole);
 
         Admin::create([

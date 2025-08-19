@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('assigned_session_id')->constrained('class_sessions');
             $table->foreignId('due_session_id')->nullable()->constrained('class_sessions');
+            $table->foreignId('section_id')->constrained('sections');
             $table->enum('type', ['homework', 'oral', 'quiz', 'project']);
             $table->string('title');
             $table->text('description');

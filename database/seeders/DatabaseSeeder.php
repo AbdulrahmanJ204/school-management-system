@@ -39,6 +39,8 @@ class DatabaseSeeder extends Seeder
             NewsSeeder::class,
             GradeYearSettingSeeder::class,
             TeacherSectionSubjectSeeder::class,
+            ClassPeriodSeeder::class,
+            ScheduleSeeder::class,
             StudentMarkSeeder::class,
             StudyNoteSeeder::class,
             BehaviorNoteSeeder::class,
@@ -47,6 +49,10 @@ class DatabaseSeeder extends Seeder
             MessageSeeder::class,
             ClassSessionSeeder::class,
             QuizSeeder::class,
+            StudentAttendanceSeeder::class,
+            TeacherAttendanceSeeder::class,
+            FileSeeder::class,
+            AssignmentSeeder::class,
         ]);
     }
 }
