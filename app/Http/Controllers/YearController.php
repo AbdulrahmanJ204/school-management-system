@@ -89,4 +89,13 @@ class YearController extends Controller
     {
         return $this->yearService->ActiveYear($year);
     }
+
+    /**
+     * Display years with nested relationships (grades, sections, main subjects, subjects)
+     * @throws PermissionException
+     */
+    public function withNestedData(): JsonResponse
+    {
+        return $this->yearService->getYearsWithNestedData();
+    }
 }

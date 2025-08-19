@@ -212,4 +212,24 @@ class YearService
             new YearResource($year),
         );
     }
+
+    /**
+     * @throws PermissionException
+     */
+    public function getYearsWithNestedData(): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::VIEW_YEARS);
+
+        $years = Year::with([
+            'semesters',
+            'grades.sections',
+            'grades.mainSubjects.subjects'
+        ])
+            ->orderBy('start_date', 'desc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            YearResource::collection($years)
+        );
+    }
 }

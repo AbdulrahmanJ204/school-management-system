@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
     Route::prefix('years')->group(function () {
         Route::get('/', [YearController::class, 'index']);
+        Route::get('/with-nested-data', [YearController::class, 'withNestedData']);
         Route::get('/trashed', [YearController::class, 'trashed']);
         Route::post('/', [YearController::class, 'store']);
         Route::get('/{year}', [YearController::class, 'show']);
