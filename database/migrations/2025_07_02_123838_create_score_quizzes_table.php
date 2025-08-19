@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('quiz_id')->constrained('quizzes');
             $table->foreignId('student_id')->constrained('students');
-            $table->unsignedBigInteger('full_score');
             $table->unsignedBigInteger('score');
             $table->timestamps();
         });

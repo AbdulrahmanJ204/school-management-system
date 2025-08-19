@@ -14,6 +14,7 @@ class QuizTarget extends Model
         'subject_id',
         'section_id',
         'semester_id',
+        'grade_id'
     ];
 
     public function quiz()
@@ -31,5 +32,9 @@ class QuizTarget extends Model
     public function semester()
     {
         return $this->belongsTo(Semester::class);
+    }
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class);
     }
 }

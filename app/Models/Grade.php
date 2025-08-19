@@ -52,5 +52,10 @@ class Grade extends Model
     {
         return $this->belongsTo(Year::class);
     }
+
+    public function quizTargets()
+    {
+        return $this->hasMany(QuizTarget::class);
+    }
 }
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\InvalidTargetException;
 use App\Exceptions\PermissionException;
 use App\Exceptions\QuizNotFoundException;
 use App\Helpers\ResponseHelper;
@@ -9,6 +10,8 @@ use App\Http\Resources\DetailedQuizResource;
 use App\Http\Resources\QuizResource;
 use App\Models\Quiz;
 use App\Models\QuizTarget;
+use App\Models\Section;
+use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 
 class QuizService
@@ -34,6 +37,10 @@ class QuizService
 
         if (isset($credentials['section_id'])) {
             $query->whereHas('targets', fn($q) => $q->where('section_id', $credentials['section_id']));
+        }
+
+        if (!empty($credentials['subject_id'])) {
+            $query->whereHas('targets.subject', function ($q) use ($credentials) {$q->where('id', $credentials['subject_id']);});
         }
 
         $quizzes = $query->get();
@@ -76,30 +83,57 @@ class QuizService
         }
 
         $credentials = $request->validated();
+        $credentials['created_by'] = $user->id;
 
         DB::beginTransaction();
 
         try {
+
             $quiz = Quiz::create([
                 'name'       => $credentials['name'],
+                'full_score' => $credentials['full_score'],
                 'created_by' => $user->id,
             ]);
 
-            foreach ($credentials['targets'] as $target) {
-                QuizTarget::create([
-                    'quiz_id'     => $quiz->id,
-                    'subject_id'  => $target['subject_id'],
-                    'section_id'  => $target['section_id'],
-                    'semester_id' => $target['semester_id'],
-                ]);
+            $subject = Subject::findOrFail($credentials['subject_id']);
+
+            if ($subject->getGrade()->id != $credentials['grade_id']) {
+                throw new InvalidTargetException(__('messages.quiz.subject_grade_mismatch'));
+            }
+
+            if (!empty($credentials['section_ids'])) {
+                foreach ($credentials['section_ids'] as $sectionId) {
+                    $section = Section::findOrFail($sectionId);
+
+                    if ($section->grade_id != $credentials['grade_id']) {
+                        throw new InvalidTargetException(__('messages.quiz.section_grade_mismatch'));
+                    }
+
+                    $quiz->targets()->create([
+                        'grade_id'    => $credentials['grade_id'],
+                        'subject_id'  => $credentials['subject_id'],
+                        'semester_id' => $credentials['semester_id'],
+                        'section_id'  => $sectionId,
+                    ]);
+                }
+            } else {
+                $sections = Section::where('grade_id', $credentials['grade_id'])->pluck('id');
+                foreach ($sections as $sectionId) {
+                    $quiz->targets()->create([
+                        'grade_id'    => $credentials['grade_id'],
+                        'subject_id'  => $credentials['subject_id'],
+                        'semester_id' => $credentials['semester_id'],
+                        'section_id'  => $sectionId,
+                    ]);
+                }
             }
 
             DB::commit();
 
             return ResponseHelper::jsonResponse(
-                new DetailedQuizResource($quiz),
+                new QuizResource($quiz->load('targets')),
                 __('messages.quiz.created'),
-                201
+                200
             );
 
         } catch (\Throwable $e) {
@@ -173,7 +207,7 @@ class QuizService
     public function update($request, $id)
     {
         $user = auth()->user();
-        $quiz = Quiz::find($id);
+        $quiz = Quiz::with('targets')->find($id);
 
         if (!$quiz) {
             throw new QuizNotFoundException();
@@ -189,43 +223,31 @@ class QuizService
 
         try {
             $quiz->update([
-                'name' => $credentials['name'],
+                'name'       => $credentials['name']       ?? $quiz->name,
+                'full_score' => $credentials['full_score'] ?? $quiz->full_score,
             ]);
 
-            $existingIds = [];
+            // Only rebuild targets if user passed grade/subject/semester/sections
+            if (isset($credentials['grade_id'], $credentials['subject_id'], $credentials['semester_id'])) {
 
-            foreach ($credentials['targets'] as $target) {
-                if (isset($target['id'])) {
-                    $quizTarget = QuizTarget::where('id', $target['id'])
-                        ->where('quiz_id', $quiz->id)
-                        ->first();
+                $quiz->targets()->delete();
 
-                    if ($quizTarget) {
-                        $quizTarget->update([
-                            'subject_id'  => $target['subject_id'],
-                            'section_id'  => $target['section_id'],
-                            'semester_id' => $target['semester_id'],
-                        ]);
+                $sectionIds = $credentials['section_ids'] ?? Section::where('grade_id', $credentials['grade_id'])->pluck('id')->toArray();
 
-                        $existingIds[] = $quizTarget->id;
-                    }
-                } else {
-                    $new = $quiz->targets()->create([
-                        'subject_id'  => $target['subject_id'],
-                        'section_id'  => $target['section_id'],
-                        'semester_id' => $target['semester_id'],
+                foreach ($sectionIds as $sectionId) {
+                    $quiz->targets()->create([
+                        'grade_id'    => $credentials['grade_id'],
+                        'subject_id'  => $credentials['subject_id'],
+                        'semester_id' => $credentials['semester_id'],
+                        'section_id'  => $sectionId,
                     ]);
-
-                    $existingIds[] = $new->id;
                 }
             }
-
-            $quiz->targets()->whereNotIn('id', $existingIds)->delete();
 
             DB::commit();
 
             return ResponseHelper::jsonResponse(
-                null,
+                new QuizResource($quiz->load('targets')),
                 __("messages.quiz.updated"),
                 201
             );
