@@ -25,4 +25,29 @@ class StudentService
             UserResource::collection($students),
         );
     }
+
+    public function getStudentsBySectionAndSemester($sectionId, $semesterId)
+    {
+        if (!auth()->user()->hasPermissionTo('عرض الطلاب')) {
+            throw new PermissionException();
+        }
+
+        $students = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'user_type', 'image')
+            ->where('user_type', 'student')
+            ->whereHas('student.studentEnrollments', function ($query) use ($sectionId, $semesterId) {
+                $query->where('section_id', $sectionId)
+                      ->where('semester_id', $semesterId);
+            })
+            ->with(['devices', 'student.studentEnrollments' => function ($query) use ($sectionId, $semesterId) {
+                $query->where('section_id', $sectionId)
+                      ->where('semester_id', $semesterId)
+                      ->with(['section', 'semester', 'year']);
+            }])
+            ->orderBy('first_name', 'asc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            UserResource::collection($students),
+        );
+    }
 }

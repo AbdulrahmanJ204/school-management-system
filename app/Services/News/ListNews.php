@@ -62,6 +62,4 @@ trait ListNews
         $news->each->loadTargets();
         return ResponseHelper::jsonResponse(NewsResource::collection($news), __(NewsStr::messageRetrieved->value));
     }
-
-
 }
