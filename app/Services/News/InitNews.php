@@ -3,6 +3,7 @@
 namespace App\Services\News;
 
 use App\Enums\StringsManager\NewsStr;
+use App\Enums\StringsManager\QueryParams;
 
 trait InitNews
 {
@@ -16,9 +17,13 @@ trait InitNews
         $this->apiIsGeneral = NewsStr::apiIsGeneral->value;
         $this->apiPhoto = NewsStr::apiPhoto->value;
         $this->apiRemovePhoto = NewsStr::apiRemovePhoto->value;
-        $this->queryYear = NewsStr::queryYear->value;
+        $this->queryYear = QueryParams::Year->value;
         $this->apiSectionIds = NewsStr::apiSectionIds->value;
         $this->apiGradeIds = NewsStr::apiGradeIds->value;
+        $this->queryGrade = QueryParams::Grade->value;
+        $this->querySection = QueryParams::Section->value;
+        $this->queryGeneral = QueryParams::General->value;
+
     }
 
 
