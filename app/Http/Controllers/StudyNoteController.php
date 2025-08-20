@@ -4,16 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
 use App\Http\Requests\StudyNoteRequest;
+use App\Http\Requests\CombinedNotesRequest;
 use App\Services\StudyNoteService;
+use App\Services\CombinedNotesService;
 use Illuminate\Http\JsonResponse;
 
 class StudyNoteController extends Controller
 {
     protected StudyNoteService $studyNoteService;
+    protected CombinedNotesService $combinedNotesService;
 
-    public function __construct(StudyNoteService $studyNoteService)
+    public function __construct(StudyNoteService $studyNoteService, CombinedNotesService $combinedNotesService)
     {
         $this->studyNoteService = $studyNoteService;
+        $this->combinedNotesService = $combinedNotesService;
     }
 
     /**
@@ -102,5 +106,13 @@ class StudyNoteController extends Controller
     public function getBySubject($subjectId): JsonResponse
     {
         return $this->studyNoteService->getBySubject($subjectId);
+    }
+
+    /**
+     * @throws PermissionException
+     */
+    public function getCombinedNotes(CombinedNotesRequest $request): JsonResponse
+    {
+        return $this->combinedNotesService->getCombinedNotes($request);
     }
 }

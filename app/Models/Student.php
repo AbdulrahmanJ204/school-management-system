@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends Model
 {
@@ -42,5 +43,15 @@ class Student extends Model
                 $query->where('id', $yearId);
 
             })->get();
+    }
+
+    public function studyNotes(): HasMany
+    {
+        return $this->hasMany(StudyNote::class, 'student_id');
+    }
+
+    public function behaviorNotes(): HasMany
+    {
+        return $this->hasMany(BehaviorNote::class, 'student_id');
     }
 }
