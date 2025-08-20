@@ -8,6 +8,7 @@ use App\Exceptions\UserNotFoundException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,12 +21,13 @@ class UserService
     {
         //
     }
-    public function getUser($id)
+
+    /**
+     * @throws UserNotFoundException
+     */
+    public function getUser($id): JsonResponse
     {
-        $user = User::select([
-            'id', 'first_name', 'father_name', 'last_name', 'email',
-            'user_type', 'birth_date', 'gender', 'phone', 'image','last_login'
-        ])->with('devices')->find($id);
+        $user = User::with('devices')->find($id);
 
         if (!$user) {
             throw new UserNotFoundException();
@@ -42,7 +44,13 @@ class UserService
             __('messages.user.get')
         );
     }
-    public function updateUser($request, $id)
+
+    /**
+     * @throws PermissionException
+     * @throws ImageUploadFailed
+     * @throws UserNotFoundException
+     */
+    public function updateUser($request, $id): JsonResponse
     {
         $admin = auth()->user();
 
@@ -50,10 +58,7 @@ class UserService
             throw new PermissionException();
         }
 
-        $user = User::select([
-            'id', 'first_name', 'father_name', 'last_name', 'email',
-            'user_type', 'birth_date', 'gender', 'phone', 'image'
-        ])->find($id);
+        $user = User::findOrFail($id);
 
         if (!$user) {
             throw new UserNotFoundException();
@@ -101,7 +106,12 @@ class UserService
             true
         );
     }
-    public function deleteUser(int $id)
+
+    /**
+     * @throws PermissionException
+     * @throws UserNotFoundException
+     */
+    public function deleteUser(int $id): JsonResponse
     {
         $admin = auth()->user();
 
@@ -109,7 +119,7 @@ class UserService
             throw new PermissionException();
         }
 
-        $user = User::find($id);
+        $user = User::findOrFail($id);
 
         if (!$user) {
             throw new UserNotFoundException();
@@ -137,14 +147,17 @@ class UserService
             true
         );
     }
-    public function listAdminsAndTeachers()
+
+    /**
+     * @throws PermissionException
+     */
+    public function listAdminsAndTeachers(): JsonResponse
     {
         if (!auth()->user()->hasPermissionTo('عرض المشرفين و الاساتذة')) {
             throw new PermissionException();
         }
 
-        $users = User::select('id', 'first_name', 'father_name', 'last_name', 'gender', 'birth_date', 'email', 'phone', 'user_type', 'image')
-            ->whereIn('user_type', ['admin', 'teacher'])
+        $users = User::whereIn('user_type', ['admin', 'teacher'])
             ->with(['admin', 'teacher', 'roles.permissions'])
             ->orderBy('id', 'asc')
             ->paginate(15);
