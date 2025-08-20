@@ -18,11 +18,13 @@ class StudyNoteResource extends JsonResource
             'id' => $this->id,
             'student_id' => $this->student_id,
             'school_day_id' => $this->school_day_id,
+            'date' => $this->schoolDay->date?->format('Y-m-d'),
             'subject_id' => $this->subject_id,
             'note_type' => $this->note_type,
             'note' => $this->note,
-            'marks' => $this->marks,
-            'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
+            'student_mark' => $this->marks,
+            'created_by' => $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
+            'sender_name' => $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
 
             // Relationships
             // 'student' => new StudentResource($this->whenLoaded('student')),
