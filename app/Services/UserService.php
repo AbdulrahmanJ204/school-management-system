@@ -159,11 +159,16 @@ class UserService
 
         $users = User::whereIn('user_type', ['admin', 'teacher'])
             ->with(['admin', 'teacher', 'roles.permissions'])
-            ->orderBy('id', 'asc')
-            ->paginate(15);
+            ->orderBy('first_name', 'asc')
+            ->paginate(50);
+
+        $responseData = [
+            'users' => UserResource::collection($users),
+            'page_count' => $users->lastPage(),
+        ];
 
         return ResponseHelper::jsonResponse(
-            UserResource::collection($users),
+            $responseData,
             __('messages.user.list_admins_and_teachers'),
         );
     }

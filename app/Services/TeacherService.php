@@ -21,11 +21,16 @@ class TeacherService
 
         $teachers = User::where('user_type', 'teacher')
             ->with(['teacher'])
-            ->orderBy('id', 'asc')
-            ->paginate(15);
+            ->orderBy('first_name', 'asc')
+            ->paginate(50);
+
+        $responseData = [
+            'users' => UserResource::collection($teachers),
+            'page_count' => $teachers->lastPage(),
+        ];
 
         return ResponseHelper::jsonResponse(
-            UserResource::collection($teachers),
+            $responseData,
         );
     }
 }

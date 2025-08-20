@@ -21,11 +21,16 @@ class AdminService
 
         $admins = User::where('user_type', 'admin')
             ->with(['admin'])
-            ->orderBy('id', 'asc')
-            ->paginate(15);
+            ->orderBy('first_name', 'asc')
+            ->paginate(50);
+
+        $responseData = [
+            'users' => UserResource::collection($admins),
+            'page_count' => $admins->lastPage(),
+        ];
 
         return ResponseHelper::jsonResponse(
-            UserResource::collection($admins),
+            $responseData,
         );
     }
 }

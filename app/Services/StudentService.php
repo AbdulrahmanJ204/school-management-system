@@ -21,12 +21,15 @@ class StudentService
 
         $students = User::where('user_type', 'student')
             ->with(['devices', 'student'])
-            ->orderBy('id', 'asc')
-            ->paginate(15);
+            ->orderBy('first_name', 'asc')
+            ->paginate(50);
 
-        return ResponseHelper::jsonResponse(
-            UserResource::collection($students),
-        );
+        $responseData = [
+            'users' => UserResource::collection($students),
+            'page_count' => $students->lastPage(),
+        ];
+
+        return ResponseHelper::jsonResponse($responseData);
     }
 
     /**

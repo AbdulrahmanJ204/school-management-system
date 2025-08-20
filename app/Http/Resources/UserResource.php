@@ -12,7 +12,7 @@ class UserResource extends JsonResource
     {
         $isGetUserRoute = $request->routeIs('users.show');
         $isGetStaffRoute = $request->routeIs('staff');
-
+        $isGetAdminsRoute = $request->routeIs('admins');
 
         return [
             'id' => $this->id,
@@ -26,14 +26,14 @@ class UserResource extends JsonResource
             'gender' => $this->gender,
             'phone' => $this->phone,
             'user_type' => $this->user_type,
-            'role' => $this->when($isGetStaffRoute, function () {
+            'role' => $this->when($isGetStaffRoute || $isGetAdminsRoute, function () {
                 $role = $this->roles->first();
                 return $role ? [
                     'id' => $role->id,
                     'name' => $role->name,
                 ] : null;
             }),
-            'permissions' => $this->when($isGetStaffRoute, function () {
+            'permissions' => $this->when($isGetStaffRoute || $isGetAdminsRoute, function () {
                 $role = $this->roles->first(); // again assuming 1 role per user
                 return $role ? $role->permissions->pluck('name') : [];
             }),
