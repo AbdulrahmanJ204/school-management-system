@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ImageUploadFailed;
 use App\Exceptions\InvalidTargetException;
 use App\Exceptions\PermissionException;
 use App\Exceptions\QuizNotFoundException;
@@ -9,13 +10,36 @@ use App\Helpers\ResponseHelper;
 use App\Http\Resources\DetailedQuizResource;
 use App\Http\Resources\QuizResource;
 use App\Models\Quiz;
-use App\Models\QuizTarget;
 use App\Models\Section;
 use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class QuizService
 {
+    private function handleImageUpload($request, string $fieldName, string $folder): ?string
+    {
+        if ($request->hasFile($fieldName)) {
+            try {
+                $file = $request->file($fieldName);
+
+                $hash = md5_file($file->getRealPath());
+                $extension = $file->getClientOriginalExtension();
+                $filename = "{$folder}/{$hash}.{$extension}";
+
+                if (!Storage::disk('public')->exists($filename)) {
+                    Storage::disk('public')->putFileAs($folder, $file, "{$hash}.{$extension}");
+                }
+
+                return $filename;
+
+            } catch (\Exception $e) {
+                throw new ImageUploadFailed();
+            }
+        }
+
+        return "{$folder}/default.png";
+    }
     public function listQuizzes($request)
     {
         $user = auth()->user();
@@ -83,6 +107,8 @@ class QuizService
         }
 
         $credentials = $request->validated();
+
+        $credentials['quiz_photo'] = $this->handleImageUpload($request, 'quiz_photo', 'quiz_images');
         $credentials['created_by'] = $user->id;
 
         DB::beginTransaction();
@@ -93,6 +119,7 @@ class QuizService
                 'name'       => $credentials['name'],
                 'full_score' => $credentials['full_score'],
                 'created_by' => $user->id,
+                'quiz_photo' => $credentials['quiz_photo'],
             ]);
 
             $subject = Subject::findOrFail($credentials['subject_id']);
@@ -219,12 +246,21 @@ class QuizService
 
         $credentials = $request->validated();
 
+        if ($request->hasFile('quiz_photo')) {
+            if ($quiz->quiz_photo && $quiz->quiz_photo !== 'quiz_images/default.png') {
+                Storage::disk('public')->delete($quiz->quiz_photo);
+            }
+
+            $credentials['quiz_photo'] = $this->handleImageUpload($request, 'quiz_photo', 'quiz_images');
+        }
+
         DB::beginTransaction();
 
         try {
             $quiz->update([
                 'name'       => $credentials['name']       ?? $quiz->name,
                 'full_score' => $credentials['full_score'] ?? $quiz->full_score,
+                'quiz_photo' => $credentials['quiz_photo']
             ]);
 
             // Only rebuild targets if user passed grade/subject/semester/sections
@@ -269,6 +305,10 @@ class QuizService
 
         if (!$quiz) {
             throw new QuizNotFoundException();
+        }
+
+        if ($quiz->quiz_photo && $quiz->quiz_photo !== 'quiz_images/default.png') {
+            Storage::disk('public')->delete($quiz->quiz_photo);
         }
 
         $quiz->delete();

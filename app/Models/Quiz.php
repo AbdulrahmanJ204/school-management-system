@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Quiz extends Model
 {
-    protected $fillable = ['name', 'created_by', 'is_active', 'taken_at', 'full_score'];
+    protected $fillable = ['name', 'created_by', 'is_active', 'taken_at', 'full_score', 'quiz_photo'];
     public function questions()
     {
         return $this->hasMany(Question::class);

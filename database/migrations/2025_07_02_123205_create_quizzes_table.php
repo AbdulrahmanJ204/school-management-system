@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('taken_at')->nullable();
             $table->boolean('is_active')->default(false);
             $table->unsignedBigInteger('full_score');
+            $table->string('quiz_photo')->nullable();
             $table->foreignId('created_by')->constrained('users');
         });
     }

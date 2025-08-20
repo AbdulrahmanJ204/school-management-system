@@ -22,8 +22,9 @@ class CreateAndUpdateQuizRequest extends BaseRequest
         return [
             'is_active' => 'prohibited',
             'taken_at' => 'prohibited',
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:quizzes,name',
             'full_score'  => 'required|integer|min:1',
+            'quiz_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'grade_id'    => 'required|exists:grades,id',
             'subject_id'  => 'required|exists:subjects,id',
             'semester_id' => 'required|exists:semesters,id',
