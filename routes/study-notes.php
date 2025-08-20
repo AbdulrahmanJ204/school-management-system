@@ -11,4 +11,5 @@ Route::middleware('auth:api')->group(function () {
     Route::get('study-notes/student/{studentId}', [StudyNoteController::class, 'getByStudent']);
     Route::get('study-notes/school-day/{schoolDayId}', [StudyNoteController::class, 'getBySchoolDay']);
     Route::get('study-notes/subject/{subjectId}', [StudyNoteController::class, 'getBySubject']);
+    Route::get('combined-notes', [StudyNoteController::class, 'getCombinedNotes']);
 });

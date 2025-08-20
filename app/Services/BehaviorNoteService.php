@@ -27,10 +27,14 @@ class BehaviorNoteService
            'schoolDay',
         ])
             ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return ResponseHelper::jsonResponse(
             BehaviorNoteResource::collection($behaviorNotes),
+            __('messages.behavior_note.listed'),
+            200,
+            true,
+            $behaviorNotes->lastPage()
         );
     }
 
@@ -47,10 +51,14 @@ class BehaviorNoteService
                 'schoolDay',
             ])
             ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return ResponseHelper::jsonResponse(
             BehaviorNoteResource::collection($behaviorNotes),
+            __('messages.behavior_note.listed'),
+            200,
+            true,
+            $behaviorNotes->lastPage()
         );
     }
 
@@ -180,10 +188,14 @@ class BehaviorNoteService
                 'schoolDay',
             ])
             ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return ResponseHelper::jsonResponse(
             BehaviorNoteResource::collection($behaviorNotes),
+            __('messages.behavior_note.listed'),
+            200,
+            true,
+            $behaviorNotes->lastPage()
         );
     }
 
@@ -200,10 +212,14 @@ class BehaviorNoteService
                 'schoolDay',
             ])
             ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return ResponseHelper::jsonResponse(
             BehaviorNoteResource::collection($behaviorNotes),
+            __('messages.behavior_note.listed'),
+            200,
+            true,
+            $behaviorNotes->lastPage()
         );
     }
 }

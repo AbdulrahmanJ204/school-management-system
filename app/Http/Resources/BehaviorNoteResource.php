@@ -18,13 +18,16 @@ class BehaviorNoteResource extends JsonResource
             'id' => $this->id,
             'student_id' => $this->student_id,
             'school_day_id' => $this->school_day_id,
+            'date' => $this->schoolDay->date?->format('Y-m-d'),
             'behavior_type' => $this->behavior_type,
             'note' => $this->note,
+            'is_positive' => $this->behavior_type === 'positive',
 
             // Relationships
             // 'student' => new StudentResource($this->whenLoaded('student')),
             'school_day' => new SchoolDayResource($this->whenLoaded('schoolDay')),
-            'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
+            'created_by' => $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
+            'sender_name' => $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
 
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),

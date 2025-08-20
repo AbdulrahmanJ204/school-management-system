@@ -32,8 +32,8 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
-    Route::get('admins', [AdminController::class, 'show']);
-    Route::get('teachers', [TeacherController::class, 'show']);
+    Route::get('admins', [AdminController::class, 'show'])->name('admins');
+    Route::get('teachers', [TeacherController::class, 'show'])->name('teachers');
     Route::get('staff', [UserController::class, 'getStaff'])->name('staff');
     Route::resource('users', UserController::class)->only(['show', 'destroy']);
     Route::post('users/{user}', [UserController::class, 'update']);

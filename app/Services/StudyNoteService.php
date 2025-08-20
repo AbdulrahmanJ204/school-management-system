@@ -28,11 +28,14 @@ class StudyNoteService
             'subject',
         ])
             ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return ResponseHelper::jsonResponse(
             StudyNoteResource::collection($studyNotes),
-            __('messages.study_note.listed')
+            __('messages.study_note.listed'),
+            200,
+            true,
+            $studyNotes->lastPage()
         );
     }
 
@@ -50,11 +53,14 @@ class StudyNoteService
                 'subject',
             ])
             ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return ResponseHelper::jsonResponse(
             StudyNoteResource::collection($studyNotes),
-            __('messages.study_note.listed')
+            __('messages.study_note.listed'),
+            200,
+            true,
+            $studyNotes->lastPage()
         );
     }
 
@@ -190,11 +196,14 @@ class StudyNoteService
                 'subject',
             ])
             ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return ResponseHelper::jsonResponse(
             StudyNoteResource::collection($studyNotes),
-            __('messages.study_note.listed')
+            __('messages.study_note.listed'),
+            200,
+            true,
+            $studyNotes->lastPage()
         );
     }
 
@@ -212,11 +221,14 @@ class StudyNoteService
                 'subject',
             ])
             ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return ResponseHelper::jsonResponse(
             StudyNoteResource::collection($studyNotes),
-            __('messages.study_note.listed')
+            __('messages.study_note.listed'),
+            200,
+            true,
+            $studyNotes->lastPage()
         );
     }
 
@@ -234,11 +246,14 @@ class StudyNoteService
                 'subject',
             ])
             ->orderBy('id', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return ResponseHelper::jsonResponse(
             StudyNoteResource::collection($studyNotes),
-            __('messages.study_note.listed')
+            __('messages.study_note.listed'),
+            200,
+            true,
+            $studyNotes->lastPage()
         );
     }
 }
