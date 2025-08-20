@@ -112,9 +112,9 @@ class RoleService
     {
         $admin = auth()->user();
 
-        /*if (!$admin->hasPermissionTo('حذف دور')) {
+        if (!$admin->hasPermissionTo('حذف دور')) {
             throw new PermissionException();
-        }*/
+        }
 
         $role = Role::Find($id);
 

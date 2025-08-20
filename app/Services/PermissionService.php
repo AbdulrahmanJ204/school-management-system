@@ -13,7 +13,7 @@ class PermissionService
     {
         $user = auth()->user();
 
-        if($user->hasPermissionTo('عرض الصلاحيات')) {
+        if(!$user->hasPermissionTo('عرض الصلاحيات')) {
             throw new PermissionException();
         }
 
