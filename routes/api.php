@@ -53,7 +53,8 @@ Route::middleware('auth:api')->group(function () {
     })->middleware(['user_type:admin|teacher', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::apiResource('quizzes', QuizController::class);
+    Route::apiResource('quizzes', QuizController::class)->except(['update']);
+    Route::post('quizzes/{id}/update', [QuizController::class, 'update']);
     Route::put('quizzes/{id}/activate', [QuizController::class, 'activate']);
     Route::put('quizzes/{id}/deactivate', [QuizController::class, 'deactivate']);
     Route::post('quizzes/{quiz_id}/questions', [QuestionController::class, 'create']);

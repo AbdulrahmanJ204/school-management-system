@@ -21,6 +21,9 @@ class QuizResource extends JsonResource
             'is_active'   => (bool) $this->is_active,
             'taken_at'    => $this->taken_at ? $this->taken_at->format('Y-m-d H:i:s') : null,
             'questions_count' => $this->questions_count ?? $this->questions()->count(),
+            'quiz_photo'  => $this->quiz_photo
+                ? asset('storage/' . $this->quiz_photo)
+                : asset('storage/quiz_images/default.png'),
 
             // Teacher info (optional, remove if you don’t need)
             'created_by'  => [
