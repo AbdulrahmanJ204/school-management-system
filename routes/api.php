@@ -36,7 +36,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('teachers', [TeacherController::class, 'show'])->name('teachers');
     Route::get('staff', [UserController::class, 'getStaff'])->name('staff');
     Route::resource('users', UserController::class)->only(['show', 'destroy']);
-    Route::post('users/{user}', [UserController::class, 'update']);
+    Route::post('users/{user}', [UserController::class, 'update'])->name('user.update');;
     Route::resource('roles', RoleController::class);
     Route::get('permissions', [PermissionController::class, 'show']);
     Route::resource('school_shifts', SchoolShiftController::class);

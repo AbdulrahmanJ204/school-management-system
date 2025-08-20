@@ -50,6 +50,7 @@ class UpdateRequest extends BaseRequest
             'gender' => 'nullable|in:male,female',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'birth_date' => 'nullable|date|before:today|date_format:Y-m-d|regex:/^\d{4}-\d{2}-\d{2}$/',
+            'role_id'      => 'nullable|exists:roles,id',
             'phone' => [
                 'nullable',
                 'string',

@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -86,6 +87,11 @@ class UserService
         DB::transaction(function () use ($user, $credentials) {
 
             $user->update($credentials);
+
+            if (isset($credentials['role_id'])) {
+                $role = Role::findOrFail($credentials['role_id']);
+                $user->syncRoles([$role->name]);
+            }
 
             match ($user->user_type) {
                 'admin' => $user->admin->touch(),

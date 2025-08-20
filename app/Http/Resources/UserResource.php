@@ -13,6 +13,7 @@ class UserResource extends JsonResource
         $isGetUserRoute = $request->routeIs('users.show');
         $isGetStaffRoute = $request->routeIs('staff');
         $isGetAdminsRoute = $request->routeIs('admins');
+        $isUpdateUserRoute = $request->routeIs('user.update');
 
         return [
             'id' => $this->id,
@@ -26,7 +27,7 @@ class UserResource extends JsonResource
             'gender' => $this->gender,
             'phone' => $this->phone,
             'user_type' => $this->user_type,
-            'role' => $this->when($isGetStaffRoute || $isGetAdminsRoute, function () {
+            'role' => $this->when($isGetStaffRoute || $isGetAdminsRoute || $isUpdateUserRoute, function () {
                 $role = $this->roles->first();
                 return $role ? [
                     'id' => $role->id,
