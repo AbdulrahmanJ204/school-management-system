@@ -162,14 +162,12 @@ class UserService
             ->orderBy('first_name', 'asc')
             ->paginate(50);
 
-        $responseData = [
-            'users' => UserResource::collection($users),
-            'page_count' => $users->lastPage(),
-        ];
-
         return ResponseHelper::jsonResponse(
-            $responseData,
+            UserResource::collection($users),
             __('messages.user.list_admins_and_teachers'),
+            200,
+            true,
+            $users->lastPage()
         );
     }
 }

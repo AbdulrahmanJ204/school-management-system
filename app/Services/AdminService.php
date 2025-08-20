@@ -24,13 +24,12 @@ class AdminService
             ->orderBy('first_name', 'asc')
             ->paginate(50);
 
-        $responseData = [
-            'users' => UserResource::collection($admins),
-            'page_count' => $admins->lastPage(),
-        ];
-
         return ResponseHelper::jsonResponse(
-            $responseData,
+            UserResource::collection($admins),
+            __('messages.admin.listed'),
+            200,
+            true,
+            $admins->lastPage()
         );
     }
 }

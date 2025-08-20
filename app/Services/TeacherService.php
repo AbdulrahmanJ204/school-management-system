@@ -24,13 +24,12 @@ class TeacherService
             ->orderBy('first_name', 'asc')
             ->paginate(50);
 
-        $responseData = [
-            'users' => UserResource::collection($teachers),
-            'page_count' => $teachers->lastPage(),
-        ];
-
         return ResponseHelper::jsonResponse(
-            $responseData,
+            UserResource::collection($teachers),
+            __('messages.teacher.listed'),
+            200,
+            true,
+            $teachers->lastPage()
         );
     }
 }

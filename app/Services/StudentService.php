@@ -24,12 +24,13 @@ class StudentService
             ->orderBy('first_name', 'asc')
             ->paginate(50);
 
-        $responseData = [
-            'users' => UserResource::collection($students),
-            'page_count' => $students->lastPage(),
-        ];
-
-        return ResponseHelper::jsonResponse($responseData);
+        return ResponseHelper::jsonResponse(
+            UserResource::collection($students),
+            __('messages.student.listed'),
+            200,
+            true,
+            $students->lastPage()
+        );
     }
 
     /**
