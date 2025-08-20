@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PermissionException;
 use App\Services\AdminService;
+use Illuminate\Http\JsonResponse;
 
 class AdminController extends Controller
 {
-    protected $adminService;
+    protected AdminService $adminService;
     public function __construct(AdminService $adminService)
     {
         $this->adminService = $adminService;
     }
 
-    public function show()
+    /**
+     * @throws PermissionException
+     */
+    public function show(): JsonResponse
     {
         return $this->adminService->listAdmins();
     }

@@ -30,7 +30,8 @@ class StoreNewsRequest extends BaseRequest
             NewsStr::apiSectionIds->value => 'array',
             NewsStr::apiSectionIds->value . '.*' => 'exists:sections,id',
             NewsStr::apiGradeIds->value => [
-                'missing_with:' . NewsStr::apiSectionIds->value, ','
+                'array',
+                'missing_with:' . NewsStr::apiSectionIds->value,
             ],
             NewsStr::apiGradeIds->value . '.*' => 'exists:grades,id',
         ];

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Exceptions\DeviceAlreadyExistsException;
+
 use App\Exceptions\ImageUploadFailed;
 use App\Exceptions\InvalidPasswordException;
 use App\Exceptions\InvalidUserTypeException;
@@ -155,32 +155,21 @@ class AuthService
         DB::beginTransaction();
 
         try {
-            $device = Device_info::where('device_id', $credentials['device_id'])->first();
+            // Always create a new device record for each login
+            $device = Device_info::create([
+                'brand' => $credentials['brand'] ?? null,
+                'device' => $credentials['device'] ?? null,
+                'manufacturer' => $credentials['manufacturer'] ?? null,
+                'model' => $credentials['model'] ?? null,
+                'product' => $credentials['product'] ?? null,
+                'name' => $credentials['name'] ?? null,
+                'identifier' => $credentials['identifier'] ?? null,
+                'os_version' => $credentials['os_version'] ?? null,
+                'os_name' => $credentials['os_name'] ?? null,
+            ]);
 
-            if ($device) {
-                // Check if the same device info is reused
-                $conflict =
-                    $device->platform !== $credentials['platform'] ||
-                    $device->type     !== $credentials['device_type'] ||
-                    $device->name     !== $credentials['device_name'];
-
-                if ($conflict) {
-                    throw new DeviceAlreadyExistsException(); // Someone reused the same device_id for another device
-                }
-
-                // If device exists and matches — just sync (if not already linked)
-                $user->devices()->syncWithoutDetaching([$device->id]);
-            } else {
-                // Device doesn't exist — create it and attach to user
-                $device = Device_info::create([
-                    'device_id' => $credentials['device_id'],
-                    'platform'  => $credentials['platform'],
-                    'type'      => $credentials['device_type'],
-                    'name'      => $credentials['device_name'],
-                ]);
-
-                $user->devices()->attach($device->id);
-            }
+            // Attach the device to the user
+            $user->devices()->attach($device->id);
             // 5. Generate tokens
             $accessToken = $user->createToken('access_token', ['access']);
             $refreshToken = $user->createToken('refresh_token', ['refresh']);
