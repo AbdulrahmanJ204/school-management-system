@@ -28,9 +28,9 @@ class NewsSeeder extends Seeder
             $firstYearStartDate->addDays(5),
             $secondYearStartDate->addDays(5),
             $thirdYearStartDate->addDays(5),
-            $firstYearEndDate->subDays(5),
-            $secondYearEndDate->subDays(5),
-            $thirdYearEndDate->subDays(5),
+            $firstYearEndDate->subDays(10),
+            $secondYearEndDate->subDays(10),
+            $thirdYearEndDate->subDays(10),
         ];
 
         $news = [

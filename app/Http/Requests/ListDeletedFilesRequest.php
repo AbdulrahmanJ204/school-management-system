@@ -1,25 +1,24 @@
 <?php
 
-namespace App\Http\Requests\News;
+namespace App\Http\Requests;
 
-use App\Enums\Permissions\NewsPermission;
-use App\Enums\StringsManager\NewsStr;
+use App\Enums\FileType;
+use App\Enums\Permissions\FilesPermission;
 use App\Enums\StringsManager\QueryParams;
-use App\Http\Requests\BaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
-class ListNewsRequest extends BaseRequest
+class ListDeletedFilesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-
         return true;
-        // TODO: return this after adding the student role
-//        return Auth::user()->hasPermissionTo(NewsPermission::ListNews->value);
+        // TODO :
+        //return Auth::user()->hasPermissionTo(FilesPermission::listDeleted->value);
     }
 
     /**
@@ -31,9 +30,13 @@ class ListNewsRequest extends BaseRequest
     {
         return [
             QueryParams::Year->value => 'sometimes|exists:years,id',
+            QueryParams::Subject->value => 'sometimes|nullable|exists:subjects,id',
+            QueryParams::Type->value => ['sometimes', Rule::enum(FileType::class)],
             QueryParams::Section->value => 'sometimes|exists:sections,id',
             QueryParams::Grade->value => 'sometimes|exists:grades,id',
             QueryParams::General->value => 'sometimes'
+            ,
         ];
+
     }
 }

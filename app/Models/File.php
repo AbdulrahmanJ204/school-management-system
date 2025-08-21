@@ -30,7 +30,7 @@ class File extends Model
         'publish_date' => 'datetime',
     ];
 
-    protected $with = ['targets.grade', 'targets.section.grade'];
+    protected $with = ['targets'];
 
     public static function boot(): void
     {
@@ -71,6 +71,7 @@ class File extends Model
     public function loadSectionAndGrade(): void
     {
         // THIS FUNCTION IS USED TO LOAD TARGETS FOR STORED OR UPDATED FILE
+        // TODO : Modify this trash...
         $this->load('targets.section.grade', 'targets.grade');
     }
 
@@ -118,7 +119,7 @@ class File extends Model
     }
 
     #[Scope]
-    protected function belongsToTeacher(Builder $query, $teacherId ,$subjectID ,  $SectionId): void
+    protected function belongsToTeacher(Builder $query, $teacherId, $subjectID, $SectionId): void
     {
         // This scope for files that targets teachers sections in his subjects ,
         // Note: The file could be for multiple teachers
@@ -133,8 +134,8 @@ class File extends Model
                     ->where('tss.teacher_id', $teacherId)
                     ->where('tss.is_active', true);
 
-                if($subjectID) $join->where('tss.subject_id', $subjectID);
-                if($SectionId) $join->where('tss.section_id', $SectionId);
+                if ($subjectID) $join->where('tss.subject_id', $subjectID);
+                if ($SectionId) $join->where('tss.section_id', $SectionId);
 
             })
             ->select('files.*')

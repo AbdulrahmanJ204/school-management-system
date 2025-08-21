@@ -8,6 +8,7 @@ Route::prefix('news')
     ->middleware('auth:api')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/trashed', 'listDeleted');
         Route::get('/{news}', 'show');
 
         Route::post('/', 'store');

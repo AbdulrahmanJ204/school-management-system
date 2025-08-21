@@ -12,4 +12,6 @@ enum NewsPermission : string{
     case delete = 'حذف خبر نهائي';
     case restore = 'استعادة خبر';
     //case show = 'عرض خبر';
+    case ListNews = 'عرض الاخبار';
+    case ListDeletedNews = 'عرض الاخبار المحذوفة';
 }

@@ -23,7 +23,7 @@ class News extends Model
         'description' => 'json',
         'publish_date' => 'datetime',
     ];
-    protected $with = ['targets.grade', 'targets.section.grade'];
+    protected $with = [ 'targets'];
 
     protected static function boot()
     {
@@ -46,8 +46,7 @@ class News extends Model
     public function getDeleteSnapshot(): self
     {
         $clone = clone $this;
-        $targets = $this->targets()->get();
-        $clone->setRelation('targets', $targets);
+        $this->loadTargets();
         return $clone;
     }
 
