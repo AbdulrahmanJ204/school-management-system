@@ -21,4 +21,13 @@ class TeacherController extends Controller
     {
         return $this->teacherService->listTeachers();
     }
+
+    /**
+     * Get teacher's grades, sections, and subjects
+     * @throws PermissionException
+     */
+    public function getGradesSectionsSubjects(): JsonResponse
+    {
+        return $this->teacherService->getTeacherGradesSectionsSubjects();
+    }
 }

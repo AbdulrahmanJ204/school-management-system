@@ -62,6 +62,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'destroy']);
     Route::get('quizzes', [QuizController::class, 'index']);
     Route::get('quiz/{id}', [QuizController::class, 'show']);
+    Route::get('teacher/grades-sections-subjects', [TeacherController::class, 'getGradesSectionsSubjects'])->name('teacher.grades-sections-subjects');
 })->middleware(['user_type:teacher', 'throttle:5,1']);
 
 Route::middleware('auth:api')->group(function () {
