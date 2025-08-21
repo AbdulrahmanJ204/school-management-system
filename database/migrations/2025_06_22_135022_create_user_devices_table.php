@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('device_id')->constrained('device_infos')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
+            $table->timestamp('last_used_at')->nullable();
         });
     }
 

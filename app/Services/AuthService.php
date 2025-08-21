@@ -17,6 +17,7 @@ use App\Models\Device_info;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -75,6 +76,17 @@ class AuthService
 
             $user = User::create($credentials);
 
+            // Assign role based on user type
+            $roleName = match ($userTypeName) {
+                'teacher' => 'Teacher',
+                'student' => 'Student',
+            };
+
+            $role = \Spatie\Permission\Models\Role::where('name', $roleName)->first();
+            if ($role) {
+                $user->assignRole($role);
+            }
+
             match ($userTypeName) {
                 'admin' => Admin::create([
                     'user_id' => $user->id,
@@ -101,7 +113,16 @@ class AuthService
             true
         );
     }
-    public function login($request, $user_type)
+
+    /**
+     * @throws InvalidUserTypeException
+     * @throws \Throwable
+     * @throws InvalidPasswordException
+     * @throws MustPassUserTypeException
+     * @throws InvalidUserException
+     * @throws UserNotFoundException
+     */
+    public function login($request, $user_type): JsonResponse
     {
         $credentials = $request->validated();
 
@@ -136,7 +157,7 @@ class AuthService
 
         $userId = (int) $idPart;
 
-        $user = User::find($userId);
+        $user = User::with(['roles.permissions', 'devices'])->find($userId);
 
         if (!$user) {
             throw new UserNotFoundException();
@@ -155,8 +176,8 @@ class AuthService
         DB::beginTransaction();
 
         try {
-            // Always create a new device record for each login
-            $device = Device_info::create([
+            // Find or create device for this user based on device data
+            $deviceData = [
                 'brand' => $credentials['brand'] ?? null,
                 'device' => $credentials['device'] ?? null,
                 'manufacturer' => $credentials['manufacturer'] ?? null,
@@ -166,15 +187,13 @@ class AuthService
                 'identifier' => $credentials['identifier'] ?? null,
                 'os_version' => $credentials['os_version'] ?? null,
                 'os_name' => $credentials['os_name'] ?? null,
-            ]);
+            ];
 
-            // Attach the device to the user
-            $user->devices()->attach($device->id);
-            // 5. Generate tokens
+            $device = $user->findOrCreateDevice($deviceData);
+
             $accessToken = $user->createToken('access_token', ['access']);
             $refreshToken = $user->createToken('refresh_token', ['refresh']);
 
-            // 6. Set token expiration and device ID
             $accessToken->accessToken->expires_at = now()->addMinutes(60);
             $accessToken->accessToken->device_id = $device->id;
             $accessToken->accessToken->save();
@@ -185,11 +204,11 @@ class AuthService
 
             DB::commit();
 
-            // 7. Return success response
+            $user->access_token = $accessToken->plainTextToken;
+            $user->refresh_token = $refreshToken->plainTextToken;
+
             return ResponseHelper::jsonResponse([
                 'user' => new UserResource($user),
-                'access_token'  => $accessToken->plainTextToken,
-                'refresh_token' => $refreshToken->plainTextToken,
             ], __('messages.auth.login'));
 
         } catch (\Throwable $e) {
@@ -198,7 +217,7 @@ class AuthService
             throw $e;
         }
     }
-    public function refresh(Request $request)
+    public function refresh(Request $request): JsonResponse
     {
         $refreshToken = $request->bearerToken();
 
@@ -234,7 +253,7 @@ class AuthService
             true
         );
     }
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
         $token = $request->user()->currentAccessToken();
         $deviceId = $token->device_id;
@@ -253,11 +272,13 @@ class AuthService
         return ResponseHelper::jsonResponse(
             null,
             __('messages.auth.logout'),
-            200,
-            true
         );
     }
-    public function changePassword($request)
+
+    /**
+     * @throws PermissionException
+     */
+    public function changePassword($request): JsonResponse
     {
         $user = auth()->user();
 
@@ -283,21 +304,19 @@ class AuthService
         return ResponseHelper::jsonResponse(
             null,
             __('messages.auth.password_changed'),
-            200,
-            true
         );
     }
 
-    public function forgotPassword($request)
+    public function forgotPassword($request): JsonResponse
     {
         $request->validated();
 
         Password::sendResetLink($request->only('email'));
 
-        return ResponseHelper::jsonResponse(null, __('messages.auth.reset_link_sent'), 200, true);
+        return ResponseHelper::jsonResponse(null, __('messages.auth.reset_link_sent'));
     }
 
-    public function resetPassword($request)
+    public function resetPassword($request): JsonResponse
     {
         $request->validated();
 
@@ -313,7 +332,7 @@ class AuthService
         );
 
         return $status === Password::PASSWORD_RESET
-            ? ResponseHelper::jsonResponse(null, __('messages.auth.password_changed'), 200, true)
+            ? ResponseHelper::jsonResponse(null, __('messages.auth.password_changed'))
             : ResponseHelper::jsonResponse(null, __('messages.auth.invalid_token'), 400, false);
     }
 }
