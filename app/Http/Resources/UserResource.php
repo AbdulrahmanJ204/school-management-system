@@ -20,9 +20,9 @@ class UserResource extends JsonResource
         $baseData = [
             'id' => $this->id,
             'full_name' => trim("{$this->first_name} {$this->father_name} {$this->last_name}"),
-            'first_name'=>$this->first_name,
-            'father_name'=>$this->father_name,
-            'last_name'=>$this->last_name,
+            'first_name' => $this->first_name,
+            'father_name' => $this->father_name,
+            'last_name' => $this->last_name,
             'mother_name' => $this->mother_name,
             'email' => $this->email,
             'birth_date' => $this->birth_date,
@@ -54,15 +54,15 @@ class UserResource extends JsonResource
             $baseData['devices'] = $this->devices->map(function ($device) {
                 return [
                     'last_login' => $this->last_login ? $this->last_login->format('Y-m-d H:i:s') : null,
-                    'brand'      => $device->brand,
-                    'device'     => $device->device,
+                    'brand' => $device->brand,
+                    'device' => $device->device,
                     'manufacturer' => $device->manufacturer,
-                    'model'      => $device->model,
-                    'product'    => $device->product,
-                    'name'       => $device->name,
+                    'model' => $device->model,
+                    'product' => $device->product,
+                    'name' => $device->name,
                     'identifier' => $device->identifier,
                     'os_version' => $device->os_version,
-                    'os_name'    => $device->os_name,
+                    'os_name' => $device->os_name,
                 ];
             });
         }
@@ -76,7 +76,7 @@ class UserResource extends JsonResource
             return $this->student?->grandfather;
         });
 
-        $baseData['general_id']  = $this->when($this->user_type == 'student', function () {
+        $baseData['general_id'] = $this->when($this->user_type == 'student', function () {
             return $this->student?->general_id;
         });
 
@@ -119,7 +119,6 @@ class UserResource extends JsonResource
                 'is_active' => $this->student?->studentEnrollments->first()?->semester?->is_active
             ];
         });
-
         return $baseData;
     }
 }
