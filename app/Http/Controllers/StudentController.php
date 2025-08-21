@@ -33,4 +33,13 @@ class StudentController extends Controller
             $request->semester_id
         );
     }
+
+    /**
+     * Get authenticated student's own profile with comprehensive statistics
+     * @throws PermissionException
+     */
+    public function getMyProfile(): JsonResponse
+    {
+        return $this->studentService->getMyProfile();
+    }
 }
