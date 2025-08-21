@@ -44,6 +44,16 @@ class TeacherService
             throw new PermissionException();
         }
 
+        // Check if the authenticated user is a teacher
+        if (!auth()->user()->teacher) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'المستخدم الحالي ليس أستاذاً',
+                403,
+                false
+            );
+        }
+
         $teacherId = auth()->user()->teacher->id;
 
         $teacherData = TeacherSectionSubject::where('teacher_id', $teacherId)
