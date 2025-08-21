@@ -13,4 +13,5 @@ enum FilesPermission : string{
     case restore = 'استعادة ملف';
     //case show = 'عرض ملف';
     case download = 'تنزيل ملف';
+    case listDeleted = 'عرض الملفات المحذوفة';
 }
