@@ -59,6 +59,7 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:5,1'])->grou
     Route::get('quizzes', [QuizController::class, 'index']);
     Route::get('quiz/{id}', [QuizController::class, 'show']);
     Route::get('teacher/grades-sections-subjects', [TeacherController::class, 'getGradesSectionsSubjects'])->name('teacher.grades-sections-subjects');
+    Route::get('teacher/section/{sectionId}/subject/{subjectId}/students', [TeacherController::class, 'getStudentsInSectionWithMarks'])->name('teacher.section.students');
 });
 
 Route::middleware(['auth:api', 'user_type:student', 'throttle:5,1'])->group(function () {

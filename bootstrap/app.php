@@ -2,6 +2,10 @@
 
 use App\Http\Middleware\LogErrors;
 use App\Http\Middleware\UserTypeMiddleware;
+use App\Jobs\CleanOldLogsJob;
+use App\Jobs\GenerateDailyLogReportJob;
+use App\Jobs\SendDailyLogReportJob;
+use App\Models\DailyLogReport;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -25,7 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule) {
         // Daily log report generation and email sending at 4:00 AM
-        $schedule->job(new \App\Jobs\GenerateDailyLogReportJob())
+        $schedule->job(new GenerateDailyLogReportJob())
                  ->name('generate-daily-log-report')
                  ->dailyAt('04:00')
                  ->withoutOverlapping()
@@ -35,9 +39,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Send daily reports after generation
         $schedule->call(function () {
-            $report = \App\Models\DailyLogReport::latest('report_date')->first();
+            $report = DailyLogReport::latest('report_date')->first();
             if ($report) {
-                \App\Jobs\SendDailyLogReportJob::dispatch($report);
+                SendDailyLogReportJob::dispatch($report);
             }
         })->name('send-daily-log-report')
           ->dailyAt('04:05')
@@ -47,7 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
           });
 
         // Clean old logs after generation
-        $schedule->job(new \App\Jobs\CleanOldLogsJob(90))
+        $schedule->job(new CleanOldLogsJob(90))
                  ->name('clean-old-logs')
                  ->dailyAt('04:10')
                  ->withoutOverlapping()
