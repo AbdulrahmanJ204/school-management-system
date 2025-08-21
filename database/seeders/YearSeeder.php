@@ -25,7 +25,7 @@ class YearSeeder extends Seeder
             [
                 'name' => '2024-2025',
                 'start_date' => '2024-09-01',
-                'end_date' => '2025-06-30',
+                'end_date' => '2025-08-31',
                 'is_active' => true,
                 'created_by' => 1,
                 'created_at' => now(),

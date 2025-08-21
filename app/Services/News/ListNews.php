@@ -6,6 +6,7 @@ use App\Enums\StringsManager\NewsStr;
 use App\Enums\UserType;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\ListDeletedNewsRequest;
 use App\Http\Resources\NewsResource;
 use App\Models\News;
 use Illuminate\Http\JsonResponse;
@@ -13,12 +14,15 @@ use Illuminate\Http\JsonResponse;
 trait ListNews
 {
 
-    public function list($request): JsonResponse
+    public function list($request, $trashed = false): JsonResponse
     {
         $yearId = $this->getYearId($request);
         $user_type = auth()->user()->user_type;
         return match ($user_type) {
-            UserType::Admin->value => $this->listAdminNews($yearId , $request),
+            UserType::Admin->value => $trashed ?
+                $this->listDeleted($request) :
+                $this->listAdminNews($yearId, $request),
+
             UserType::Student->value => $this->listStudentNews($yearId),
             default => throw new PermissionException(),
         };
@@ -54,22 +58,45 @@ trait ListNews
         return ResponseHelper::jsonResponse(NewsResource::collection($news), __(NewsStr::messageRetrieved->value));
     }
 
-    private function listAdminNews($yearId ,$request): JsonResponse
+    private function listAdminNews($yearId, $request, $trashed = false): JsonResponse
     {
         $data = $request->validated();
-        $query = News::withTrashed()
-            ->belongsToYear($yearId)
+        $query = News::belongsToYear($yearId)
             ->orderByPublishDate();
-        if($request->has($this->querySection)) {
+        $this->filterAdmin($request, $query, $data);
+        $news = $query->get();
+        return ResponseHelper::jsonResponse(NewsResource::collection($news), __(NewsStr::messageRetrieved->value));
+    }
+
+    /**
+     * @param $request
+     * @param $query
+     * @param mixed $data
+     * @return void
+     */
+    public function filterAdmin($request, $query, mixed $data): void
+    {
+        if ($request->has($this->querySection)) {
             $query->forSection($data[$this->querySection]);
-        }else if($request->has($this->queryGrade)) {
+        } else if ($request->has($this->queryGrade)) {
             $query->forGrade($data[$this->queryGrade]);
-        }
-        else if($request->has($this->queryGeneral)) {
+        } else if ($request->has($this->queryGeneral)) {
             $query->forPublic();
         }
+    }
+
+    public function listDeleted(ListDeletedNewsRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $yearId = $this->getYearId($request);
+        $query = News::onlyTrashed()
+            ->belongsToYear($yearId)
+            ->orderByDeletionDate();
+        $this->filterAdmin($request, $query, $data);
         $news = $query->get();
-        $news->each->loadTargets();
+        $news->each->loadTargets(); // Necessary because it is deleted
         return ResponseHelper::jsonResponse(NewsResource::collection($news), __(NewsStr::messageRetrieved->value));
+
+
     }
 }

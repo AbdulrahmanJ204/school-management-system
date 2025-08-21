@@ -63,7 +63,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function devices()
     {
         return $this->belongsToMany(Device_info::class, 'user_devices', 'user_id', 'device_id')
-            ->withTimestamps();
+            ->withTimestamps()
+            ->withPivot('last_used_at');
     }
     public function admin()
     {
@@ -88,5 +89,46 @@ class User extends Authenticatable implements MustVerifyEmail
     public function createdStudents()
     {
         return $this->hasMany(Student::class, 'created_by_id');
+    }
+
+    /**
+     * Find or create a device for this user based on device data
+     */
+    public function findOrCreateDevice(array $deviceData)
+    {
+        $identifier = $deviceData['identifier'] ?? null;
+        
+        if (!$identifier) {
+            // If no identifier, always create a new device
+            $device = Device_info::create($deviceData);
+            $this->devices()->attach($device->id, ['last_used_at' => now()]);
+            return $device;
+        }
+
+        // Try to find existing device with same identifier
+        $existingDevice = Device_info::forUserByIdentifier($this->id, $identifier)->first();
+        
+        if ($existingDevice) {
+            // Update existing device with new information
+            $existingDevice->update($deviceData);
+            // Update the last_used_at timestamp in the pivot table
+            $this->devices()->updateExistingPivot($existingDevice->id, ['last_used_at' => now()]);
+            return $existingDevice;
+        }
+
+        // Create new device
+        $device = Device_info::create($deviceData);
+        $this->devices()->attach($device->id, ['last_used_at' => now()]);
+        return $device;
+    }
+
+    /**
+     * Get devices ordered by last used time (most recent first)
+     */
+    public function getDevicesOrderedByLastUsed()
+    {
+        return $this->devices()
+            ->orderBy('last_used_at', 'desc')
+            ->get();
     }
 }

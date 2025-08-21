@@ -25,15 +25,13 @@ class AdminSeeder extends Seeder
             'birth_date' => '2003-01-01',
             'email' => 'magholm302@gmail.com',
             'phone' => '0935946431',
-            'password' => '1234567890',
+            'password' => Hash::make('1234567890'),
             'image' => 'user_images/default.png',
             'user_type' => 'admin',
             'remember_token' => Str::random(10),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
-        Hash::make('password');
 
         $superAdminRole = Role::where('name', 'Owner')->first();
         $superAdminUser->assignRole($superAdminRole);

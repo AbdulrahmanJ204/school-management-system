@@ -21,10 +21,11 @@ trait SoftDeleteNews
     {
 
         AuthHelper::authorize(NewsPermission::softDelete->value);
-        $data = $news->getDeleteSnapshot(); // can be used for debug
+        $data = clone $news ; // للتدبيغ :-)
 
         $news->delete();
-        return ResponseHelper::jsonResponse([],  __(NewsStr::messageSoftDelete->value));
+//        return ResponseHelper::jsonResponse([],  __(NewsStr::messageSoftDelete->value));
+        return ResponseHelper::jsonResponse(NewsResource::make($data),  __(NewsStr::messageSoftDelete->value));
     }
 
 

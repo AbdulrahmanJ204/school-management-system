@@ -33,4 +33,5 @@ class NewsService
         $this->apiKeys();
         $this->generalVariables();
     }
+
 }

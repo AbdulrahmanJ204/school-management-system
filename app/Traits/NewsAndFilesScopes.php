@@ -33,6 +33,14 @@ trait NewsAndFilesScopes
     }
 
     #[Scope]
+    protected function orderByDeletionDate($query, $direction = 'desc')
+    {
+        $direction = in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
+
+        return $query->orderBy('deleted_at', $direction);
+    }
+
+    #[Scope]
     protected function forStudent($query, $enrollments)
     {
         return $query->where(function ($q) use ($enrollments) {
