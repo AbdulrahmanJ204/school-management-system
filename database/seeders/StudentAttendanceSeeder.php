@@ -37,7 +37,7 @@ class StudentAttendanceSeeder extends Seeder
                 continue;
             }
 
-            // Create attendance records for each enrolled student
+            // Create attendance records for each enrolled student (only for absences and late)
             foreach ($enrolledStudents as $enrollment) {
                 $student = $enrollment->student;
                 
@@ -47,12 +47,17 @@ class StudentAttendanceSeeder extends Seeder
                     ->first();
 
                 if (!$existingAttendance) {
-                    StudentAttendance::create([
-                        'student_id' => $student->id,
-                        'class_session_id' => $classSession->id,
-                        'status' => $this->getRandomAttendanceStatus(),
-                        'created_by' => 1,
-                    ]);
+                    $status = $this->getRandomAttendanceStatus();
+                    
+                    // Only create records for absences and late arrivals (not for present students)
+                    if ($status !== 'present') {
+                        StudentAttendance::create([
+                            'student_id' => $student->id,
+                            'class_session_id' => $classSession->id,
+                            'status' => $status,
+                            'created_by' => 1,
+                        ]);
+                    }
                 }
             }
         }
@@ -66,15 +71,15 @@ class StudentAttendanceSeeder extends Seeder
         $rand = rand(1, 100);
         
         if ($rand <= 75) {
-            return 'present'; // 75% present
+            return 'present'; // 75% present (we'll handle this as no record)
         } elseif ($rand <= 85) {
-            return 'absent'; // 10% absent
+            return 'Unexcused absence'; // 10% unexcused absence
         } elseif ($rand <= 90) {
-            return 'late'; // 5% late
+            return 'Late'; // 5% late
         } elseif ($rand <= 95) {
-            return 'excused'; // 5% excused
+            return 'Excused absence'; // 5% excused absence
         } else {
-            return 'sick'; // 5% sick
+            return 'Unexcused absence'; // 5% more absences
         }
     }
 }

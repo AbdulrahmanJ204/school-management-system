@@ -215,9 +215,29 @@ class StudentMarkService
      */
     private function calculateTotalMark($credentials)
     {
-        $total = $credentials['homework'] + $credentials['oral'] + $credentials['activity']
-            + $credentials['quiz'] + $credentials['exam'];
+        $subject = Subject::find($credentials['subject_id']);
+        if (!$subject) {
+            return 0;
+        }
 
-        return $total;
+        $total = 0;
+        
+        if (isset($credentials['homework']) && $credentials['homework'] !== null) {
+            $total += ($credentials['homework'] * $subject->homework_percentage) / 100;
+        }
+        if (isset($credentials['oral']) && $credentials['oral'] !== null) {
+            $total += ($credentials['oral'] * $subject->oral_percentage) / 100;
+        }
+        if (isset($credentials['activity']) && $credentials['activity'] !== null) {
+            $total += ($credentials['activity'] * $subject->activity_percentage) / 100;
+        }
+        if (isset($credentials['quiz']) && $credentials['quiz'] !== null) {
+            $total += ($credentials['quiz'] * $subject->quiz_percentage) / 100;
+        }
+        if (isset($credentials['exam']) && $credentials['exam'] !== null) {
+            $total += ($credentials['exam'] * $subject->exam_percentage) / 100;
+        }
+
+        return round($total, 2);
     }
 }
