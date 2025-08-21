@@ -7,6 +7,7 @@ use App\Exceptions\PermissionException;
 use App\Http\Requests\File\ListFilesRequest;
 use App\Http\Requests\File\StoreFileRequest;
 use App\Http\Requests\File\UpdateFileRequest;
+use App\Http\Requests\ListDeletedFilesRequest;
 use App\Models\File;
 use App\Services\Files\FileService;
 use GuzzleHttp\Psr7\Request;
@@ -28,9 +29,9 @@ class FileController extends Controller
         return $this->fileService->list($request);
     }
 
-    public function bySubject(ListFilesRequest $request , $id): JsonResponse
+    public function listDeleted(ListDeletedFilesRequest $request): JsonResponse
     {
-        return $this->fileService->list($request , $id);
+        return $this->fileService->list($request , true);
     }
 
     /**

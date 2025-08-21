@@ -13,10 +13,13 @@ use LaravelIdea\Helper\App\Models\_IH_File_QB;
 
 trait ListFiles
 {
-    public function list($request): JsonResponse
+    public function list($request, $trashed = false): JsonResponse
     {
         return match (auth()->user()->user_type) {
-            UserType::Admin->value => $this->listAdminFiles($request),
+            UserType::Admin->value =>
+            $trashed ?
+                $this->listTrashed($request) :
+                $this->listAdminFiles($request),
             UserType::Teacher->value => $this->listTeacherFiles($request),
             UserType::Student->value => $this->listStudentFiles($request),
             default => ResponseHelper::jsonResponse([], __(FileStr::messageUnknownType->value), 403),
@@ -27,8 +30,7 @@ trait ListFiles
     {
         $yearId = $this->getYearId($request);
         $data = $request->validated();
-        $query = File::withTrashed()
-            ->belongsToYear($yearId)
+        $query = File::belongsToYear($yearId)
             ->orderByPublishDate();
 
         $this->filterAdmin($request, $query, $data);
@@ -38,6 +40,21 @@ trait ListFiles
         return ResponseHelper::jsonResponse(FileResource::collection($files), __(FileStr::messageRetrieved->value));
     }
 
+    private function listTrashed($request): JsonResponse
+    {
+        $yearId = $this->getYearId($request);
+        $data = $request->validated();
+        $query = File::onlyTrashed()
+            ->belongsToYear($yearId)
+            ->orderByDeletionDate();
+
+        $this->filterAdmin($request, $query, $data);
+
+        $files = $query->get();
+        $files->each->loadTargets();
+        return ResponseHelper::jsonResponse(FileResource::collection($files), __(FileStr::messageRetrieved->value));
+
+    }
     private function listTeacherFiles($request): JsonResponse
     {
         $data = $request->validated();
@@ -46,12 +63,12 @@ trait ListFiles
         $subjectId = null;
         $sectionId = null;
         if ($request->has($this->querySubject)) {
-            $subjectId= $data[$this->querySubject];
+            $subjectId = $data[$this->querySubject];
         }
         if ($request->has($this->querySection)) {
             $sectionId = $data[$this->querySection];
         }
-        $files = File::belongsToTeacher($teacher->id , $subjectId , $sectionId)
+        $files = File::belongsToTeacher($teacher->id, $subjectId, $sectionId)
             ->orderByPublishDate()->get();
         return ResponseHelper::jsonResponse(FileResource::collection($files), 'files retrieved successfully');
     }
