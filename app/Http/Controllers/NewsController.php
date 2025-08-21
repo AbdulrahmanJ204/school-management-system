@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
+use App\Http\Requests\ListDeletedNewsRequest;
 use App\Http\Requests\News\ListNewsRequest;
 use App\Http\Requests\News\StoreNewsRequest;
 use App\Http\Requests\News\UpdateNewsRequest;
@@ -21,13 +22,20 @@ class NewsController extends Controller
 
     /**
      * Display a listing of the resource.
+     * @throws PermissionException
      */
     public function index(ListNewsRequest $request): ?JsonResponse
     {
         return $this->newsService->list($request);
     }
 
-
+    /**
+     * @throws PermissionException
+     */
+    public function listDeleted(ListDeletedNewsRequest $request): ?JsonResponse
+    {
+        return $this->newsService->list($request , true);
+    }
     /**
      * Store a newly created resource in storage.
      */
