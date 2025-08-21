@@ -14,6 +14,7 @@ class UserResource extends JsonResource
         $isGetStaffRoute = $request->routeIs('staff');
         $isGetAdminsRoute = $request->routeIs('admins');
         $isUpdateUserRoute = $request->routeIs('user.update');
+        $isGetUserRoute = $request->routeIs('users.show');
 
         return [
             'id' => $this->id,
@@ -27,14 +28,14 @@ class UserResource extends JsonResource
             'gender' => $this->gender,
             'phone' => $this->phone,
             'user_type' => $this->user_type,
-            'role' => $this->when($isGetStaffRoute || $isGetAdminsRoute || $isUpdateUserRoute, function () {
+            'role' => $this->when($isGetStaffRoute || $isGetAdminsRoute || $isUpdateUserRoute || $isGetUserRoute, function () {
                 $role = $this->roles->first();
                 return $role ? [
                     'id' => $role->id,
                     'name' => $role->name,
                 ] : null;
             }),
-            'permissions' => $this->when($isGetStaffRoute || $isGetAdminsRoute, function () {
+            'permissions' => $this->when($isGetStaffRoute || $isGetAdminsRoute || $isUpdateUserRoute || $isGetUserRoute, function () {
                 $role = $this->roles->first(); // again assuming 1 role per user
                 return $role ? $role->permissions->pluck('name') : [];
             }),
@@ -84,7 +85,7 @@ class UserResource extends JsonResource
                 ];
             }),
 
-            'devices' => $this->when($isGetUserRoute, function () {
+            'devices' => $this->when($isGetUserRoute || $isUpdateUserRoute, function () {
                 return $this->devices->map(function ($device) {
                     return [
                         'last_login' => $this->last_login->format('Y-m-d H:i:s'),
