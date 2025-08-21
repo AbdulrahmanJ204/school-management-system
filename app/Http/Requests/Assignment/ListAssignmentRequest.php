@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Assignment;
 
 use App\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 class ListAssignmentRequest extends BaseRequest
 {
@@ -17,7 +18,7 @@ class ListAssignmentRequest extends BaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {

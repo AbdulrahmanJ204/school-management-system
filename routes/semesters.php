@@ -3,8 +3,8 @@
 use App\Http\Controllers\SemesterController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:api')->group(function () {
-    Route::prefix('semesters')->group(function () {
+Route::prefix('semesters')->group(function () {
+    Route::middleware(['auth:api', 'user_type:teacher', 'throttle:5,1'])->group(function () {
         Route::post('/', [SemesterController::class, 'store']);
         Route::put('/{semester}', [SemesterController::class, 'update']);
         Route::delete('/{semester}', [SemesterController::class, 'destroy']);
@@ -12,4 +12,4 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('/{id}/restore', [SemesterController::class, 'restore']);
         Route::delete('/{id}/force-delete', [SemesterController::class, 'forceDelete']);
     });
-}); 
+});

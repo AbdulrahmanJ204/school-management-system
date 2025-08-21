@@ -6,15 +6,11 @@ use App\Http\Controllers\ClassPeriodController;
 use App\Http\Controllers\ClassSessionController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\SchoolDayController;
 use App\Http\Controllers\SchoolShiftController;
-use App\Http\Controllers\SectionController;
-use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScoreQuizController;
-use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\UserController;
@@ -30,7 +26,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
     });
 });
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', 'user_type:admin', 'throttle:5,1'])->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::get('admins', [AdminController::class, 'show'])->name('admins');
     Route::get('teachers', [TeacherController::class, 'show'])->name('teachers');
@@ -46,13 +42,13 @@ Route::middleware('auth:api')->group(function () {
     Route::post('class-sessions', [ClassSessionController::class, 'create']);
     Route::put('class-sessions/{id}', [ClassSessionController::class, 'update']);
     Route::delete('class-sessions/{id}', [ClassSessionController::class, 'destroy']);
-})->middleware(['user_type:admin', 'throttle:5,1']);
+});
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:5,1'])->group(function () {
     Route::post('change-password', [AuthController::class, 'changePassword'])->name('change-password');
-    })->middleware(['user_type:admin|teacher', 'throttle:5,1']);
+});
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:5,1'])->group(function () {
     Route::apiResource('quizzes', QuizController::class)->except(['update']);
     Route::post('quizzes/{id}/update', [QuizController::class, 'update']);
     Route::put('quizzes/{id}/activate', [QuizController::class, 'activate']);
@@ -63,11 +59,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('quizzes', [QuizController::class, 'index']);
     Route::get('quiz/{id}', [QuizController::class, 'show']);
     Route::get('teacher/grades-sections-subjects', [TeacherController::class, 'getGradesSectionsSubjects'])->name('teacher.grades-sections-subjects');
-})->middleware(['user_type:teacher', 'throttle:5,1']);
+});
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', 'user_type:student', 'throttle:5,1'])->group(function () {
     Route::post('score-quizzes', [ScoreQuizController::class, 'create']);
-})->middleware(['user_type:student', 'throttle:5,1']);
+});
 
 require __DIR__.'/news.php';
 require __DIR__.'/files.php';

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\LogErrors;
+use App\Http\Middleware\UserTypeMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(\App\Http\Middleware\LogErrors::class);
+        $middleware->append(LogErrors::class);
+        $middleware->alias([
+            'user_type' => UserTypeMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
@@ -27,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
                  ->onFailure(function () {
                      \Log::error('Failed to generate daily log report');
                  });
-        
+
         // Send daily reports after generation
         $schedule->call(function () {
             $report = \App\Models\DailyLogReport::latest('report_date')->first();
@@ -40,7 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
           ->onFailure(function () {
               \Log::error('Failed to send daily log report');
           });
-        
+
         // Clean old logs after generation
         $schedule->job(new \App\Jobs\CleanOldLogsJob(90))
                  ->name('clean-old-logs')

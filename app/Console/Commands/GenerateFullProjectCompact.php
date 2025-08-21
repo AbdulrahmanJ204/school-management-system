@@ -16,20 +16,20 @@ class GenerateFullProjectCompact extends Command
         $content = "// === FULL PROJECT COMPACT EXPORT ===\n";
 
         $sections = [
-           'Controllers' => app_path('Http/Controllers'),
-        //    'ApiControllers' => app_path('Http/Controllers/Api'),
-            // 'Models' => app_path('Models'),
+//           'Controllers' => app_path('Http/Controllers'),
+//            'ApiControllers' => app_path('Http/Controllers/Api'),
+            'Models' => app_path('Models'),
             'Migrations' => database_path('migrations'),
-        //    'Seeders' => database_path('seeders'),
-        //    'Factories' => database_path('factories'),
-           'Resources' => app_path('Http/Resources'),
-        //    'Requests' => app_path('Http/Requests'),
-        //    'Services' => app_path('Services'),
-        //    'Exceptions' => app_path('Exceptions'),
-           'Helpers' => app_path('Helpers'),
-           'Routes' => base_path('routes'),
-        //    'Lang_ar' => base_path('lang\ar'),
-        //    'Lang_en' => base_path('lang\en'),
+//            'Seeders' => database_path('seeders'),
+//            'Factories' => database_path('factories'),
+//            'Resources' => app_path('Http/Resources'),
+//            'Requests' => app_path('Http/Requests'),
+//            'Services' => app_path('Services'),
+//            'Exceptions' => app_path('Exceptions'),
+//            'Helpers' => app_path('Helpers'),
+//            'Routes' => base_path('routes'),
+//            'Lang_ar' => base_path('lang\ar'),
+//            'Lang_en' => base_path('lang\en'),
         ];
 
         foreach ($sections as $sectionName => $path) {
