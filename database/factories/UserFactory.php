@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -33,9 +33,9 @@ class UserFactory extends Factory
 
         return [
             'first_name' => $this->faker->firstName($gender),
-            'father_name' => $this->faker->firstName($gender),
+            'father_name' => $this->faker->firstName('male'),
             'last_name' => $this->faker->lastName(),
-            'mother_name' => $this->faker->firstName(),
+            'mother_name' => $this->faker->firstName('female'),
             'gender' => $gender,
             'birth_date' => $this->faker->date(),
             'email' => $this->faker->unique()->safeEmail(),
@@ -81,8 +81,8 @@ class UserFactory extends Factory
             ];
         })->afterCreating(function (User $user) {
 
-            $superAdminRole = Role::where('name', 'super_admin')->first();
-            $user->assignRole($superAdminRole);
+            $teacherRole = Role::where('name', 'Teacher')->first();
+            $user->assignRole($teacherRole);
 
             Teacher::create([
                 'user_id' => $user->id,
@@ -98,6 +98,10 @@ class UserFactory extends Factory
                 'user_type' => 'student',
             ];
         })->afterCreating(function (User $user) {
+            
+            $studentRole = Role::where('name', 'Student')->first();
+            $user->assignRole($studentRole);
+            
             Student::create([
                 'user_id' => $user->id,
                 'created_by' => 1,

@@ -26,4 +26,14 @@ class Device_info extends Model
         return $this->belongsToMany(User::class, 'user_devices', 'device_id', 'user_id')
             ->withTimestamps();
     }
+
+    /**
+     * Scope to find device by identifier for a specific user
+     */
+    public function scopeForUserByIdentifier($query, $userId, $identifier)
+    {
+        return $query->whereHas('users', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })->where('identifier', $identifier);
+    }
 }
