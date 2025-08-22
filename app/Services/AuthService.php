@@ -13,10 +13,10 @@ use App\Exceptions\UserNotFoundException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\UserResource;
 use App\Models\Admin;
-use App\Models\Device_info;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\PersonalAccessToken;
+use Spatie\Permission\Models\Role;
+use Throwable;
 
 class AuthService
 {
@@ -35,7 +37,12 @@ class AuthService
     {
         //
     }
-    public function register($request)
+
+    /**
+     * @throws PermissionException
+     * @throws ImageUploadFailed
+     */
+    public function register($request): JsonResponse
     {
         $admin = auth()->user();
 
@@ -57,7 +64,7 @@ class AuthService
                     $image->storeAs('user_images', $imageName, 'public');
                 }
                 $credentials['image'] = $imagePath;
-            } catch (\Exception $e) {
+            } catch (Exception) {
                 throw new ImageUploadFailed();
             }
         }
@@ -82,7 +89,7 @@ class AuthService
                 'student' => 'Student',
             };
 
-            $role = \Spatie\Permission\Models\Role::where('name', $roleName)->first();
+            $role = Role::where('name', $roleName)->first();
             if ($role) {
                 $user->assignRole($role);
             }
@@ -110,13 +117,12 @@ class AuthService
             new UserResource($user),
             __('messages.user.created'),
             201,
-            true
         );
     }
 
     /**
      * @throws InvalidUserTypeException
-     * @throws \Throwable
+     * @throws Throwable
      * @throws InvalidPasswordException
      * @throws MustPassUserTypeException
      * @throws InvalidUserException
@@ -211,7 +217,7 @@ class AuthService
                 'user' => new UserResource($user),
             ], __('messages.auth.login'));
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
 
             throw $e;
@@ -249,8 +255,6 @@ class AuthService
                 'new_refresh_token' => $newRefreshToken->plainTextToken
             ],
             __('messages.auth.refresh'),
-            200,
-            true
         );
     }
     public function logout(Request $request): JsonResponse

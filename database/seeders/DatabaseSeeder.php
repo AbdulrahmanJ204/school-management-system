@@ -33,7 +33,6 @@ class DatabaseSeeder extends Seeder
             SchoolDaySeeder::class,
             GradeSeeder::class,
             SectionSeeder::class,
-//            MainSubjectSeeder::class,
             SubjectSeeder::class,
             StudentEnrollmentSeeder::class,
             NewsSeeder::class,

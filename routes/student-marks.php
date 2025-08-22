@@ -3,9 +3,13 @@
 use App\Http\Controllers\StudentMarkController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:api')->group(function () {
-    Route::apiResource('student-marks', StudentMarkController::class);
-    Route::get('student-marks/enrollment/{enrollmentId}', [StudentMarkController::class, 'getByEnrollment']);
-    Route::get('student-marks/subject/{subjectId}', [StudentMarkController::class, 'getBySubject']);
-    Route::get('student-marks/subject/{subjectId}/section/{sectionId}', [StudentMarkController::class, 'getBySubjectAndSection']);
-}); 
+Route::prefix('student-marks')->group(function () {
+    Route::middleware(['auth:api', 'user_type:admin', 'throttle:5,1'])->group(function () {
+        Route::apiResource('/', StudentMarkController::class);
+        Route::get('/enrollment/{enrollmentId}', [StudentMarkController::class, 'getByEnrollment']);
+        Route::get('/subject/{subjectId}', [StudentMarkController::class, 'getBySubject']);
+    });
+    Route::middleware(['auth:api', 'user_type:teacher', 'throttle:5,1'])->group(function () {
+        Route::get('/subject/{subjectId}/section/{sectionId}', [StudentMarkController::class, 'getBySubjectAndSection']);
+    });
+});

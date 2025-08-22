@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\StudentEnrollment;
 
+use App\Http\Requests\BaseRequest;
 use App\Models\StudentEnrollment;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class StudentEnrollmentRequest extends BaseRequest
+class UpdateStudentEnrollmentRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->user()->hasPermissionTo('تحديث تسجيل طالب');
     }
 
     /**
@@ -22,8 +23,6 @@ class StudentEnrollmentRequest extends BaseRequest
      */
     public function rules(): array
     {
-        $enrollmentId = $this->route('student_enrollment') ? $this->route('student_enrollment')->id : null;
-
         return [
             'student_id' => [
                 'required',
@@ -58,15 +57,16 @@ class StudentEnrollmentRequest extends BaseRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            // Check if enrollment already exists for this student and semester
-            if (!$this->route('student_enrollment')) {
-                $existingEnrollment = StudentEnrollment::where('student_id', $this->student_id)
-                    ->where('semester_id', $this->semester_id)
-                    ->first();
+            $enrollmentId = $this->route('student_enrollment') ? $this->route('student_enrollment')->id : null;
+            
+            // Check if enrollment already exists for this student and semester (excluding current enrollment)
+            $existingEnrollment = StudentEnrollment::where('student_id', $this->student_id)
+                ->where('semester_id', $this->semester_id)
+                ->where('id', '!=', $enrollmentId)
+                ->first();
 
-                if ($existingEnrollment) {
-                    $validator->errors()->add('enrollment', 'الطالب مسجل مسبقاً في هذا الفصل الدراسي');
-                }
+            if ($existingEnrollment) {
+                $validator->errors()->add('enrollment', 'الطالب مسجل مسبقاً في هذا الفصل الدراسي');
             }
         });
     }

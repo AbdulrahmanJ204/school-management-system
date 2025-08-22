@@ -78,6 +78,8 @@ require __DIR__.'/students.php';
 require __DIR__.'/student-enrollments.php';
 require __DIR__.'/grade-year-settings.php';
 require __DIR__.'/student-marks.php';
+
+// Todo: Add User_type middleware to next Api's
 require __DIR__.'/teacher-section-subjects.php';
 require __DIR__.'/study-notes.php';
 require __DIR__.'/behavior-notes.php';
