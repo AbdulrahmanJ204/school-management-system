@@ -7,7 +7,11 @@ use App\Exceptions\PermissionException;
 use App\Exceptions\UserNotFoundException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\UserResource;
+use App\Models\Grade;
 use App\Models\User;
+use App\Models\StudentEnrollment;
+use App\Models\Semester;
+use App\Models\Year;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -103,6 +107,50 @@ class UserService
                     'is_active' => $credentials['is_active'] ?? $user->student->is_active,
                 ])
             };
+
+            // Update student enrollment if GPA or grade_id is provided
+            if ($user->user_type === 'student' && (isset($credentials['last_year_gpa']) || isset($credentials['grade_id']))) {
+                // Get the current active year and first semester
+                $year = Grade::where('id', $credentials['grade_id'])->first()->year;
+                if ($year) {
+                    $firstSemester = Semester::where('year_id', $year->id)
+                        ->orderBy('start_date', 'asc')
+                        ->first();
+
+                    if ($firstSemester) {
+                        // Find existing enrollment or create new one
+                        $enrollment = StudentEnrollment::where('student_id', $user->student->id)
+                            ->where('semester_id', $firstSemester->id)
+                            ->first();
+
+                        if ($enrollment) {
+                            // Update existing enrollment
+                            $updateData = [];
+                            if (isset($credentials['last_year_gpa'])) {
+                                $updateData['last_year_gpa'] = $credentials['last_year_gpa'];
+                            }
+                            if (isset($credentials['grade_id'])) {
+                                $updateData['grade_id'] = $credentials['grade_id'];
+                            }
+
+                            if (!empty($updateData)) {
+                                $enrollment->update($updateData);
+                            }
+                        } else {
+                            // Create new enrollment if none exists
+                            StudentEnrollment::create([
+                                'student_id' => $user->student->id,
+                                'grade_id' => $credentials['grade_id'] ?? 1, // Default to grade 1 if not provided
+                                'section_id' => null,
+                                'semester_id' => $firstSemester->id,
+                                'year_id' => $year->id,
+                                'last_year_gpa' => $credentials['last_year_gpa'] ?? null,
+                                'created_by' => $admin->id,
+                            ]);
+                        }
+                    }
+                }
+            }
         });
 
         return ResponseHelper::jsonResponse(

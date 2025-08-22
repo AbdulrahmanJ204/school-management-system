@@ -17,9 +17,11 @@ class StudentEnrollmentResource extends JsonResource
         return [
             'id' => $this->id,
             'student_id' => $this->student_id,
+            'grade_id' => $this->grade_id,
             'section_id' => $this->section_id,
             'semester_id' => $this->semester_id,
             'year_id' => $this->year_id,
+            'last_year_gpa' => $this->last_year_gpa,
             'enrollment_date' => $this->enrollment_date,
             'status' => $this->status,
             'created_by' => $this->created_by,

@@ -16,6 +16,9 @@ use App\Models\Admin;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Models\StudentEnrollment;
+use App\Models\Semester;
+use App\Models\Year;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -111,6 +114,29 @@ class AuthService
                     'is_active' => $credentials['is_active']
                 ])
             };
+
+            // Create enrollment for student with last_year_gpa and grade_id
+            if ($userTypeName === 'student') {
+                // Get the first semester of the current active year
+                $activeYear = Year::where('is_active', true)->first();
+                if ($activeYear) {
+                    $firstSemester = Semester::where('year_id', $activeYear->id)
+                        ->orderBy('start_date', 'asc')
+                        ->first();
+                    
+                    if ($firstSemester) {
+                        StudentEnrollment::create([
+                            'student_id' => $user->student->id,
+                            'grade_id' => $credentials['grade_id'],
+                            'section_id' => null, // section is null as requested
+                            'semester_id' => $firstSemester->id,
+                            'year_id' => $activeYear->id,
+                            'last_year_gpa' => $credentials['last_year_gpa'],
+                            'created_by' => $admin->id,
+                        ]);
+                    }
+                }
+            }
         });
 
         return ResponseHelper::jsonResponse(

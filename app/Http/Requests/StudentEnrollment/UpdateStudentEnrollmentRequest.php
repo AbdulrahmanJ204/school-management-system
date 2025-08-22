@@ -30,14 +30,26 @@ class UpdateStudentEnrollmentRequest extends BaseRequest
                 'exists:students,id'
             ],
             'section_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:sections,id'
+            ],
+            'grade_id' => [
+                'required',
+                'integer',
+                'exists:grades,id'
             ],
             'semester_id' => [
                 'required',
                 'integer',
                 'exists:semesters,id'
+            ],
+            'last_year_gpa' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'max:100',
+                'regex:/^\d+(\.\d{1,2})?$/'
             ],
             'enrollment_date' => [
                 'nullable',
@@ -81,13 +93,23 @@ class UpdateStudentEnrollmentRequest extends BaseRequest
             'student_id.integer' => 'الطالب يجب أن يكون رقماً صحيحاً',
             'student_id.exists' => 'الطالب المحدد غير موجود',
 
-            'section_id.required' => 'الشعبة مطلوبة',
+            'section_id.nullable' => 'الشعبة اختيارية',
             'section_id.integer' => 'الشعبة يجب أن تكون رقماً صحيحاً',
             'section_id.exists' => 'الشعبة المحددة غير موجودة',
+
+            'grade_id.required' => 'الصف مطلوب',
+            'grade_id.integer' => 'الصف يجب أن يكون رقماً صحيحاً',
+            'grade_id.exists' => 'الصف المحدد غير موجود',
 
             'semester_id.required' => 'الفصل الدراسي مطلوب',
             'semester_id.integer' => 'الفصل الدراسي يجب أن يكون رقماً صحيحاً',
             'semester_id.exists' => 'الفصل الدراسي المحدد غير موجود',
+
+            'last_year_gpa.nullable' => 'المعدل التراكمي للسنة السابقة اختياري',
+            'last_year_gpa.numeric' => 'المعدل التراكمي يجب أن يكون رقماً',
+            'last_year_gpa.min' => 'المعدل التراكمي يجب أن يكون أكبر من أو يساوي 0',
+            'last_year_gpa.max' => 'المعدل التراكمي يجب أن يكون أقل من أو يساوي 100',
+            'last_year_gpa.regex' => 'المعدل التراكمي يجب أن يكون بتنسيق صحيح (مثال: 3.5)',
 
             'enrollment_date.nullable' => 'تاريخ التسجيل اختياري',
             'enrollment_date.date' => 'تاريخ التسجيل يجب أن يكون تاريخاً صحيحاً',

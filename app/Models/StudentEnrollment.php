@@ -18,6 +18,7 @@ class StudentEnrollment extends Model
         'section_id',
         'semester_id',
         'year_id',
+        'last_year_gpa',
         'created_by'
     ];
 

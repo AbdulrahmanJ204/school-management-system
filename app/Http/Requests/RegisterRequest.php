@@ -36,6 +36,8 @@ class RegisterRequest extends BaseRequest
             'grandfather'  => 'required_if:user_type,student|prohibited_unless:user_type,student|string|max:255',
             'general_id' => 'required_if:user_type,student|prohibited_unless:user_type,student|string|max:50|unique:students,general_id',
             'is_active' => 'required_if:user_type,student|in:0,1',
+            'last_year_gpa' => 'required_if:user_type,student|prohibited_unless:user_type,student|nullable|numeric|min:0|max:100|regex:/^\d+(\.\d{1,2})?$/',
+            'grade_id' => 'required_if:user_type,student|prohibited_unless:user_type,student|integer|exists:grades,id',
         ];
     }
 }

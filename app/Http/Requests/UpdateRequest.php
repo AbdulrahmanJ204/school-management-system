@@ -67,19 +67,31 @@ class UpdateRequest extends BaseRequest
             'grandfather' => [
                 'nullable',
                 'required_if:user_type,student',
-                'prohibited_unless:user_type,student',
                 'string',
                 'max:255'
             ],
             'general_id' => [
                 'nullable',
                 'required_if:user_type,student',
-                'prohibited_unless:user_type,student',
                 'string',
                 'max:50',
                 Rule::unique('students', 'general_id')->ignore($user->id, 'user_id')
             ],
             'is_active' => 'nullable|required_if:user_type,student|boolean',
+            'last_year_gpa' => [
+                'nullable',
+                'required_if:user_type,student',
+                'numeric',
+                'min:0',
+                'max:100',
+                'regex:/^\d+(\.\d{1,2})?$/'
+            ],
+            'grade_id' => [
+                'nullable',
+                'required_if:user_type,student',
+                'integer',
+                'exists:grades,id'
+            ],
         ];
     }
 }

@@ -72,10 +72,15 @@ class StudentEnrollmentService
         $this->checkPermission(PermissionEnum::CREATE_STUDENT_ENROLLMENT);
 
         $credentials = $request->validated();
-        $section = Section::findOrFail($credentials['section_id']);
+        
+        // Handle section_id - it can be null
+        if (isset($credentials['section_id']) && $credentials['section_id']) {
+            $section = Section::findOrFail($credentials['section_id']);
+            $credentials['grade_id'] = $section->grade_id;
+        }
+        
         $semester = Semester::findOrFail($credentials['semester_id']);
 
-        $credentials['grade_id'] = $section->grade_id;
         $credentials['year_id'] = $semester->year_id;
         $credentials['created_by'] = auth()->id();
 
@@ -137,10 +142,14 @@ class StudentEnrollmentService
 
         $credentials = $request->validated();
 
-        $section = Section::findOrFail($credentials['section_id']);
+        // Handle section_id - it can be null
+        if (isset($credentials['section_id']) && $credentials['section_id']) {
+            $section = Section::findOrFail($credentials['section_id']);
+            $credentials['grade_id'] = $section->grade_id;
+        }
+        
         $semester = Semester::findOrFail($credentials['semester_id']);
 
-        $credentials['grade_id'] = $section->grade_id;
         $credentials['year_id'] = $semester->year_id;
 
         // Check if enrollment already exists for this student and semester (excluding current enrollment)
