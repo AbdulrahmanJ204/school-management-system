@@ -7,6 +7,7 @@ use App\Exceptions\RoleNotFoundException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\RoleResource;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleService
@@ -30,7 +31,8 @@ class RoleService
             ]);
 
             if (!empty($credentials['permissions'])) {
-                $role->syncPermissions($credentials['permissions']);
+                $permissions = Permission::whereIn('id', $credentials['permissions'])->get();
+                $role->syncPermissions($permissions);
             }
 
             DB::commit();
@@ -42,6 +44,13 @@ class RoleService
             );
         } catch (\Exception $e) {
             DB::rollBack();
+
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                500,
+                false
+            );
         }
     }
 

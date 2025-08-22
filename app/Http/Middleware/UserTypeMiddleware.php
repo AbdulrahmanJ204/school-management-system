@@ -22,14 +22,6 @@ class UserTypeMiddleware
      */
     public function handle(Request $request, Closure $next, string $allowedTypes): JsonResponse
     {
-        // Check if user is authenticated
-        if (!auth()->check()) {
-            return response()->json([
-                'message' => 'Unauthenticated',
-                'status' => false
-            ], HttpResponse::HTTP_UNAUTHORIZED);
-        }
-
         $user = auth()->user();
         $userType = $user->user_type;
 

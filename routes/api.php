@@ -18,15 +18,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('login')->middleware('throttle:10,1');
-    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password')->middleware('throttle:5,1');
-    Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password')->middleware('throttle:5,1');
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password')->middleware('throttle:60,1');
+    Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password')->middleware('throttle:60,1');
     Route::middleware(['auth:api'])->group(function () {
         Route::post('refresh', [AuthController::class, 'refresh'])->name('refresh');
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     });
 });
 
-Route::middleware(['auth:api', 'user_type:admin', 'throttle:5,1'])->group(function () {
+Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::get('admins', [AdminController::class, 'show'])->name('admins');
     Route::get('teachers', [TeacherController::class, 'show'])->name('teachers');
@@ -44,11 +44,11 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:5,1'])->group(functi
     Route::delete('class-sessions/{id}', [ClassSessionController::class, 'destroy']);
 });
 
-Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:5,1'])->group(function () {
+Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->group(function () {
     Route::post('change-password', [AuthController::class, 'changePassword'])->name('change-password');
 });
 
-Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:5,1'])->group(function () {
+Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->group(function () {
     Route::apiResource('quizzes', QuizController::class)->except(['update']);
     Route::post('quizzes/{id}/update', [QuizController::class, 'update']);
     Route::put('quizzes/{id}/activate', [QuizController::class, 'activate']);
@@ -62,7 +62,7 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:5,1'])->grou
     Route::get('teacher/section/{sectionId}/subject/{subjectId}/students', [TeacherController::class, 'getStudentsInSectionWithMarks'])->name('teacher.section.students');
 });
 
-Route::middleware(['auth:api', 'user_type:student', 'throttle:5,1'])->group(function () {
+Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(function () {
     Route::post('score-quizzes', [ScoreQuizController::class, 'create']);
 });
 

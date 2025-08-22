@@ -4,7 +4,7 @@ use App\Http\Controllers\GradeYearSettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('grade-year-settings')->group(function () {
-    Route::middleware(['auth:api', 'user_type:admin', 'throttle:5,1'])->group(function () {
+    Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(function () {
         Route::get('/trashed', [GradeYearSettingController::class, 'trashed']);
         Route::apiResource('/', GradeYearSettingController::class);
         Route::patch('/{id}/restore', [GradeYearSettingController::class, 'restore']);
