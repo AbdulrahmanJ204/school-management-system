@@ -19,6 +19,7 @@ class SubjectResource extends JsonResource
             'name' => $this->name,
             'code' => $this->code,
             'full_mark' => $this->full_mark,
+            'min_mark' => $this->mainSubject->success_rate * $this->full_mark / 100,
             'homework_percentage' => $this->homework_percentage,
             'oral_percentage' => $this->oral_percentage,
             'activity_percentage' => $this->activity_percentage,

@@ -27,7 +27,7 @@ class StudyNoteResource extends JsonResource
             'sender_name' => $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
 
             // Relationships
-            // 'student' => new StudentResource($this->whenLoaded('student')),
+//             'student' => new StudentResource($this->whenLoaded('student')),
             'school_day' => new SchoolDayResource($this->whenLoaded('schoolDay')),
             'subject' => new SubjectResource($this->whenLoaded('subject')),
 

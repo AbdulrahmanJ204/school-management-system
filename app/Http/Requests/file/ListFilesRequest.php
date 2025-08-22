@@ -3,10 +3,10 @@
 namespace App\Http\Requests\File;
 
 use App\Enums\FileType;
-use App\Enums\StringsManager\Files\FileApi;
 use App\Enums\StringsManager\QueryParams;
 use App\Enums\UserType;
 use App\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -22,8 +22,7 @@ class ListFilesRequest extends BaseRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
