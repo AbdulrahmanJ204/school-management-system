@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        User::factory()->student()->count(10)->create();
+        User::factory()->student()->count(100)->create();
         User::factory()->teacher()->count(5)->create();
         User::factory()->admin()->count(3)->create();
 
@@ -33,7 +33,6 @@ class DatabaseSeeder extends Seeder
             SchoolDaySeeder::class,
             GradeSeeder::class,
             SectionSeeder::class,
-//            MainSubjectSeeder::class,
             SubjectSeeder::class,
             StudentEnrollmentSeeder::class,
             NewsSeeder::class,

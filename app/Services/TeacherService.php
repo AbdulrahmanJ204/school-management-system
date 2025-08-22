@@ -7,6 +7,8 @@ use App\Helpers\ResponseHelper;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\TeacherSectionSubject;
+use App\Models\StudentEnrollment;
+use App\Models\StudentMark;
 use Illuminate\Http\JsonResponse;
 
 class TeacherService
@@ -99,6 +101,97 @@ class TeacherService
         return ResponseHelper::jsonResponse(
             $teacherData,
             'تم جلب بيانات الصفوف والشعب والمواد بنجاح',
+            200,
+            true
+        );
+    }
+
+    /**
+     * Get students in a section with their marks for a specific subject
+     * @throws PermissionException
+     */
+    public function getStudentsInSectionWithMarks(int $sectionId, int $subjectId): JsonResponse
+    {
+        // Check if the authenticated user is a teacher
+        if (!auth()->user()->teacher) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'المستخدم الحالي ليس أستاذاً',
+                403,
+                false
+            );
+        }
+
+        $teacherId = auth()->user()->teacher->id;
+
+        // Verify that the teacher is assigned to this section and subject
+        $teacherAssignment = TeacherSectionSubject::where('teacher_id', $teacherId)
+            ->where('section_id', $sectionId)
+            ->where('subject_id', $subjectId)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$teacherAssignment) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'غير مصرح لك بالوصول إلى هذه الشعبة أو المادة',
+                403,
+                false
+            );
+        }
+
+        // Get current active semester
+        $currentSemester = \App\Models\Semester::where('is_active', true)->first();
+        
+        if (!$currentSemester) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'لا يوجد فصل دراسي نشط حالياً',
+                404,
+                false
+            );
+        }
+
+        // Get students enrolled in the section for the current semester
+        $students = StudentEnrollment::where('section_id', $sectionId)
+            ->where('semester_id', $currentSemester->id)
+            ->with([
+                'student.user',
+                'studentMarks' => function ($query) use ($subjectId) {
+                    $query->where('subject_id', $subjectId);
+                }
+            ])
+            ->get()
+            ->map(function ($enrollment) {
+                $user = $enrollment->student->user;
+                $mark = $enrollment->studentMarks->first();
+
+                return [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'father_name' => $user->father_name,
+                    'mother_name' => $user->mother_name,
+                    'photo_link' => $user->image ? asset('storage/' . $user->image) : asset('storage/user_images/default.png'),
+                    'birth_date' => $user->birth_date,
+                    'gender' => $user->gender,
+                    'phone_number' => $user->phone,
+                    'email' => $user->email,
+                    'grandfather_name' => $enrollment->student->grandfather,
+                    'general_id' => $enrollment->student->general_id,
+                    'results' => [
+                        'activityMark' => $mark ? $mark->activity : null,
+                        'oralMark' => $mark ? $mark->oral : null,
+                        'homeworkMark' => $mark ? $mark->homework : null,
+                        'quizMark' => $mark ? $mark->quiz : null,
+                        'examMark' => $mark ? $mark->exam : null,
+                    ]
+                ];
+            });
+
+        return ResponseHelper::jsonResponse(
+            $students,
+            'تم جلب بيانات الطلاب وعلاماتهم بنجاح',
             200,
             true
         );

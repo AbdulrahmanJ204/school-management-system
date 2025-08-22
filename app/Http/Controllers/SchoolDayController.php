@@ -46,14 +46,6 @@ class SchoolDayController extends Controller
         return $this->schoolDayService->createSchoolDay($request);
     }
 
-//    /**
-//     * @throws PermissionException
-//     */
-//    public function show(SchoolDay $schoolDay): JsonResponse
-//    {
-//        return $this->schoolDayService->showSchoolDay($schoolDay);
-//    }
-
     /**
      * Update the specified resource in storage.
      * @throws PermissionException

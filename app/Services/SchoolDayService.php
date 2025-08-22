@@ -86,29 +86,6 @@ class SchoolDayService
             new SchoolDayResource($schoolDay),
             __('messages.school_day.created'),
             ResponseAlias::HTTP_CREATED,
-            true
-        );
-    }
-
-    /**
-     * @throws PermissionException
-     */
-    public function showSchoolDay(SchoolDay $schoolDay): JsonResponse
-    {
-        $this->checkPermission(PermissionEnum::VIEW_SCHOOL_DAY);
-
-        $schoolDay->load([
-            'semester.year',
-            'assignments.subject',
-            'behaviorNotes.student',
-            'studyNotes.student',
-            'studentAttendances.student',
-            'teacherAttendances.teacher',
-            'news'
-        ]);
-
-        return ResponseHelper::jsonResponse(
-            new SchoolDayResource($schoolDay),
         );
     }
 
