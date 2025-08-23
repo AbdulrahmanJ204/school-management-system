@@ -451,10 +451,12 @@ class NewsSeeder extends Seeder
         ];
 
         foreach ($news as $newsItem) {
-            $createdNews = News::create($newsItem);
+            for ($i = 0; $i < 10; $i++) {
 
-            // Create news targets for demonstration
-            $this->createNewsTargets($createdNews->id);
+                $createdNews = News::create($newsItem);
+                // Create news targets for demonstration
+                $this->createNewsTargets($createdNews->id);
+            }
         }
     }
 
@@ -494,18 +496,16 @@ class NewsSeeder extends Seeder
                 }
                 break;
 
-            default: // Target high school grades (9-12)
-                $highSchoolGrades = Grade::whereIn('id', [9, 10, 11, 12])->get();
-                foreach ($highSchoolGrades as $grade) {
-                    NewsTarget::create([
-                        'news_id' => $newsId,
-                        'grade_id' => $grade->id,
-                        'section_id' => null,
-                        'created_by' => 1,
-                    ]);
-                }
+            default:
+
+                NewsTarget::create([
+                    'news_id' => $newsId,
+                    'grade_id' => null,
+                    'section_id' => null,
+                    'created_by' => 1,
+                ]);
+
                 break;
         }
     }
 }
-
