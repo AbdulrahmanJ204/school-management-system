@@ -40,6 +40,8 @@ class StudentProfileResource extends JsonResource
             'absencePercentage' => $this->resource['absencePercentage'],
             'justifiedAbsencePercentage' => $this->resource['justifiedAbsencePercentage'],
             'latenessPercentage' => $this->resource['latenessPercentage'],
+            'oralPercentage' => $this->resource['oralPercentage'],
+            'quizPercentage' => $this->resource['quizPercentage'],
         ];
     }
 }

@@ -6,6 +6,7 @@ use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\UserResource;
 use App\Models\Semester;
+use App\Models\TeacherAttendance;
 use App\Models\User;
 use App\Models\TeacherSectionSubject;
 use App\Models\StudentEnrollment;
@@ -245,17 +246,17 @@ class TeacherService
             $attendancePercentage = round(($completedSessions / $totalSessions) * 100);
 
             // Get absence records from TeacherAttendance
-            $absenceRecords = \App\Models\TeacherAttendance::where('teacher_id', $teacher->id)->get();
+            $absenceRecords = TeacherAttendance::where('teacher_id', $teacher->id)->get();
 
-            $absencePercentage = round((\App\Models\TeacherAttendance::where('teacher_id', $teacher->id)
+            $absencePercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
                 ->where('status', 'Unexcused absence')
                 ->count() / $totalSessions) * 100);
 
-            $latenessPercentage = round((\App\Models\TeacherAttendance::where('teacher_id', $teacher->id)
+            $latenessPercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
                 ->where('status', 'Late')
                 ->count() / $totalSessions) * 100);
 
-            $justifiedAbsencePercentage = round((\App\Models\TeacherAttendance::where('teacher_id', $teacher->id)
+            $justifiedAbsencePercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
                 ->where('status', 'Excused absence')
                 ->count() / $totalSessions) * 100);
         } else {
@@ -272,11 +273,13 @@ class TeacherService
             ->get()
             ->groupBy('grade.title')
             ->map(function ($gradeData) {
-                return $gradeData->pluck('section.title')->mapWithKeys(function ($sectionTitle) {
+                $sections = [];
+                foreach ($gradeData->pluck('section.title') as $sectionTitle) {
                     // Convert Arabic section names to numbers
                     $sectionNumber = $this->convertArabicSectionToNumber($sectionTitle);
-                    return [$sectionNumber => true];
-                })->toArray();
+                    $sections[$sectionNumber] = true;
+                }
+                return $sections;
             })
             ->toArray();
 
@@ -321,31 +324,31 @@ class TeacherService
     /**
      * Convert Arabic section names to numbers
      */
-    private function convertArabicSectionToNumber(string $sectionName): string
+    private function convertArabicSectionToNumber(string $sectionName): int
     {
         $arabicToNumber = [
-            'الأولى' => '1',
-            'الثانية' => '2',
-            'الثالثة' => '3',
-            'الرابعة' => '4',
-            'الخامسة' => '5',
-            'السادسة' => '6',
-            'السابعة' => '7',
-            'الثامنة' => '8',
-            'التاسعة' => '9',
-            'العاشرة' => '10',
-            'الحادية عشر' => '11',
-            'الثانية عشر' => '12',
-            'الثالثة عشر' => '13',
-            'الرابعة عشر' => '14',
-            'الخامسة عشر' => '15',
-            'السادسة عشر' => '16',
-            'السابعة عشر' => '17',
-            'الثامنة عشر' => '18',
-            'التاسعة عشر' => '19',
-            'العشرون' => '20'
+            'الأولى' => 1,
+            'الثانية' => 2,
+            'الثالثة' => 3,
+            'الرابعة' => 4,
+            'الخامسة' => 5,
+            'السادسة' => 6,
+            'السابعة' => 7,
+            'الثامنة' => 8,
+            'التاسعة' => 9,
+            'العاشرة' => 10,
+            'الحادية عشر' => 11,
+            'الثانية عشر' => 12,
+            'الثالثة عشر' => 13,
+            'الرابعة عشر' => 14,
+            'الخامسة عشر' => 15,
+            'السادسة عشر' => 16,
+            'السابعة عشر' => 17,
+            'الثامنة عشر' => 18,
+            'التاسعة عشر' => 19,
+            'العشرون' => 20
         ];
 
-        return $arabicToNumber[$sectionName] ?? $sectionName;
+        return $arabicToNumber[$sectionName] ?? (int) $sectionName;
     }
 }
