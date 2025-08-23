@@ -90,6 +90,7 @@ class AuthService
             $roleName = match ($userTypeName) {
                 'teacher' => 'Teacher',
                 'student' => 'Student',
+		'admin'=>'Admin',
             };
 
             $role = Role::where('name', $roleName)->first();
