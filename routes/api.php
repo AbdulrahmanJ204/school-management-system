@@ -60,6 +60,7 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::get('quiz/{id}', [QuizController::class, 'show']);
     Route::get('teacher/grades-sections-subjects', [TeacherController::class, 'getGradesSectionsSubjects'])->name('teacher.grades-sections-subjects');
     Route::get('teacher/section/{sectionId}/subject/{subjectId}/students', [TeacherController::class, 'getStudentsInSectionWithMarks'])->name('teacher.section.students');
+    Route::get('teacher/profile', [TeacherController::class, 'getProfile'])->name('teacher.profile');
 });
 
 Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(function () {

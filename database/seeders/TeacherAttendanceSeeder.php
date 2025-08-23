@@ -46,13 +46,11 @@ class TeacherAttendanceSeeder extends Seeder
         $rand = rand(1, 100);
         
         if ($rand <= 85) {
-            return 'present'; // 85% present (teachers have higher attendance rate)
+            return 'Unexcused absence'; // 85% present (teachers have higher attendance rate)
         } elseif ($rand <= 90) {
-            return 'absent'; // 5% absent
-        } elseif ($rand <= 95) {
-            return 'late'; // 5% late
+            return 'Late'; // 5% late
         } else {
-            return 'excused'; // 5% excused
+            return 'Excused absence'; // 5% excused
         }
     }
 }

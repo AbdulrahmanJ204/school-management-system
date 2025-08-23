@@ -156,4 +156,66 @@ class TeacherController extends Controller
     {
         return $this->teacherService->getStudentsInSectionWithMarks($sectionId, $subjectId);
     }
+
+    /**
+     * Get teacher profile with detailed information
+     * 
+     * @OA\Get(
+     *     path="/api/teacher/profile",
+     *     summary="Get teacher profile",
+     *     description="Retrieve detailed profile information for the authenticated teacher",
+     *     tags={"Teacher"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status_code", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="تم جلب بيانات الملف الشخصي بنجاح"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="firstName", type="string", example="منار"),
+     *                 @OA\Property(property="lastName", type="string", example="عجاج الكردي"),
+     *                 @OA\Property(property="subject", type="string", example="الرياضيات"),
+     *                 @OA\Property(property="fatherName", type="string", example="ماهر"),
+     *                 @OA\Property(property="image", type="string", example="assets/images/teacher.jpg"),
+     *                 @OA\Property(property="birthDate", type="string", example="2004-07-14"),
+     *                 @OA\Property(property="age", type="integer", example=20),
+     *                 @OA\Property(property="gender", type="string", example="ذكر"),
+     *                 @OA\Property(property="email", type="string", example="manarkurdy111@gmail.com"),
+     *                 @OA\Property(property="phone", type="string", example="0997161988"),
+     *                 @OA\Property(property="availableDays", type="array", @OA\Items(type="string", example="الخميس")),
+     *                 @OA\Property(property="attendancePercentage", type="integer", example=80),
+     *                 @OA\Property(property="absencePercentage", type="integer", example=10),
+     *                 @OA\Property(property="latenessPercentage", type="integer", example=5),
+     *                 @OA\Property(property="justifiedAbsencePercentage", type="integer", example=5),
+     *                 @OA\Property(property="gradesAndSections", type="object",
+     *                     @OA\Property(property="الصف التاسع", type="object",
+     *                         @OA\Property(property="1", type="boolean", example=true),
+     *                         @OA\Property(property="2", type="boolean", example=false),
+     *                         @OA\Property(property="3", type="boolean", example=true)
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - User is not a teacher",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status_code", type="integer", example=403),
+     *             @OA\Property(property="message", type="string", example="المستخدم الحالي ليس أستاذاً")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
+     * 
+     * @throws PermissionException
+     */
+    public function getProfile(): JsonResponse
+    {
+        return $this->teacherService->getTeacherProfile();
+    }
 }
