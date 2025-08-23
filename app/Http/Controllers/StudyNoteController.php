@@ -6,7 +6,7 @@ use App\Exceptions\PermissionException;
 use App\Http\Requests\StudyNote\ListStudyNoteRequest;
 use App\Http\Requests\StudyNote\StoreStudyNoteRequest;
 use App\Http\Requests\StudyNote\UpdateStudyNoteRequest;
-use App\Http\Requests\StudyNoteRequest;
+
 use App\Http\Requests\CombinedNotesRequest;
 use App\Services\StudyNoteService;
 use App\Services\CombinedNotesService;
@@ -26,9 +26,9 @@ class StudyNoteController extends Controller
     /**
      * @throws PermissionException
      */
-    public function index(): JsonResponse
+    public function index(ListStudyNoteRequest $request): JsonResponse
     {
-        return $this->studyNoteService->listStudyNotes();
+        return $this->studyNoteService->listStudyNotes($request);
     }
 
     /**
@@ -42,7 +42,7 @@ class StudyNoteController extends Controller
     /**
      * @throws PermissionException
      */
-    public function store(StudyNoteRequest $request): JsonResponse
+    public function store(StoreStudyNoteRequest $request): JsonResponse
     {
         return $this->studyNoteService->createStudyNote($request);
     }
@@ -58,7 +58,7 @@ class StudyNoteController extends Controller
     /**
      * @throws PermissionException
      */
-    public function update(StudyNoteRequest $request, $id): JsonResponse
+    public function update(UpdateStudyNoteRequest $request, $id): JsonResponse
     {
         return $this->studyNoteService->updateStudyNote($request, $id);
     }
@@ -87,29 +87,7 @@ class StudyNoteController extends Controller
         return $this->studyNoteService->forceDeleteStudyNote($id);
     }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getByStudent($studentId): JsonResponse
-    {
-        return $this->studyNoteService->getByStudent($studentId);
-    }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getBySchoolDay($schoolDayId): JsonResponse
-    {
-        return $this->studyNoteService->getBySchoolDay($schoolDayId);
-    }
-
-    /**
-     * @throws PermissionException
-     */
-    public function getBySubject($subjectId): JsonResponse
-    {
-        return $this->studyNoteService->getBySubject($subjectId);
-    }
 
     /**
      * @throws PermissionException

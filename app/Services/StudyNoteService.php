@@ -20,17 +20,55 @@ class StudyNoteService
     /**
      * @throws PermissionException
      */
-    public function listStudyNotes(): JsonResponse
+    public function listStudyNotes($request = null): JsonResponse
     {
         $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTES);
 
-        $studyNotes = StudyNote::with([
+        $query = StudyNote::with([
             'student',
             'schoolDay',
             'subject',
-        ])
-            ->orderBy('id', 'desc')
-            ->paginate(50);
+        ]);
+
+        // Apply filters if request is provided
+        if ($request) {
+            $filters = $request->validated();
+
+            // Filter by student_id
+            if (isset($filters['student_id'])) {
+                $query->where('student_id', $filters['student_id']);
+            }
+
+            // Filter by school_day_id
+            if (isset($filters['school_day_id'])) {
+                $query->where('school_day_id', $filters['school_day_id']);
+            }
+
+            // Filter by subject_id
+            if (isset($filters['subject_id'])) {
+                $query->where('subject_id', $filters['subject_id']);
+            }
+
+            // Filter by note_type
+            if (isset($filters['note_type'])) {
+                $query->where('note_type', $filters['note_type']);
+            }
+
+            // Filter by date range
+            if (isset($filters['date_from'])) {
+                $query->whereHas('schoolDay', function ($q) use ($filters) {
+                    $q->where('date', '>=', $filters['date_from']);
+                });
+            }
+
+            if (isset($filters['date_to'])) {
+                $query->whereHas('schoolDay', function ($q) use ($filters) {
+                    $q->where('date', '<=', $filters['date_to']);
+                });
+            }
+        }
+
+        $studyNotes = $query->orderBy('id', 'desc')->paginate(50);
 
         return ResponseHelper::jsonResponse(
             StudyNoteResource::collection($studyNotes),
@@ -184,80 +222,7 @@ class StudyNoteService
         );
     }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getByStudent($studentId): JsonResponse
-    {
-        $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTES);
 
-        $studyNotes = StudyNote::where('student_id', $studentId)
-            ->with([
-                'student',
-                'schoolDay',
-                'subject',
-            ])
-            ->orderBy('id', 'desc')
-            ->paginate(50);
-
-        return ResponseHelper::jsonResponse(
-            StudyNoteResource::collection($studyNotes),
-            __('messages.study_note.listed'),
-            200,
-            true,
-            $studyNotes->lastPage()
-        );
-    }
-
-    /**
-     * @throws PermissionException
-     */
-    public function getBySchoolDay($schoolDayId): JsonResponse
-    {
-        $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTES);
-
-        $studyNotes = StudyNote::where('school_day_id', $schoolDayId)
-            ->with([
-                'student',
-                'schoolDay',
-                'subject',
-            ])
-            ->orderBy('id', 'desc')
-            ->paginate(50);
-
-        return ResponseHelper::jsonResponse(
-            StudyNoteResource::collection($studyNotes),
-            __('messages.study_note.listed'),
-            200,
-            true,
-            $studyNotes->lastPage()
-        );
-    }
-
-    /**
-     * @throws PermissionException
-     */
-    public function getBySubject($subjectId): JsonResponse
-    {
-        $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTES);
-
-        $studyNotes = StudyNote::where('subject_id', $subjectId)
-            ->with([
-                'student',
-                'schoolDay',
-                'subject',
-            ])
-            ->orderBy('id', 'desc')
-            ->paginate(50);
-
-        return ResponseHelper::jsonResponse(
-            StudyNoteResource::collection($studyNotes),
-            __('messages.study_note.listed'),
-            200,
-            true,
-            $studyNotes->lastPage()
-        );
-    }
 
     /**
      * Get study notes for student (no pagination, with filters)

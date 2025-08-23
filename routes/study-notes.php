@@ -8,8 +8,5 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('study-notes', StudyNoteController::class);
     Route::patch('study-notes/{id}/restore', [StudyNoteController::class, 'restore']);
     Route::delete('study-notes/{id}/force-delete', [StudyNoteController::class, 'forceDelete']);
-    Route::get('study-notes/student/{studentId}', [StudyNoteController::class, 'getByStudent']);
-    Route::get('study-notes/school-day/{schoolDayId}', [StudyNoteController::class, 'getBySchoolDay']);
-    Route::get('study-notes/subject/{subjectId}', [StudyNoteController::class, 'getBySubject']);
     Route::get('combined-notes', [StudyNoteController::class, 'getCombinedNotes']);
 });

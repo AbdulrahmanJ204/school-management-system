@@ -22,6 +22,16 @@ class ListStudyNoteRequest extends \App\Http\Requests\BaseRequest
     public function rules(): array
     {
         return [
+            'student_id' => [
+                'nullable',
+                'integer',
+                'exists:students,id'
+            ],
+            'school_day_id' => [
+                'nullable',
+                'integer',
+                'exists:school_days,id'
+            ],
             'subject_id' => [
                 'nullable',
                 'integer',
@@ -52,6 +62,14 @@ class ListStudyNoteRequest extends \App\Http\Requests\BaseRequest
     public function messages(): array
     {
         return [
+            'student_id.nullable' => 'الطالب اختياري',
+            'student_id.integer' => 'الطالب يجب أن يكون رقماً صحيحاً',
+            'student_id.exists' => 'الطالب المحدد غير موجود',
+
+            'school_day_id.nullable' => 'اليوم الدراسي اختياري',
+            'school_day_id.integer' => 'اليوم الدراسي يجب أن يكون رقماً صحيحاً',
+            'school_day_id.exists' => 'اليوم الدراسي المحدد غير موجود',
+
             'subject_id.nullable' => 'المادة اختيارية',
             'subject_id.integer' => 'المادة يجب أن تكون رقماً صحيحاً',
             'subject_id.exists' => 'المادة المحددة غير موجودة',

@@ -197,8 +197,6 @@ class UserService
         return ResponseHelper::jsonResponse(
             null,
             __('messages.user.deleted'),
-            200,
-            true
         );
     }
 

@@ -86,7 +86,7 @@ class StoreStudyNoteRequest extends BaseRequest
             'marks.nullable' => 'الدرجة اختيارية',
             'marks.integer' => 'الدرجة يجب أن تكون رقماً صحيحاً',
             'marks.min' => 'الدرجة يجب أن تكون 0 أو أكثر',
-            'marks.max' => 'الدرجة يجب أن تكون 100 أو أقل'
+            'marks.max' => 'الدرجة يجب أن تكون 10 أو أقل'
         ];
     }
 }

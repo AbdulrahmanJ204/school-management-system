@@ -48,15 +48,15 @@ class UpdateRequest extends BaseRequest
             'password' => 'prohibited',
             'user_type' => 'prohibited',
             'gender' => 'nullable|in:male,female',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'birth_date' => 'nullable|date|before:today|date_format:Y-m-d|regex:/^\d{4}-\d{2}-\d{2}$/',
             'role_id'      => 'nullable|exists:roles,id',
             'phone' => [
                 'nullable',
                 'string',
                 'regex:/^[0-9+\-\s()]*$/',
-                'min:7',
-                'max:20',
+                'min:10',
+                'max:15',
                 Rule::unique('users')->ignore($user->id)->whereNull('deleted_at')
                     ->when(
                         $this->filled('phone') && $this->input('phone') !== $user->phone,

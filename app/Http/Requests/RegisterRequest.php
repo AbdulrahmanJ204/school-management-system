@@ -30,7 +30,7 @@ class RegisterRequest extends BaseRequest
             'password' => 'required_unless:user_type,student|string|min:8|confirmed|prohibited_if:user_type,student',
             'user_type' => 'required|in:admin,teacher,student',
             'gender' => 'required|in:male,female',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'birth_date'   => 'required|date|before:today',
             'phone'        => 'required|string|unique:users,phone|regex:/^[0-9+\-\s()]*$/|min:7|max:20',
             'grandfather'  => 'required_if:user_type,student|prohibited_unless:user_type,student|string|max:255',
