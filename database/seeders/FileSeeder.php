@@ -91,71 +91,150 @@ class FileSeeder extends Seeder
             ],
         ];
         $storageDisk = 'public';
-        foreach ($fileTemplates as $index => $template) {
-            // Determine subject (can be null for general files)
-            $subject = rand(0, 10) > 2 ? $subjects->random() : null; // 80% chance to have subject
-            $subjectCode = $subject ? $subject->code : FileStr::GeneralPath->value;
+        for ($i = 0; $i < 4; $i++) {
 
-            // Create filename following your naming convention
-            $hashedName = Str::random(40); // Simulate Laravel's hashName
-            $filename = $subjectCode . FileStr::Separator->value . $hashedName . '.' . $template['extension'];
+            foreach ($fileTemplates as $index => $template) {
+                // Determine subject (can be null for general files)
+                $subject = rand(0, 10) > 2 ? $subjects->random() : null; // 80% chance to have subject
+                $subjectCode = $subject ? $subject->code : FileStr::GeneralPath->value;
 
-            // Create directory structure like your system
-            $directoryPath = FileStr::LibraryPath->value. '/' . $subjectCode;
-            $filePath = $directoryPath . '/' . $filename;
+                // Create filename following your naming convention
+                $hashedName = Str::random(40); // Simulate Laravel's hashName
+                $filename = $subjectCode . FileStr::Separator->value . $hashedName . '.' . $template['extension'];
 
-            // Create directory and store file
-            Storage::disk($storageDisk)->makeDirectory($directoryPath);
-            Storage::disk($storageDisk)->put($filePath, $template['content']);
+                // Create directory structure like your system
+                $directoryPath = FileStr::LibraryPath->value . '/' . $subjectCode;
+                $filePath = $directoryPath . '/' . $filename;
 
-            // Get file size
-            $fileSize = Storage::disk($storageDisk)->size($filePath);
+                // Create directory and store file
+                Storage::disk($storageDisk)->makeDirectory($directoryPath);
+                Storage::disk($storageDisk)->put($filePath, $template['content']);
 
-            // Create file record
-            $file = File::create([
-                'subject_id' => $subject?->id,
-                'title' => $template['title'],
-                'description' => $template['description'],
-                'type' => $template['type'],
-                'file' => $filePath,
-                'size' => $fileSize,
-                'publish_date' => $dates[array_rand($dates)],
-                'created_by' => $users->random()->id,
-            ]);
+                // Get file size
+                $fileSize = Storage::disk($storageDisk)->size($filePath);
 
-            // Create file targets with different scenarios
-            $targetScenario = rand(1, 4);
+                // Create file record
+                $file = File::create([
+                    'subject_id' => $subject?->id,
+                    'title' => $template['title'],
+                    'description' => $template['description'],
+                    'type' => $template['type'],
+                    'file' => $filePath,
+                    'size' => $fileSize,
+                    'publish_date' => $dates[array_rand($dates)],
+                    'created_by' => $users->random()->id,
+                ]);
 
-            switch ($targetScenario) {
-                case 1: // General target (both null) - 25% chance
+                // Create file targets with different scenarios
+                $targetScenario = rand(1, 4);
+
+                switch ($targetScenario) {
+                    case 1: // General target (both null) - 25% chance
+                        FileTarget::create([
+                            'section_id' => null,
+                            'grade_id' => null,
+                            'file_id' => $file->id,
+                            'created_by' => $users->random()->id,
+                        ]);
+                        break;
+
+                    case 2: // Grade specific - 25% chance
+                        FileTarget::create([
+                            'section_id' => null,
+                            'grade_id' => $grades->random()->id,
+                            'file_id' => $file->id,
+                            'created_by' => $users->random()->id,
+                        ]);
+                        break;
+
+                    case 3: // Section specific - 25% chance
+                        FileTarget::create([
+                            'section_id' => $sections->random()->id,
+                            'grade_id' => null,
+                            'file_id' => $file->id,
+                            'created_by' => $users->random()->id,
+                        ]);
+                        break;
+
+                    case 4: // Multiple targets - 25% chance
+                        $targetCount = rand(2, 3);
+                        $isGradeTargets = rand(0, 1); // Decide if ALL targets are grade or section based
+
+                        for ($i = 0; $i < $targetCount; $i++) {
+                            if ($isGradeTargets) {
+                                // All targets are grade-based
+                                FileTarget::create([
+                                    'section_id' => null,
+                                    'grade_id' => $grades->random()->id,
+                                    'file_id' => $file->id,
+                                    'created_by' => $users->random()->id,
+                                ]);
+                            } else {
+                                // All targets are section-based
+                                FileTarget::create([
+                                    'section_id' => $sections->random()->id,
+                                    'grade_id' => null,
+                                    'file_id' => $file->id,
+                                    'created_by' => $users->random()->id,
+                                ]);
+                            }
+                        }
+                        break;
+                }
+
+                $this->command->info("Created file: {$template['title']} (Subject: " . ($subject ? $subject->name : 'General') . ")");
+            }
+        }
+        // Create some PDF-like files (if you want to simulate different file types)
+        $pdfTemplates = [
+            'Complete Study Guide - Chapter 5',
+            'Final Exam Review Materials',
+            'Project Rubric and Guidelines',
+        ];
+
+        for ($i = 0; $i < 4; $i++) {
+            foreach ($pdfTemplates as $index => $title) {
+                // Some files can be general (no subject)
+                $subject = rand(0, 10) > 3 ? $subjects->random() : null; // 70% chance to have subject
+                $subjectCode = $subject ? $subject->code : FileStr::GeneralPath->value;
+
+                // Create filename following your naming convention
+                $hashedName = Str::random(40);
+                $filename = $subjectCode . FileStr::Separator->value . $hashedName . '.txt'; // Using .txt for simplicity
+
+                $directoryPath = FileStr::LibraryPath->value . '/' . $subjectCode;
+                $filePath = $directoryPath . '/' . $filename;
+
+                $content = "PDF Document: {$title}\n\nThis is a sample document that would normally be a PDF file.\nIt contains important information for students.\n\n" . str_repeat("Sample content line.\n", 50);
+
+                Storage::disk($storageDisk)->makeDirectory($directoryPath);
+                Storage::disk($storageDisk)->put($filePath, $content);
+
+                $file = File::create([
+                    'subject_id' => $subject?->id,
+                    'title' => $title,
+                    'description' => 'Important study material for students',
+                    'type' => rand(0, 1) ? 'public' : 'helper',
+                    'file' => $filePath,
+                    'size' => Storage::disk($storageDisk)->size($filePath),
+                    'publish_date' => $dates[array_rand($dates)],
+                    'created_by' => $users->random()->id,
+                ]);
+
+                // Create different target scenarios
+                $targetScenario = rand(1, 3);
+
+                if ($targetScenario === 1) {
+                    // General target (both null)
                     FileTarget::create([
                         'section_id' => null,
                         'grade_id' => null,
                         'file_id' => $file->id,
                         'created_by' => $users->random()->id,
                     ]);
-                    break;
-
-                case 2: // Grade specific - 25% chance
-                    FileTarget::create([
-                        'section_id' => null,
-                        'grade_id' => $grades->random()->id,
-                        'file_id' => $file->id,
-                        'created_by' => $users->random()->id,
-                    ]);
-                    break;
-
-                case 3: // Section specific - 25% chance
-                    FileTarget::create([
-                        'section_id' => $sections->random()->id,
-                        'grade_id' => null,
-                        'file_id' => $file->id,
-                        'created_by' => $users->random()->id,
-                    ]);
-                    break;
-
-                case 4: // Multiple targets - 25% chance
-                    $targetCount = rand(2, 3);
+                } else {
+                    // Specific targets
+                    $targetCount = rand(1, 2);
                     $isGradeTargets = rand(0, 1); // Decide if ALL targets are grade or section based
 
                     for ($i = 0; $i < $targetCount; $i++) {
@@ -177,87 +256,11 @@ class FileSeeder extends Seeder
                             ]);
                         }
                     }
-                    break;
-            }
-
-            $this->command->info("Created file: {$template['title']} (Subject: " . ($subject ? $subject->name : 'General') . ")");
-        }
-
-        // Create some PDF-like files (if you want to simulate different file types)
-        $pdfTemplates = [
-            'Complete Study Guide - Chapter 5',
-            'Final Exam Review Materials',
-            'Project Rubric and Guidelines',
-        ];
-
-        foreach ($pdfTemplates as $index => $title) {
-            // Some files can be general (no subject)
-            $subject = rand(0, 10) > 3 ? $subjects->random() : null; // 70% chance to have subject
-            $subjectCode = $subject ? $subject->code : FileStr::GeneralPath->value;
-
-            // Create filename following your naming convention
-            $hashedName = Str::random(40);
-            $filename = $subjectCode . FileStr::Separator->value . $hashedName . '.txt'; // Using .txt for simplicity
-
-            $directoryPath = FileStr::LibraryPath->value.'/' . $subjectCode;
-            $filePath = $directoryPath . '/' . $filename;
-
-            $content = "PDF Document: {$title}\n\nThis is a sample document that would normally be a PDF file.\nIt contains important information for students.\n\n" . str_repeat("Sample content line.\n", 50);
-
-            Storage::disk($storageDisk)->makeDirectory($directoryPath);
-            Storage::disk($storageDisk)->put($filePath, $content);
-
-            $file = File::create([
-                'subject_id' => $subject?->id,
-                'title' => $title,
-                'description' => 'Important study material for students',
-                'type' => rand(0, 1) ? 'public' : 'helper',
-                'file' => $filePath,
-                'size' => Storage::disk($storageDisk)->size($filePath),
-                'publish_date' => $dates[array_rand($dates)],
-                'created_by' => $users->random()->id,
-            ]);
-
-            // Create different target scenarios
-            $targetScenario = rand(1, 3);
-
-            if ($targetScenario === 1) {
-                // General target (both null)
-                FileTarget::create([
-                    'section_id' => null,
-                    'grade_id' => null,
-                    'file_id' => $file->id,
-                    'created_by' => $users->random()->id,
-                ]);
-            } else {
-                // Specific targets
-                $targetCount = rand(1, 2);
-                $isGradeTargets = rand(0, 1); // Decide if ALL targets are grade or section based
-
-                for ($i = 0; $i < $targetCount; $i++) {
-                    if ($isGradeTargets) {
-                        // All targets are grade-based
-                        FileTarget::create([
-                            'section_id' => null,
-                            'grade_id' => $grades->random()->id,
-                            'file_id' => $file->id,
-                            'created_by' => $users->random()->id,
-                        ]);
-                    } else {
-                        // All targets are section-based
-                        FileTarget::create([
-                            'section_id' => $sections->random()->id,
-                            'grade_id' => null,
-                            'file_id' => $file->id,
-                            'created_by' => $users->random()->id,
-                        ]);
-                    }
                 }
+
+                $this->command->info("Created PDF file: {$title} (Subject: " . ($subject ? $subject->name : 'General') . ")");
             }
-
-            $this->command->info("Created PDF file: {$title} (Subject: " . ($subject ? $subject->name : 'General') . ")");
         }
-
         $this->command->info('File seeding completed successfully!');
     }
 }

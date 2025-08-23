@@ -64,8 +64,8 @@ class ListFilesRequest extends BaseRequest
     {
         return [
             QueryParams::Year->value => 'sometimes|exists:years,id',
-            QueryParams::Subject->value => 'sometimes|nullable|exists:subjects,id',
-            QueryParams::Type->value => ['sometimes', Rule::enum(FileType::class)],
+//            QueryParams::Subject->value => 'sometimes|nullable|exists:subjects,id',
+//            QueryParams::Type->value => ['sometimes', Rule::enum(FileType::class)],
 
         ];
     }

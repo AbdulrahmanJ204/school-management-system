@@ -62,12 +62,12 @@ trait ListFiles
         $teacher = auth()->user()->teacher;
         $subjectId = null;
         $sectionId = null;
-        if ($request->has($this->querySubject)) {
-            $subjectId = $data[$this->querySubject];
-        }
-        if ($request->has($this->querySection)) {
-            $sectionId = $data[$this->querySection];
-        }
+//        if ($request->has($this->querySubject)) {
+//            $subjectId = $data[$this->querySubject];
+//        }
+//        if ($request->has($this->querySection)) {
+//            $sectionId = $data[$this->querySection];
+//        }
         $files = File::belongsToTeacher($teacher->id, $subjectId, $sectionId)
             ->orderByPublishDate()->get();
         return ResponseHelper::jsonResponse(FileResource::collection($files), 'files retrieved successfully');
@@ -77,7 +77,7 @@ trait ListFiles
     {
         $data = $request->validated();
         $yearId = $this->getYearId($request);
-        $subjectId = $request->filled($this->querySubject) ? $data[$this->querySubject] : null;
+//        $subjectId = $request->filled($this->querySubject) ? $data[$this->querySubject] : null;
 
         $enrollments = auth()->user()->student->yearEnrollments($yearId);
         if ($enrollments->isEmpty()) {
@@ -93,7 +93,7 @@ trait ListFiles
             $currentSemesterFiles =
                 File::inDateRange($start_date, $end_date)
                     ->forSection($enrollment->section_id)
-                    ->forSubject($subjectId)
+//                    ->forSubject($subjectId)
                     ->get();
             $files = $files->merge($currentSemesterFiles);
         }
@@ -101,9 +101,9 @@ trait ListFiles
         $overallEndDate = $enrollments->max('semester.end_date');
         $gradeId = $enrollments->pluck('grade_id')->first();
         $query = File::inDateRange($overallStartDate, $overallEndDate)
-            ->forGradeOrPublic($gradeId)
-            ->forSubject($subjectId);
-        $this->studentFilter($request, $query, $data);
+            ->forGradeOrPublic($gradeId);
+//            ->forSubject($subjectId);
+//        $this->studentFilter($request, $query, $data);
         $gradeAndPublicFiles =
             $query->get();
         $files = $files->merge($gradeAndPublicFiles)
@@ -160,6 +160,11 @@ trait ListFiles
      */
     public function studentFilter($request, $query, $data): void
     {
+        // Subject
+        if ($request->has($this->querySubject)) {
+            $query->forSubject($data[$this->querySubject]);
+        }
+        // Type
         if ($request->has($this->queryType)) {
             $query->forType($data[$this->queryType]);
         }
