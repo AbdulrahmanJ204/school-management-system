@@ -3,36 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
+use App\Helpers\ResponseHelper;
 use App\Http\Requests\ClassSessionRequest;
+use App\Http\Requests\CreateClassSessionRequest;
+use App\Http\Requests\UpdateClassSessionRequest;
+use App\Http\Resources\ClassSessionResource;
 use App\Models\ClassSession;
 use App\Services\ClassSessionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Artisan;
 
 class ClassSessionController extends Controller
 {
-    protected ClassSessionService $classSessionService;
+    protected $classSessionService;
 
     public function __construct(ClassSessionService $classSessionService)
     {
         $this->classSessionService = $classSessionService;
     }
-
-    /**
-     * Display a listing of the resource.
-     * @throws PermissionException
-     */
-    public function index(): JsonResponse
-    {
-        return $this->classSessionService->listClassSessions();
-    }
-
     /**
      * Store a newly created resource in storage.
      * @throws PermissionException
      */
-    public function store(ClassSessionRequest $request): JsonResponse
+    public function store(CreateClassSessionRequest $request)
     {
-        return $this->classSessionService->createClassSession($request);
+        $credentials = $request->validated();
+
+        Artisan::call('class-sessions:generate', $credentials);
+
+        return ResponseHelper::jsonResponse(
+            null,
+            __('messages.class_session.created'),
+            200
+        );
     }
 
     /**
@@ -48,18 +51,18 @@ class ClassSessionController extends Controller
      * Update the specified resource in storage.
      * @throws PermissionException
      */
-    public function update(ClassSessionRequest $request, ClassSession $classSession): JsonResponse
+    public function update(UpdateClassSessionRequest $request, int $id): JsonResponse
     {
-        return $this->classSessionService->updateClassSession($request, $classSession);
+        return $this->classSessionService->update($request, $id);
     }
 
     /**
      * Remove the specified resource from storage.
      * @throws PermissionException
      */
-    public function destroy(ClassSession $classSession): JsonResponse
+    public function destroy(int $id)
     {
-        return $this->classSessionService->destroyClassSession($classSession);
+        return $this->classSessionService->delete($id);
     }
 
     /**

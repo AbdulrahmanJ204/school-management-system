@@ -16,14 +16,19 @@ enum TimetablePermission : string {
     case delete_timetable = 'حذف جدول زمني';
     case get_timetable = 'عرض جدول زمني';
     case list_timetable = 'عرض الجداول الزمنية';
-    case create_class_period = 'انشاء حصة دراسية';
-    case update_class_period = 'تعديل حصة دراسية';
-    case delete_class_period = 'حذف حصة دراسية';
-    case get_class_period = 'عرض حصة دراسية';
-    case list_class_period = 'عرض حصص دراسية';
+    case create_class_period = 'انشاء فترة دراسية';
+    case update_class_period = 'تعديل فترة دراسية';
+    case delete_class_period = 'حذف فترة دراسية';
+    case get_class_period = 'عرض فترة دراسية';
+    case list_class_period = 'عرض فترات دراسية';
     case create_schedule = 'انشاء جدول دراسي';
     case update_schedule = 'تعديل جدول دراسي';
     case delete_schedule = 'حذف جدول دراسي';
     case get_schedule = 'عرض جدول دراسي';
     case list_schedule = 'عرض جداول دراسية';
+    case create_class_session = 'انشاء حصة دراسية ';
+    case update_class_session = 'تعديل حصة دراسية';
+    case delete_class_session = 'حذف حصة دراسية';
+    case get_class_session = 'عرض حصة دراسية';
+    case list_class_session = 'عرض حصص دراسية';
 }

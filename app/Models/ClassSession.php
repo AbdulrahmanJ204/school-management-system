@@ -58,10 +58,10 @@ class ClassSession extends Model
         return $this->belongsTo(ClassPeriod::class);
     }
 
-    public function createdBy(): BelongsTo
+    /*public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
+    }*/
 
     // العلاقات المرتبطة
     public function studentAttendances(): HasMany
@@ -104,7 +104,7 @@ class ClassSession extends Model
 
     public function canBeStarted(): bool
     {
-        return $this->status === 'scheduled' && 
+        return $this->status === 'scheduled' &&
                $this->schoolDay->date->isToday();
     }
 }

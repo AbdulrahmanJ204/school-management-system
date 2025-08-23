@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('class_sessions', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('schedule_id')->constrained('schedules');
             $table->foreignId('school_day_id')->constrained('school_days');
             $table->foreignId('teacher_id')->constrained('teachers');
@@ -20,21 +21,19 @@ return new class extends Migration
             $table->enum('status', [
                 'scheduled',
                 'completed',
-                'cancelled',
             ])->default('scheduled');
-            
 
             $table->integer('total_students_count')->nullable();
             $table->integer('present_students_count')->nullable();
-            
+
             $table->timestamps();
-            $table->foreignId('created_by')->constrained('users');
-            
+            //$table->foreignId('created_by')->constrained('users');
+
             $table->index(['school_day_id', 'section_id']);
             $table->index(['teacher_id', 'school_day_id']);
             $table->index(['status', 'school_day_id']);
-            
-            $table->unique(['schedule_id', 'school_day_id'], 'unique_session_per_day');
+
+            $table->unique(['schedule_id', 'school_day_id', 'class_period_id'], 'unique_session_per_day');
         });
     }
 
