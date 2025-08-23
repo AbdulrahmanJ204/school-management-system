@@ -137,6 +137,9 @@ class StudentService
             'absencePercentage' => $attendanceStats['absencePercentage'],
             'justifiedAbsencePercentage' => $attendanceStats['justifiedAbsencePercentage'],
             'latenessPercentage' => $attendanceStats['latenessPercentage'],
+//            Todo after study note
+            'oralPercentage' => 5,
+            'quizPercentage' => 8,
         ];
 
         return ResponseHelper::jsonResponse(
