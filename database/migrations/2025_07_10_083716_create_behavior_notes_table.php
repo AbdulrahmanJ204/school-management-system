@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('behavior_notes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('students');
+            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->foreignId('school_day_id')->constrained('school_days');
             $table->enum('behavior_type', ['positive', 'negative']);
             $table->string('note');

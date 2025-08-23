@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('study_notes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('students');
+            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->foreignId('school_day_id')->constrained('school_days');
             $table->foreignId('subject_id')->nullable()->constrained('subjects');
             $table->enum('note_type', ['dictation', 'quiz', 'homework', 'general'])->default('general');

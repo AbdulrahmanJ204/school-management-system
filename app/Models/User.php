@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -13,7 +14,7 @@ use App\Traits\LogsActivity;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasRoles, HasApiTokens, HasFactory, Notifiable, LogsActivity;
+    use HasRoles, HasApiTokens, HasFactory, Notifiable, LogsActivity, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -97,7 +98,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function findOrCreateDevice(array $deviceData)
     {
         $identifier = $deviceData['identifier'] ?? null;
-        
+
         if (!$identifier) {
             // If no identifier, always create a new device
             $device = Device_info::create($deviceData);
@@ -107,7 +108,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         // Try to find existing device with same identifier
         $existingDevice = Device_info::forUserByIdentifier($this->id, $identifier)->first();
-        
+
         if ($existingDevice) {
             // Update existing device with new information
             $existingDevice->update($deviceData);
