@@ -10,7 +10,6 @@ class UserResource extends JsonResource
 {
     public function toArray($request): array
     {
-        $isGetUserRoute = $request->routeIs('users.show');
         $isGetStaffRoute = $request->routeIs('staff');
         $isGetAdminsRoute = $request->routeIs('admins');
         $isUpdateUserRoute = $request->routeIs('user.update');
@@ -31,6 +30,15 @@ class UserResource extends JsonResource
             'user_type' => $this->user_type,
             'image' => $this->image ? asset('storage/' . $this->image) : asset('storage/user_images/default.png'),
         ];
+
+        if ($this->user_type !== 'student') {
+            $baseData['email'] = $this->email;
+        }
+        else {
+            $baseData['last_year_gpa'] = $this->student?->studentEnrollments()
+                ->latest('year_id')
+                ->first();;
+        }
 
         // Add tokens for login response
         if ($isLoginRoute && isset($this->access_token) && isset($this->refresh_token)) {
