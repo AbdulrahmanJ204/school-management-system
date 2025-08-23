@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\UserResource;
+use App\Models\Semester;
 use App\Models\User;
 use App\Models\TeacherSectionSubject;
 use App\Models\StudentEnrollment;
@@ -143,7 +144,7 @@ class TeacherService
         }
 
         // Get current active semester
-        $currentSemester = \App\Models\Semester::where('is_active', true)->first();
+        $currentSemester = Semester::where('is_active', true)->first();
 
         if (!$currentSemester) {
             return ResponseHelper::jsonResponse(
@@ -194,8 +195,6 @@ class TeacherService
         return ResponseHelper::jsonResponse(
             $students,
             'تم جلب بيانات الطلاب وعلاماتهم بنجاح',
-            200,
-            true
         );
     }
 
@@ -310,14 +309,12 @@ class TeacherService
             'absencePercentage' => $absencePercentage,
             'latenessPercentage' => $latenessPercentage,
             'justifiedAbsencePercentage' => $justifiedAbsencePercentage,
-            'gradesAndSections' => $gradesAndSections
+            'classesAndSections' => $gradesAndSections
         ];
 
         return ResponseHelper::jsonResponse(
             $profileData,
             'تم جلب بيانات الملف الشخصي بنجاح',
-            200,
-            true
         );
     }
 
