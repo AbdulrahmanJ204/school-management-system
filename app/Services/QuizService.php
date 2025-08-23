@@ -55,6 +55,23 @@ class QuizService
             ->with(['targets.subject', 'targets.section.grade', 'targets.semester'])
             ->where('created_by', $user->id);
 
+        if ($user->user_type === 'teacher') {
+            $query->where('created_by', $user->id);
+
+        } elseif ($user->user_type === 'student') {
+
+            $student = $user->student->studentEnrollments();
+
+            $query->where('is_active', true)
+                ->whereHas('targets', function ($q) use ($student) {
+                    $q->where('grade_id', $student->grade_id)
+                        ->where(function ($sub) use ($student) {
+                            $sub->where('section_id', $student->section_id)
+                                ->orWhereNull('section_id');
+                        });
+                });
+        }
+
         if (isset($credentials['grade_id'])) {
             $query->whereHas('targets.section.grade', fn($q) => $q->where('id', $credentials['grade_id']));
         }
