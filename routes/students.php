@@ -9,6 +9,6 @@ Route::prefix('students')->group(function () {
         Route::get('/by-section-semester', [StudentController::class, 'getBySectionAndSemester']);
     });
     Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(function () {
-        Route::get('student/profile', [StudentController::class, 'getMyProfile']);
+        Route::get('/profile', [StudentController::class, 'getMyProfile']);
     });
 });

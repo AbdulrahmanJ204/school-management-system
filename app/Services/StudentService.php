@@ -119,8 +119,8 @@ class StudentService
         $gpaPercentage = $this->calculateGpaPercentage($currentEnrollment);
 
         // Calculate rankings
-        $rankInSection = $this->calculateRankInSection($currentEnrollment);
-        $rankAcrossSections = $this->calculateRankAcrossSections($currentEnrollment);
+        $rankInSection = $this->calculateRankInSection($currentEnrollment, $gpaPercentage);
+        $rankAcrossSections = $this->calculateRankAcrossSections($currentEnrollment, $gpaPercentage);
 
         // Calculate attendance statistics
         $attendanceStats = $this->calculateAttendanceStatistics($student);
@@ -141,9 +141,7 @@ class StudentService
 
         return ResponseHelper::jsonResponse(
             new StudentProfileResource($profileData),
-            'Student profile retrieved successfully',
-            200,
-            true
+            'Student profile retrieved successfully'
         );
     }
 
@@ -160,36 +158,36 @@ class StudentService
             return 0.0;
         }
 
-        $totalWeightedMarks = 0;
-        $totalPossibleMarks = 0;
+        $totalStudentMarks = 0;
+        $totalMaxMarks = 0;
 
         foreach ($marks as $mark) {
             $subject = $mark->subject;
-            
-            // Calculate weighted marks for this subject (only quiz and exam)
-            $subjectWeightedMarks = 0;
-            $subjectPossibleMarks = 0;
-            
+
+            // Calculate Student marks for this subject (only quiz and exam)
+            $subjectStudentMarks = 0;
+            $subjectMaxMarks = 0;
+
             if ($mark->quiz !== null) {
-                $subjectWeightedMarks += ($mark->quiz * $subject->quiz_percentage) / 100;
-                $subjectPossibleMarks += $subject->quiz_percentage;
+                $subjectStudentMarks += $mark->quiz;
+                $subjectMaxMarks += ($subject->quiz_percentage * $subject->full_mark) / 100;
             }
             if ($mark->exam !== null) {
-                $subjectWeightedMarks += ($mark->exam * $subject->exam_percentage) / 100;
-                $subjectPossibleMarks += $subject->exam_percentage;
+                $subjectStudentMarks += $mark->exam;
+                $subjectMaxMarks += ($subject->exam_percentage * $subject->full_mark) / 100;
             }
-            
-            $totalWeightedMarks += $subjectWeightedMarks;
-            $totalPossibleMarks += $subjectPossibleMarks;
+
+            $totalStudentMarks += $subjectStudentMarks;
+            $totalMaxMarks += $subjectMaxMarks;
         }
 
-        return $totalPossibleMarks > 0 ? round(($totalWeightedMarks / $totalPossibleMarks) * 100, 2) : 0.0;
+        return $totalMaxMarks > 0 ? round(($totalStudentMarks / $totalMaxMarks) * 100, 2) : 0.0;
     }
 
     /**
      * Calculate rank within section
      */
-    private function calculateRankInSection(StudentEnrollment $enrollment): int
+    private function calculateRankInSection(StudentEnrollment $enrollment, float $gpaPercentage): int
     {
         // Get all students in the same section and semester
         $sectionEnrollments = StudentEnrollment::where('section_id', $enrollment->section_id)
@@ -197,12 +195,10 @@ class StudentService
             ->get();
 
         // Calculate GPA for each student and rank them
-        $studentsWithGpa = $sectionEnrollments->map(function ($enrollment) {
-            $gpa = $this->calculateGpaPercentage($enrollment);
-
+        $studentsWithGpa = $sectionEnrollments->map(function ($enrollment) use ($gpaPercentage) {
             return [
                 'enrollment_id' => $enrollment->id,
-                'gpa' => $gpa
+                'gpa' => $gpaPercentage
             ];
         })->sortByDesc('gpa')->values();
 
@@ -217,7 +213,7 @@ class StudentService
     /**
      * Calculate rank across all sections in the same grade
      */
-    private function calculateRankAcrossSections(StudentEnrollment $enrollment): int
+    private function calculateRankAcrossSections(StudentEnrollment $enrollment, float $gpaPercentage): int
     {
         // Get all students in the same grade and semester
         $gradeEnrollments = StudentEnrollment::whereHas('section', function ($query) use ($enrollment) {
@@ -227,12 +223,11 @@ class StudentService
             ->get();
 
         // Calculate GPA for each student and rank them
-        $studentsWithGpa = $gradeEnrollments->map(function ($enrollment) {
-            $gpa = $this->calculateGpaPercentage($enrollment);
+        $studentsWithGpa = $gradeEnrollments->map(function ($enrollment) use ($gpaPercentage) {
 
             return [
                 'enrollment_id' => $enrollment->id,
-                'gpa' => $gpa
+                'gpa' => $gpaPercentage
             ];
         })->sortByDesc('gpa')->values();
 
@@ -249,6 +244,14 @@ class StudentService
      */
     private function calculateAttendanceStatistics(Student $student): array
     {
+//        Todo after create attendance
+        return [
+            'attendancePercentage' => 1.0,
+            'absencePercentage' => 2.5,
+            'justifiedAbsencePercentage' => 62.5,
+            'latenessPercentage' => 25.4,
+        ];
+
         // Get current enrollment to determine which class sessions the student should attend
         $currentEnrollment = $student->studentEnrollments()
             ->orderBy('created_at', 'desc')
@@ -284,13 +287,13 @@ class StudentService
                       ->where('status', 'completed');
             })
             ->get();
-        
+
         $excusedAbsences = $attendanceRecords->where('status', 'Excused absence')->count();
         $unexcusedAbsences = $attendanceRecords->where('status', 'Unexcused absence')->count();
         $lateRecords = $attendanceRecords->where('status', 'Late')->count();
-        
+
         $totalAbsences = $excusedAbsences + $unexcusedAbsences;
-        
+
         // Present sessions = total sessions - absences (late is considered present but late)
         $presentSessions = $totalClassSessions - $totalAbsences;
 
