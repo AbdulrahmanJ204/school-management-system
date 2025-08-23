@@ -66,11 +66,15 @@ class RoleService
 
         $role = Role::find($id);
 
-        $role->update([
-            'name' => $credentials['name'],
-        ]);
+        if (isset($credentials['name'])) {
+            $role->update([
+                'name' => $credentials['name'],
+            ]);
+        }
 
-        $role->syncPermissions($credentials['permissions']);
+        if (isset($credentials['permissions'])) {
+            $role->syncPermissions($credentials['permissions']);
+        }
 
         return ResponseHelper::jsonResponse(
             new RoleResource($role),
