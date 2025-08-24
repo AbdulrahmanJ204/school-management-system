@@ -81,7 +81,7 @@ class Subject extends Model
 
     public function getGrade()
     {
-        return $this->mainSubject->grade;
+        return $this->mainSubject ? $this->mainSubject->grade : null;
     }
     // Func
 
