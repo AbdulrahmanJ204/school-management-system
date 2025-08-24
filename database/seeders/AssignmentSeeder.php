@@ -231,6 +231,6 @@ class AssignmentSeeder extends Seeder
             ->limit(5)
             ->get();
 
-        return $futureSessions->random();
+        return $futureSessions->isNotEmpty() ? $futureSessions->random() : null;
     }
 }

@@ -23,8 +23,10 @@ class StudentAttendanceResource extends JsonResource
             ],
             'class_session' => [
                 'id' => $this->classSession->id,
-                'date' => $this->classSession->date->format('Y-m-d'),
-                'time' => $this->classSession->time->format('H:i'),
+                'date' => $this->classSession->schoolDay->date->format('Y-m-d'),
+                'period' => $this->classSession->classPeriod->period_number ?? 1,
+                'subject' => $this->classSession->subject->name ?? 'غير محدد',
+                'teacher' => $this->classSession->teacher->user->name ?? 'غير محدد',
             ],
             'status' => $this->status,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),

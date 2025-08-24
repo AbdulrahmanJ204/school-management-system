@@ -19,7 +19,8 @@ class ClassSessionSeeder extends Seeder
     public function run(): void
     {
         $schedules = Schedule::all();
-        $schoolDays = SchoolDay::where('date', '>=', now()->subDays(7))->get();
+        // Get recent school days (last 20 school days from the available data)
+        $schoolDays = SchoolDay::orderBy('date', 'desc')->limit(20)->get();
         $teachers = Teacher::all();
         $subjects = Subject::all();
         $sections = Section::all();
@@ -57,7 +58,6 @@ class ClassSessionSeeder extends Seeder
                         'status' => $this->getRandomStatus($schoolDay->date),
                         'total_students_count' => rand(20, 35),
                         'present_students_count' => rand(15, 30),
-                        'created_by' => 1,
                     ]);
                 }
             }
@@ -73,8 +73,8 @@ class ClassSessionSeeder extends Seeder
         $dateString = $date->toDateString();
 
         if ($dateString < $today) {
-            // Past dates - mostly completed, some cancelled
-            return rand(1, 10) <= 8 ? 'completed' : 'cancelled';
+            // Past dates - mostly completed
+            return rand(1, 10) <= 8 ? 'completed' : 'scheduled';
         } elseif ($dateString === $today) {
             // Today - mix of statuses
             $rand = rand(1, 10);
@@ -82,7 +82,7 @@ class ClassSessionSeeder extends Seeder
             else return 'completed';
         } else {
             // Future dates - mostly scheduled
-            return rand(1, 10) <= 9 ? 'scheduled' : 'cancelled';
+            return rand(1, 10) <= 9 ? 'scheduled' : 'completed';
         }
     }
 }

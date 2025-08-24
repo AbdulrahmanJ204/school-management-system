@@ -14,7 +14,8 @@ class TeacherAttendanceSeeder extends Seeder
      */
     public function run(): void
     {
-        $classSessions = ClassSession::where('status', 'completed')->get();
+        // Get more class sessions - include both completed and scheduled
+        $classSessions = ClassSession::whereIn('status', ['completed', 'scheduled'])->get();
         $teachers = Teacher::all();
 
         if ($classSessions->isEmpty() || $teachers->isEmpty()) {
@@ -28,29 +29,82 @@ class TeacherAttendanceSeeder extends Seeder
                 ->first();
 
             if (!$existingAttendance) {
-                TeacherAttendance::create([
-                    'class_session_id' => $classSession->id,
-                    'teacher_id' => $classSession->teacher_id,
-                    'status' => $this->getRandomTeacherAttendanceStatus(),
-                    'created_by' => 1,
-                ]);
+                // For completed sessions, create attendance records
+                if ($classSession->status === 'completed') {
+                    TeacherAttendance::create([
+                        'class_session_id' => $classSession->id,
+                        'teacher_id' => $classSession->teacher_id,
+                        'status' => $this->getRandomTeacherAttendanceStatus(),
+                        'created_by' => 1,
+                    ]);
+                }
+                // For scheduled sessions, create some attendance records (simulating early attendance tracking)
+                elseif ($classSession->status === 'scheduled' && rand(1, 100) <= 15) {
+                    TeacherAttendance::create([
+                        'class_session_id' => $classSession->id,
+                        'teacher_id' => $classSession->teacher_id,
+                        'status' => $this->getRandomScheduledTeacherAttendanceStatus(),
+                        'created_by' => 1,
+                    ]);
+                }
+            }
+
+            // Create additional attendance records for some sessions (simulating multiple attendance checks)
+            if ($classSession->status === 'completed' && rand(1, 100) <= 25) {
+                $this->createAdditionalTeacherAttendanceRecords($classSession);
             }
         }
     }
 
     /**
-     * Get random teacher attendance status with realistic distribution
+     * Create additional teacher attendance records for the same session
+     */
+    private function createAdditionalTeacherAttendanceRecords($classSession)
+    {
+        // Check if we already have multiple attendance records for this teacher and session
+        $existingCount = TeacherAttendance::where('teacher_id', $classSession->teacher_id)
+            ->where('class_session_id', $classSession->id)
+            ->count();
+
+        if ($existingCount < 2) { // Allow up to 2 attendance records per teacher per session
+            TeacherAttendance::create([
+                'class_session_id' => $classSession->id,
+                'teacher_id' => $classSession->teacher_id,
+                'status' => $this->getRandomTeacherAttendanceStatus(),
+                'created_by' => 1,
+            ]);
+        }
+    }
+
+    /**
+     * Get random teacher attendance status with realistic distribution for completed sessions
      */
     private function getRandomTeacherAttendanceStatus(): string
     {
         $rand = rand(1, 100);
         
-        if ($rand <= 85) {
-            return 'Unexcused absence'; // 85% present (teachers have higher attendance rate)
-        } elseif ($rand <= 90) {
-            return 'Late'; // 5% late
+        if ($rand <= 70) {
+            return 'Late'; // 70% late (teachers are mostly on time)
+        } elseif ($rand <= 85) {
+            return 'Excused absence'; // 15% excused absence
         } else {
-            return 'Excused absence'; // 5% excused
+            return 'Unexcused absence'; // 15% unexcused absence
+        }
+    }
+
+    /**
+     * Get random teacher attendance status for scheduled sessions
+     */
+    private function getRandomScheduledTeacherAttendanceStatus(): string
+    {
+        $rand = rand(1, 100);
+        
+        if ($rand <= 80) {
+            return 'Late'; // 80% late for scheduled sessions
+        } elseif ($rand <= 90) {
+            return 'Excused absence'; // 10% excused
+        } else {
+            return 'Unexcused absence'; // 10% unexcused
         }
     }
 }

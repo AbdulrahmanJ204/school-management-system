@@ -3,11 +3,12 @@
 ## Overview
 This API provides detailed student attendance reports with monthly statistics and daily breakdowns for the current academic year.
 
-**Academic Year Logic:**
+**Monthly Logic:**
 - Gets the current active academic year from the database
-- Uses the academic year's `start_date` and `end_date` to determine the date range
-- Returns data for all months from start_date to end_date within the academic year
-- Handles academic years named like "2024/2025" with cross-year periods
+- Retrieves all semesters for the current academic year
+- Breaks down each semester into individual months
+- Returns data for each month with its own statistics and daily breakdown
+- Handles academic years with multiple semesters (e.g., Fall, Spring, Summer)
 
 ## Endpoint
 ```
@@ -18,7 +19,7 @@ GET /api/student-attendances/report/generate
 No parameters required. The API automatically:
 - Gets the student_id from the authenticated user's token
 - Gets the current active academic year from the database
-- Returns data for all months from the academic year's start_date to end_date
+- Returns data for all months in all semesters of the current academic year
 
 ## Example Request
 ```
@@ -31,74 +32,117 @@ GET /api/student-attendances/report/generate
     "message": "تم إنشاء تقرير الحضور بنجاح",
     "data": {
         "months": [
-            {
-                "year": 2024,
-                "month": 9,
-                "stats": {
-                    "attendancePercentage": 85.0,
-                    "absencePercentage": 10.0,
-                    "justifiedAbsencePercentage": 3.0,
-                    "latenessPercentage": 2.0,
-                    "totalDays": 20,
-                    "presentDays": 17,
-                    "absentDays": 2,
-                    "justifiedAbsentDays": 1,
-                    "lateDays": 0
-                },
-                "days": [
-                    {
-                        "date": "2024-09-01",
-                        "status": "present",
-                        "sessions": [
                             {
-                                "sessionNumber": 1,
-                                "teacherName": "أستاذ عمر",
-                                "subjectName": "رياضيات",
-                                "status": "present"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "year": 2024,
-                "month": 10,
-                "stats": {
-                    "attendancePercentage": 78.0,
-                    "absencePercentage": 15.0,
-                    "justifiedAbsencePercentage": 5.0,
-                    "latenessPercentage": 2.0,
-                    "totalDays": 22,
-                    "presentDays": 17,
-                    "absentDays": 3,
-                    "justifiedAbsentDays": 1,
-                    "lateDays": 1
+                    "year": 2025,
+                    "month": 5,
+                    "stats": {
+                        "attendancePercentage": 70.0,
+                        "absencePercentage": 15.0,
+                        "justifiedAbsencePercentage": 10.0,
+                        "latenessPercentage": 5.0,
+                        "totalDays": 22,
+                        "presentDays": 15,
+                        "absentDays": 3,
+                        "justifiedAbsentDays": 2,
+                        "lateDays": 1
+                    },
+                    "days": [
+                        {
+                            "date": "2025-05-01",
+                            "status": "present",
+                            "sessions": [
+                                {
+                                    "sessionNumber": 1,
+                                    "teacherName": "أستاذ عمر",
+                                    "subjectName": "رياضيات",
+                                    "status": "present"
+                                },
+                                {
+                                    "sessionNumber": 2,
+                                    "teacherName": "أستاذة نور",
+                                    "subjectName": "علوم",
+                                    "status": "present"
+                                }
+                            ]
+                        },
+                        {
+                            "date": "2025-05-02",
+                            "status": "present",
+                            "sessions": [
+                                {
+                                    "sessionNumber": 1,
+                                    "teacherName": "أستاذة هبة",
+                                    "subjectName": "عربي",
+                                    "status": "present"
+                                }
+                            ]
+                        },
+                        {
+                            "date": "2025-05-03",
+                            "status": "holiday",
+                            "sessions": []
+                        }
+                    ]
                 },
-                "days": []
-            },
-            {
-                "year": 2025,
-                "month": 1,
-                "stats": {
-                    "attendancePercentage": 82.0,
-                    "absencePercentage": 12.0,
-                    "justifiedAbsencePercentage": 4.0,
-                    "latenessPercentage": 2.0,
-                    "totalDays": 18,
-                    "presentDays": 15,
-                    "absentDays": 2,
-                    "justifiedAbsentDays": 1,
-                    "lateDays": 0
-                },
-                "days": []
-            }
+                {
+                    "year": 2025,
+                    "month": 6,
+                    "stats": {
+                        "attendancePercentage": 70.0,
+                        "absencePercentage": 15.0,
+                        "justifiedAbsencePercentage": 10.0,
+                        "latenessPercentage": 5.0,
+                        "totalDays": 22,
+                        "presentDays": 15,
+                        "absentDays": 3,
+                        "justifiedAbsentDays": 2,
+                        "lateDays": 1
+                    },
+                    "days": [
+                        {
+                            "date": "2025-06-01",
+                            "status": "present",
+                            "sessions": [
+                                {
+                                    "sessionNumber": 1,
+                                    "teacherName": "أستاذ عمر",
+                                    "subjectName": "رياضيات",
+                                    "status": "present"
+                                },
+                                {
+                                    "sessionNumber": 2,
+                                    "teacherName": "أستاذة نور",
+                                    "subjectName": "علوم",
+                                    "status": "present"
+                                }
+                            ]
+                        },
+                        {
+                            "date": "2025-06-02",
+                            "status": "present",
+                            "sessions": [
+                                {
+                                    "sessionNumber": 1,
+                                    "teacherName": "أستاذة هبة",
+                                    "subjectName": "عربي",
+                                    "status": "present"
+                                }
+                            ]
+                        },
+                        {
+                            "date": "2025-06-03",
+                            "status": "holiday",
+                            "sessions": []
+                        }
+                    ]
+                }
         ]
     },
     "status_code": 200
 }
 ```
 
-**Note:** The response includes data for all months from the academic year's start_date to end_date, with each month containing its own statistics and daily breakdown.
+**Note:** The response includes data for all months in all semesters of the current academic year, with each month containing its own statistics and daily breakdown.
 
 ## Status Values
 - `present`: Student was present
@@ -129,4 +173,4 @@ The user must have the `VIEW_STUDENT_ATTENDANCES` permission to access this endp
 ## Error Responses
 - `401 Unauthorized`: Missing or invalid authentication
 - `403 Forbidden`: Insufficient permissions
-- `404 Not Found`: Student not found for the authenticated user or current academic year not found
+- `404 Not Found`: Student not found for the authenticated user, current academic year not found, or no semesters found
