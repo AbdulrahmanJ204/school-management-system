@@ -56,7 +56,7 @@ class StudentEnrollment extends Model
     // Accessors
     public function getGradeAttribute()
     {
-        return $this->section->grade;
+        return Grade::findOrFail($this->grade_id);
     }
 
     public function getYearAttribute()
