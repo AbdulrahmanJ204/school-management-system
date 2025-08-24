@@ -40,7 +40,7 @@ class ListStudyNoteRequest extends \App\Http\Requests\BaseRequest
             'note_type' => [
                 'nullable',
                 'string',
-                'in:dictation,quiz,homework,general'
+                'in:oral,quiz,homework,general'
             ],
             'date_from' => [
                 'nullable',

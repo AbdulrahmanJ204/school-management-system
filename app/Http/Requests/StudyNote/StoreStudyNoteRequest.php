@@ -36,7 +36,7 @@ class StoreStudyNoteRequest extends BaseRequest
             'note_type' => [
                 'required',
                 'string',
-                'in:dictation,quiz,homework,general'
+                'in:oral,quiz,homework,general'
             ],
             'school_day_id' => [
                 'nullable',

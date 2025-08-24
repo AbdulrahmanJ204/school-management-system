@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->foreignId('school_day_id')->constrained('school_days');
             $table->foreignId('subject_id')->nullable()->constrained('subjects');
-            $table->enum('note_type', ['dictation', 'quiz', 'homework', 'general'])->default('general');
+            $table->enum('note_type', ['oral', 'quiz', 'homework', 'general'])->default('general');
             $table->string('note');
             $table->integer('marks')->nullable();
             $table->timestamps();

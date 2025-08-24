@@ -30,7 +30,7 @@ class UpdateStudyNoteRequest extends \App\Http\Requests\BaseRequest
             'note_type' => [
                 'sometimes',
                 'string',
-                'in:dictation,quiz,homework,general'
+                'in:oral,quiz,homework,general'
             ],
             'note' => [
                 'sometimes',
