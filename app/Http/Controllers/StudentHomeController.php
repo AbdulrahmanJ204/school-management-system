@@ -39,8 +39,8 @@ class StudentHomeController extends Controller
             return response()->json([
                 'message' => 'حدث خطأ في جلب بيانات الطالب: ' . $e->getMessage(),
                 'data' => null,
-                'status_code' => 500
-            ], 500);
+                'status_code' => 404
+            ], 404);
         }
     }
 }
