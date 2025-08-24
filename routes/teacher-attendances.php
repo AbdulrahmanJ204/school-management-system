@@ -9,6 +9,7 @@ Route::prefix('teacher-attendances')
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/{teacherAttendance}', 'show');
+        Route::get('/report/generate', 'generateReport');
 
         Route::post('/store', 'store');
         Route::post('/{teacherAttendance}', 'update');

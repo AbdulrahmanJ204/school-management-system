@@ -84,16 +84,15 @@ class TeacherService
                         $section = $sectionData->first()->section;
 
                         $subjects = $sectionData->map(function ($item) {
-                            $minMark = 0;
-                            
+
                             // Ensure we have a valid subject
                             if (!$item->subject) {
                                 return null;
                             }
-                            
+
                             // Check if subject and mainSubject exist and have required properties
-                            if ($item->subject->mainSubject && 
-                                isset($item->subject->mainSubject->success_rate) && 
+                            if ($item->subject->mainSubject &&
+                                isset($item->subject->mainSubject->success_rate) &&
                                 $item->subject->mainSubject->success_rate !== null &&
                                 is_numeric($item->subject->mainSubject->success_rate)) {
                                 $minMark = (int)($item->subject->full_mark * $item->subject->mainSubject->success_rate / 100);
@@ -102,7 +101,7 @@ class TeacherService
                                 // This could happen if the relationship is not loaded or if there's a data issue
                                 $minMark = (int)($item->subject->full_mark * 0.5);
                             }
-                            
+
                             return [
                                 'id' => $item->subject->id,
                                 'name' => $item->subject->name,
