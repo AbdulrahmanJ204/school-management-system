@@ -11,7 +11,9 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScoreQuizController;
+use App\Http\Controllers\StudentHomeController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherHomeController;
 use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -61,10 +63,12 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::get('teacher/grades-sections-subjects', [TeacherController::class, 'getGradesSectionsSubjects'])->name('teacher.grades-sections-subjects');
     Route::get('teacher/section/{sectionId}/subject/{subjectId}/students', [TeacherController::class, 'getStudentsInSectionWithMarks'])->name('teacher.section.students');
     Route::get('teacher/profile', [TeacherController::class, 'getProfile'])->name('teacher.profile');
+    Route::get('teacher/home', [TeacherHomeController::class, 'home'])->name('teacher.home');
 });
 
 Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(function () {
     Route::post('score-quizzes', [ScoreQuizController::class, 'create']);
+    Route::get('student/home', [StudentHomeController::class, 'home'])->name('student.home');
 });
 
 require __DIR__.'/news.php';
