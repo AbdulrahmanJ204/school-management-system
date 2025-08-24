@@ -38,7 +38,8 @@ class TeacherService
             __('messages.teacher.listed'),
             200,
             true,
-            $teachers->lastPage()
+            $teachers->lastPage(),
+            $teachers->total()
         );
     }
 
