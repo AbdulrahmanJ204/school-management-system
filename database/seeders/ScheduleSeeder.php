@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\ClassPeriodType;
 use App\Models\Schedule;
+use App\Models\Section;
 use App\Models\TimeTable;
 use App\Models\ClassPeriod;
 use App\Models\TeacherSectionSubject;
@@ -17,9 +19,9 @@ class ScheduleSeeder extends Seeder
     public function run(): void
     {
         $timetables = TimeTable::all();
-        $classPeriods = ClassPeriod::where('type', \App\Enums\ClassPeriodType::STUDY)->get();
+        $classPeriods = ClassPeriod::where('type', ClassPeriodType::STUDY)->get();
         $teacherSectionSubjects = TeacherSectionSubject::all();
-        $sections = \App\Models\Section::all();
+        $sections = Section::all();
 
         if ($timetables->isEmpty()) {
             // Create a default timetable if none exists
@@ -42,10 +44,11 @@ class ScheduleSeeder extends Seeder
         }
 
         // Create schedules for each day of the week
-        $weekDays = [WeekDay::SUNDAY, WeekDay::MONDAY, WeekDay::TUESDAY, WeekDay::WEDNESDAY, WeekDay::THURSDAY];
+        $weekDays = [WeekDay::SUNDAY, WeekDay::MONDAY, WeekDay::THURSDAY];
+//        $weekDays = [WeekDay::SUNDAY, WeekDay::MONDAY, WeekDay::TUESDAY, WeekDay::WEDNESDAY, WeekDay::THURSDAY];
 
         $this->command->info("Creating schedules for {$sections->count()} sections, " . count($weekDays) . " weekdays, and {$classPeriods->count()} class periods each...");
-        
+
         $createdCount = 0;
         $skippedCount = 0;
 
@@ -67,10 +70,10 @@ class ScheduleSeeder extends Seeder
                     if (!$existingSchedule) {
                         // Find a teacher-section-subject for this specific section
                         $sectionTeacherSubjects = $teacherSectionSubjects->where('section_id', $section->id);
-                        
+
                         if ($sectionTeacherSubjects->isNotEmpty()) {
                             $teacherSectionSubject = $sectionTeacherSubjects->random();
-                            
+
                             Schedule::create([
                                 'timetable_id' => $timetable->id,
                                 'class_period_id' => $classPeriod->id,
@@ -78,7 +81,7 @@ class ScheduleSeeder extends Seeder
                                 'week_day' => $weekDay,
                                 'created_by' => 1,
                             ]);
-                            
+
                             $createdCount++;
                         }
                     } else {
@@ -87,7 +90,7 @@ class ScheduleSeeder extends Seeder
                 }
             }
         }
-        
+
         $this->command->info("Schedule generation completed:");
         $this->command->info("Created: {$createdCount} schedules");
         $this->command->info("Skipped (already exists): {$skippedCount} schedules");
