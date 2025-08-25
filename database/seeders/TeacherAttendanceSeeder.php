@@ -39,7 +39,7 @@ class TeacherAttendanceSeeder extends Seeder
                     ]);
                 }
                 // For scheduled sessions, create some attendance records (simulating early attendance tracking)
-                elseif ($classSession->status === 'scheduled' && rand(1, 100) <= 15) {
+                elseif ($classSession->status === 'scheduled' && rand(1, 100) <= 99) {
                     TeacherAttendance::create([
                         'class_session_id' => $classSession->id,
                         'teacher_id' => $classSession->teacher_id,
@@ -50,7 +50,7 @@ class TeacherAttendanceSeeder extends Seeder
             }
 
             // Create additional attendance records for some sessions (simulating multiple attendance checks)
-            if ($classSession->status === 'completed' && rand(1, 100) <= 25) {
+            if ($classSession->status === 'completed' && rand(1, 100) <= 99) {
                 $this->createAdditionalTeacherAttendanceRecords($classSession);
             }
         }
@@ -59,7 +59,7 @@ class TeacherAttendanceSeeder extends Seeder
     /**
      * Create additional teacher attendance records for the same session
      */
-    private function createAdditionalTeacherAttendanceRecords($classSession)
+    private function createAdditionalTeacherAttendanceRecords($classSession): void
     {
         // Check if we already have multiple attendance records for this teacher and session
         $existingCount = TeacherAttendance::where('teacher_id', $classSession->teacher_id)
@@ -82,7 +82,7 @@ class TeacherAttendanceSeeder extends Seeder
     private function getRandomTeacherAttendanceStatus(): string
     {
         $rand = rand(1, 100);
-        
+
         if ($rand <= 70) {
             return 'Late'; // 70% late (teachers are mostly on time)
         } elseif ($rand <= 85) {
@@ -98,13 +98,15 @@ class TeacherAttendanceSeeder extends Seeder
     private function getRandomScheduledTeacherAttendanceStatus(): string
     {
         $rand = rand(1, 100);
-        
-        if ($rand <= 80) {
-            return 'Late'; // 80% late for scheduled sessions
-        } elseif ($rand <= 90) {
-            return 'Excused absence'; // 10% excused
+
+        if ($rand <= 50) {
+            return 'present'; // 50% present for scheduled sessions
+        } elseif ($rand <= 70) {
+            return 'Excused absence'; // 20% Excused absence
+        } elseif ($rand <= 85) {
+            return 'Late'; // 15% late
         } else {
-            return 'Unexcused absence'; // 10% unexcused
+            return 'Unexcused absence'; // 15% absence
         }
     }
 }

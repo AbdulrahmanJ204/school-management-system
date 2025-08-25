@@ -376,7 +376,7 @@ class TeacherAttendanceService
     /**
      * Build daily attendance data
      */
-    private function buildDaysData($schoolDays, $classSessions, $teacherAttendances)
+    private function buildDaysData($schoolDays, $classSessions, $teacherAttendances): array
     {
         $days = [];
 
@@ -408,7 +408,7 @@ class TeacherAttendanceService
     /**
      * Build sessions data for a specific day
      */
-    private function buildSessionsData($daySessions, $teacherAttendances, $date)
+    private function buildSessionsData($daySessions, $teacherAttendances, $date): array
     {
         $sessions = [];
 
@@ -474,33 +474,29 @@ class TeacherAttendanceService
         } elseif ($hasLate) {
             return 'late';
         } else {
-            return 'mixed';
+//            Todo after handel error
+            return 'present';
         }
     }
 
     /**
      * Map attendance status to frontend format
      */
-    private function mapAttendanceStatus($status)
+    private function mapAttendanceStatus($status): string
     {
-        switch ($status) {
-            case 'present':
-                return 'present';
-            case 'Unexcused absence':
-                return 'absent';
-            case 'Excused absence':
-                return 'justified_absent';
-            case 'Late':
-                return 'late';
-            default:
-                return 'not_marked';
-        }
+        return match ($status) {
+            'present' => 'present',
+            'Unexcused absence' => 'absent',
+            'Excused absence' => 'justified_absent',
+            'Late' => 'late',
+            default => 'present',
+        };
     }
 
     /**
      * Count present days
      */
-    private function countPresentDays($schoolDays, $teacherAttendances, $classSessions)
+    private function countPresentDays($schoolDays, $teacherAttendances, $classSessions): int
     {
         $presentDays = 0;
 

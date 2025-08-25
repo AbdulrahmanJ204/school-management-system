@@ -204,12 +204,14 @@ class StudentAttendanceSeeder extends Seeder
     {
         $rand = rand(1, 100);
 
-        if ($rand <= 85) {
-            return 'present'; // 85% present for scheduled sessions
-        } elseif ($rand <= 95) {
-            return 'Late'; // 10% late
+        if ($rand <= 50) {
+            return 'present'; // 50% present for scheduled sessions
+        } elseif ($rand <= 70) {
+            return 'Excused absence'; // 20% Excused absence
+        } elseif ($rand <= 85) {
+            return 'Late'; // 15% late
         } else {
-            return 'Unexcused absence'; // 5% absence
+            return 'Unexcused absence'; // 15% absence
         }
     }
 }
