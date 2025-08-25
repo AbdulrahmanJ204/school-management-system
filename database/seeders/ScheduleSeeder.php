@@ -40,8 +40,8 @@ class ScheduleSeeder extends Seeder
         $weekDays = [WeekDay::SUNDAY, WeekDay::MONDAY, WeekDay::TUESDAY, WeekDay::WEDNESDAY, WeekDay::THURSDAY];
 
         foreach ($weekDays as $weekDay) {
-            // Create 3-6 schedules per day
-            $schedulesCount = rand(3, 6);
+            // Create 400-600 schedules per day
+            $schedulesCount = rand(400, 600);
             
             for ($i = 0; $i < $schedulesCount; $i++) {
                 $classPeriod = $classPeriods->random();

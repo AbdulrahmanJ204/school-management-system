@@ -6,6 +6,7 @@ use App\Models\Teacher;
 use App\Models\Schedule;
 use App\Models\TimeTable;
 use App\Models\User;
+use App\Enums\WeekDay;
 use Carbon\Carbon;
 
 class TeacherTimetableService
@@ -52,20 +53,20 @@ class TeacherTimetableService
         }
 
         $dayNames = [
-            1 => 'الأحد',
-            2 => 'الإثنين', 
-            3 => 'الثلاثاء',
-            4 => 'الأربعاء',
-            5 => 'الخميس',
-            6 => 'الجمعة',
-            7 => 'السبت'
+            WeekDay::SUNDAY->value => 'الأحد',
+            WeekDay::MONDAY->value => 'الإثنين', 
+            WeekDay::TUESDAY->value => 'الثلاثاء',
+            WeekDay::WEDNESDAY->value => 'الأربعاء',
+            WeekDay::THURSDAY->value => 'الخميس',
+            WeekDay::FRIDAY->value => 'الجمعة',
+            WeekDay::SATURDAY->value => 'السبت'
         ];
 
         $timetable = [];
 
-        // Get all days (1-7 for Sunday to Saturday)
-        foreach ($dayNames as $dayNumber => $dayName) {
-            $daySchedules = $this->getSchedulesForDay($teacher, $activeTimetable, $dayNumber);
+        // Get all days using WeekDay enum values
+        foreach ($dayNames as $dayValue => $dayName) {
+            $daySchedules = $this->getSchedulesForDay($teacher, $activeTimetable, $dayValue);
             if (!empty($daySchedules)) {
                 $timetable[] = [
                     'day_name' => $dayName,
@@ -82,10 +83,10 @@ class TeacherTimetableService
      *
      * @param Teacher $teacher
      * @param TimeTable $timetable
-     * @param int $dayOfWeek
+     * @param string $dayOfWeek
      * @return array
      */
-    private function getSchedulesForDay(Teacher $teacher, TimeTable $timetable, int $dayOfWeek): array
+    private function getSchedulesForDay(Teacher $teacher, TimeTable $timetable, string $dayOfWeek): array
     {
         $schedules = Schedule::where('timetable_id', $timetable->id)
             ->where('week_day', $dayOfWeek)

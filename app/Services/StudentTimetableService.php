@@ -7,6 +7,7 @@ use App\Models\StudentEnrollment;
 use App\Models\Schedule;
 use App\Models\TimeTable;
 use App\Models\User;
+use App\Enums\WeekDay;
 use Carbon\Carbon;
 
 class StudentTimetableService
@@ -98,19 +99,19 @@ class StudentTimetableService
 
         // Group schedules by day
         $weekDays = [
-            1 => 'الأحد',
-            2 => 'الإثنين',
-            3 => 'الثلاثاء',
-            4 => 'الأربعاء',
-            5 => 'الخميس',
-            6 => 'الجمعة',
-            7 => 'السبت'
+            WeekDay::SUNDAY->value => 'الأحد',
+            WeekDay::MONDAY->value => 'الإثنين',
+            WeekDay::TUESDAY->value => 'الثلاثاء',
+            WeekDay::WEDNESDAY->value => 'الأربعاء',
+            WeekDay::THURSDAY->value => 'الخميس',
+            WeekDay::FRIDAY->value => 'الجمعة',
+            WeekDay::SATURDAY->value => 'السبت'
         ];
 
         $timetable = [];
 
-        foreach ($weekDays as $dayNumber => $dayName) {
-            $daySchedules = $schedules->where('week_day', $dayNumber);
+        foreach ($weekDays as $dayValue => $dayName) {
+            $daySchedules = $schedules->where('week_day', $dayValue);
             
             $lectures = [];
             foreach ($daySchedules as $schedule) {

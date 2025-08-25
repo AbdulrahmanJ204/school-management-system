@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Year;
 
 class SchoolDaySeeder extends Seeder
 {
@@ -17,8 +18,8 @@ class SchoolDaySeeder extends Seeder
         $schoolDays = [];
 
         // Generate school days for current semester (semester_id = 3, 2024-2025 first semester)
-        $startDate = Carbon::parse('2024-09-01');
-        $endDate = Carbon::parse('2025-01-31');
+        $startDate = Year::find(2)->start_date;
+        $endDate = Year::find(2)->end_date;
 
         $currentDate = $startDate->copy();
 

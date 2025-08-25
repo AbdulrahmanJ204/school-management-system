@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users');
 
             $table->index(['class_session_id', 'student_id']);
+            $table->unique(['student_id', 'class_session_id'], 'unique_student_session_attendance');
         });
     }
 
