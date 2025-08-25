@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateAndUpdateQuizRequest;
-use App\Http\Requests\ListQuizzesRequest;
+use App\Http\Requests\CreateQuizRequest;
 use App\Http\Requests\UpdateQuizRequest;
+use App\Http\Requests\ListQuizzesRequest;
 use App\Services\QuizService;
 
 class QuizController extends Controller
@@ -25,7 +25,7 @@ class QuizController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateAndUpdateQuizRequest $request)
+    public function store(CreateQuizRequest $request)
     {
         return $this->quizService->create($request);
     }
@@ -49,7 +49,7 @@ class QuizController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CreateAndUpdateQuizRequest $request, int $id)
+    public function update(UpdateQuizRequest $request, int $id)
     {
         return $this->quizService->update($request, $id);
     }
