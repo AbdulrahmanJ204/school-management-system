@@ -52,6 +52,7 @@ class DatabaseSeeder extends Seeder
             TeacherAttendanceSeeder::class,
             FileSeeder::class,
             AssignmentSeeder::class,
+            QuestionSeeder::class,
         ]);
     }
 }
