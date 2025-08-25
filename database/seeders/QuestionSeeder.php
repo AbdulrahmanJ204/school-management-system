@@ -20,7 +20,14 @@ class QuestionSeeder extends Seeder
                     ["insert" => "What is 2 + 2?"]
                 ]
             ]),
-            'choices' => json_encode(["1", "2", "3", "4"]),
+            'choices'            => json_encode([
+                'ops' => [
+                    ['insert' => "1\n"],
+                    ['insert' => "2\n"],
+                    ['insert' => "3\n"],
+                    ['insert' => "4\n"],
+                ]
+            ]),
             'choices_count' => 4,
             'right_choice' => 3, // index of "4"
             'hint' => json_encode([
@@ -38,7 +45,14 @@ class QuestionSeeder extends Seeder
                     ["insert" => "Which planet is known as the Red Planet?"]
                 ]
             ]),
-            'choices' => json_encode(["Earth", "Venus", "Mars", "Jupiter"]),
+            'choices'            => json_encode([
+                'ops' => [
+                    ['insert' => "1\n"],
+                    ['insert' => "2\n"],
+                    ['insert' => "3\n"],
+                    ['insert' => "4\n"],
+                ]
+            ]),
             'choices_count' => 4,
             'right_choice' => 2, // "Mars"
             'hint' => json_encode([
@@ -56,7 +70,14 @@ class QuestionSeeder extends Seeder
                     ["insert" => "Who wrote 'Romeo and Juliet'?"]
                 ]
             ]),
-            'choices' => json_encode(["Charles Dickens", "Shakespeare", "Homer", "Tolstoy"]),
+            'choices'            => json_encode([
+                'ops' => [
+                    ['insert' => "1\n"],
+                    ['insert' => "2\n"],
+                    ['insert' => "3\n"],
+                    ['insert' => "4\n"],
+                ]
+            ]),
             'choices_count' => 4,
             'right_choice' => 1, // "Shakespeare"
             'hint' => json_encode([
