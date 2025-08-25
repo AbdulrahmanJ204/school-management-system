@@ -36,7 +36,8 @@ class StudentService
             __('messages.student.listed'),
             200,
             true,
-            $students->lastPage()
+            $students->lastPage(),
+            $students->total()
         );
     }
 

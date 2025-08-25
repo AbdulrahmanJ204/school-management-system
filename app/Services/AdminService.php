@@ -29,7 +29,8 @@ class AdminService
             __('messages.admin.listed'),
             200,
             true,
-            $admins->lastPage()
+            $admins->lastPage(),
+            $admins->total()
         );
     }
 }

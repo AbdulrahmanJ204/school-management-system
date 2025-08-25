@@ -79,9 +79,14 @@ class Subject extends Model
         return $this->hasMany(File::class);
     }
 
+    public function exams(): HasMany
+    {
+        return $this->hasMany(Exam::class);
+    }
+
     public function getGrade()
     {
-        return $this->mainSubject->grade;
+        return $this->mainSubject ? $this->mainSubject->grade : null;
     }
     // Func
 

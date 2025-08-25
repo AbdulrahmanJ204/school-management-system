@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TeacherAttendance\ListTeacherAttendanceRequest;
 use App\Http\Requests\TeacherAttendance\StoreTeacherAttendanceRequest;
 use App\Http\Requests\TeacherAttendance\UpdateTeacherAttendanceRequest;
+use App\Http\Requests\TeacherAttendance\TeacherAttendanceReportRequest;
 use App\Models\TeacherAttendance;
 use App\Services\TeacherAttendanceService;
 use Illuminate\Http\JsonResponse;
@@ -56,5 +57,13 @@ class TeacherAttendanceController extends Controller
     public function destroy(TeacherAttendance $teacherAttendance): JsonResponse
     {
         return $this->teacherAttendanceService->deleteTeacherAttendance($teacherAttendance->id);
+    }
+
+    /**
+     * Generate detailed attendance report for a teacher
+     */
+    public function generateReport(TeacherAttendanceReportRequest $request): JsonResponse
+    {
+        return $this->teacherAttendanceService->generateAttendanceReport($request);
     }
 }

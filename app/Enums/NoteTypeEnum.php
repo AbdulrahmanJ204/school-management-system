@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum NoteTypeEnum: string
 {
-    case DICTATION = 'dictation';
+    case Oral = 'oral';
     case QUIZ = 'quiz';
     case HOMEWORK = 'homework';
     case GENERAL = 'general';
@@ -27,10 +27,10 @@ enum NoteTypeEnum: string
     public function label(): string
     {
         return match($this) {
-            self::DICTATION => 'تسميع',
+            self::Oral => 'تسميع',
             self::QUIZ => 'اختبار',
             self::HOMEWORK => 'واجب منزلي',
             self::GENERAL => 'عام',
         };
     }
-} 
+}

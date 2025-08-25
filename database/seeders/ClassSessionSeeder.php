@@ -19,13 +19,13 @@ class ClassSessionSeeder extends Seeder
     public function run(): void
     {
         $schedules = Schedule::all();
-        $schoolDays = SchoolDay::where('date', '>=', now()->subDays(7))->get();
+        $schoolDays = SchoolDay::all();
         $teachers = Teacher::all();
         $subjects = Subject::all();
         $sections = Section::all();
         $classPeriods = ClassPeriod::all();
 
-        if ($schedules->isEmpty() || $schoolDays->isEmpty() || $teachers->isEmpty() || 
+        if ($schedules->isEmpty() || $schoolDays->isEmpty() || $teachers->isEmpty() ||
             $subjects->isEmpty() || $sections->isEmpty() || $classPeriods->isEmpty()) {
             return;
         }
@@ -33,7 +33,7 @@ class ClassSessionSeeder extends Seeder
         foreach ($schoolDays as $schoolDay) {
             // Create 2-5 class sessions per school day
             $sessionsCount = rand(2, 5);
-            
+
             for ($i = 0; $i < $sessionsCount; $i++) {
                 $schedule = $schedules->random();
                 $teacher = $teachers->random();
@@ -57,7 +57,6 @@ class ClassSessionSeeder extends Seeder
                         'status' => $this->getRandomStatus($schoolDay->date),
                         'total_students_count' => rand(20, 35),
                         'present_students_count' => rand(15, 30),
-                        'created_by' => 1,
                     ]);
                 }
             }
@@ -73,8 +72,8 @@ class ClassSessionSeeder extends Seeder
         $dateString = $date->toDateString();
 
         if ($dateString < $today) {
-            // Past dates - mostly completed, some cancelled
-            return rand(1, 10) <= 8 ? 'completed' : 'cancelled';
+            // Past dates - mostly completed
+            return rand(1, 10) <= 8 ? 'completed' : 'scheduled';
         } elseif ($dateString === $today) {
             // Today - mix of statuses
             $rand = rand(1, 10);
@@ -82,7 +81,7 @@ class ClassSessionSeeder extends Seeder
             else return 'completed';
         } else {
             // Future dates - mostly scheduled
-            return rand(1, 10) <= 9 ? 'scheduled' : 'cancelled';
+            return rand(1, 10) <= 9 ? 'scheduled' : 'completed';
         }
     }
 }

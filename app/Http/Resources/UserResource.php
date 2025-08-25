@@ -94,8 +94,8 @@ class UserResource extends JsonResource
 
         $baseData['grade_summary'] = $this->when($this->user_type == 'student', function () {
             return [
-                'id' => $this->student?->studentEnrollments->first()?->section?->grade?->id,
-                'grade_name' => $this->student?->studentEnrollments->first()?->section?->grade?->title
+                'id' => $this->student?->studentEnrollments->first()?->grade?->id,
+                'grade_name' => $this->student?->studentEnrollments->first()?->grade?->title
             ];
         });
 

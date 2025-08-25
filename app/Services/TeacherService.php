@@ -38,7 +38,8 @@ class TeacherService
             __('messages.teacher.listed'),
             200,
             true,
-            $teachers->lastPage()
+            $teachers->lastPage(),
+            $teachers->total()
         );
     }
 
@@ -69,8 +70,10 @@ class TeacherService
             ->with([
                 'grade:id,title',
                 'section:id,title,grade_id',
-                'subject:id,name,full_mark'
+                'subject:id,name,full_mark,main_subject_id',
+                'subject.mainSubject:id,success_rate'
             ])
+            ->whereHas('subject')
             ->get()
             ->groupBy('grade_id')
             ->map(function ($gradeData, $gradeId) {
@@ -81,13 +84,33 @@ class TeacherService
                         $section = $sectionData->first()->section;
 
                         $subjects = $sectionData->map(function ($item) {
+
+                            // Ensure we have a valid subject
+                            if (!$item->subject) {
+                                return null;
+                            }
+
+                            // Check if subject and mainSubject exist and have required properties
+                            if ($item->subject->mainSubject &&
+                                isset($item->subject->mainSubject->success_rate) &&
+                                $item->subject->mainSubject->success_rate !== null &&
+                                is_numeric($item->subject->mainSubject->success_rate)) {
+                                $minMark = (int)($item->subject->full_mark * $item->subject->mainSubject->success_rate / 100);
+                            } else {
+                                // Fallback: use a default success rate of 50% if mainSubject is not available
+                                // This could happen if the relationship is not loaded or if there's a data issue
+                                $minMark = (int)($item->subject->full_mark * 0.5);
+                            }
+
                             return [
                                 'id' => $item->subject->id,
                                 'name' => $item->subject->name,
                                 'full_mark' => $item->subject->full_mark,
-                                'min_mark' => (int)($item->subject->full_mark * 0.5) // Calculate min_mark as 50% of full_mark
+                                'min_mark' => $minMark
                             ];
-                        })->values();
+                        })
+                        ->filter() // Remove any null values
+                        ->values();
 
                         return [
                             'id' => $section->id,
@@ -176,7 +199,7 @@ class TeacherService
                     'last_name' => $user->last_name,
                     'father_name' => $user->father_name,
                     'mother_name' => $user->mother_name,
-                    'photo_link' => $user->image ? asset('storage/' . $user->image) : asset('storage/user_images/default.png'),
+                    'photo' => $user->image ? asset('storage/' . $user->image) : asset('storage/user_images/default.png'),
                     'birth_date' => $user->birth_date,
                     'gender' => $user->gender,
                     'phone_number' => $user->phone,

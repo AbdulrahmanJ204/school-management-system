@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
+use App\Http\Requests\ExamFilterRequest;
 use App\Http\Requests\ExamRequest;
 use App\Services\ExamService;
 use Illuminate\Http\JsonResponse;
@@ -19,9 +20,9 @@ class ExamController extends Controller
     /**
      * @throws PermissionException
      */
-    public function index(): JsonResponse
+    public function index(ExamFilterRequest $request): JsonResponse
     {
-        return $this->examService->listExams();
+        return $this->examService->listExams($request);
     }
 
     /**
@@ -80,19 +81,5 @@ class ExamController extends Controller
         return $this->examService->forceDeleteExam($id);
     }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getBySchoolDay($schoolDayId): JsonResponse
-    {
-        return $this->examService->getBySchoolDay($schoolDayId);
-    }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getByGrade($gradeId): JsonResponse
-    {
-        return $this->examService->getByGrade($gradeId);
-    }
 }

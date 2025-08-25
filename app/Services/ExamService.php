@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\ExamType;
 use App\Enums\PermissionEnum;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\ExamResource;
 use App\Models\Exam;
-use App\Models\MainSubject;
 use App\Models\Subject;
 use App\Traits\HasPermissionChecks;
 use Illuminate\Http\JsonResponse;
@@ -20,17 +20,36 @@ class ExamService
     /**
      * @throws PermissionException
      */
-    public function listExams(): JsonResponse
+    public function listExams($request = null): JsonResponse
     {
         $this->checkPermission(PermissionEnum::VIEW_EXAMS);
 
-        $exams = Exam::with([
+        $query = Exam::with([
              'schoolDay',
              'grade',
-             'mainSubject',
-        ])
-            ->orderBy('id', 'desc')
-            ->get();
+             'subject',
+        ]);
+
+        // Apply filters if provided
+        if ($request) {
+            if ($request->has('grade_id') && $request->grade_id) {
+                $query->where('grade_id', $request->grade_id);
+            }
+
+            if ($request->has('school_day_id') && $request->school_day_id) {
+                $query->where('school_day_id', $request->school_day_id);
+            }
+
+            if ($request->has('type') && $request->type) {
+                $query->where('type', $request->type);
+            }
+
+            if ($request->has('subject_id') && $request->subject_id) {
+                $query->where('subject_id', $request->subject_id);
+            }
+        }
+
+        $exams = $query->orderBy('id', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
             ExamResource::collection($exams),
@@ -49,7 +68,7 @@ class ExamService
             ->with([
                  'schoolDay',
                  'grade',
-                 'mainSubject',
+                 'subject',
             ])
             ->orderBy('id', 'desc')
             ->get();
@@ -69,8 +88,9 @@ class ExamService
 
         $exam = Exam::create([
             'school_day_id' => $request->school_day_id,
-            'grade_id' => MainSubject::findOrFail($request->main_subject_id)->grade_id,
-            'main_subject_id' => $request->main_subject_id,
+            'grade_id' => Subject::findOrFail($request->subject_id)->getGrade()->id,
+            'subject_id' => $request->subject_id,
+            'type' => $request->type ?? ExamType::EXAM,
             'created_by' => auth()->id(),
         ]);
 
@@ -93,7 +113,7 @@ class ExamService
         $exam = Exam::with([
              'schoolDay',
              'grade',
-             'mainSubject',
+             'subject',
         ])->findOrFail($id);
 
         return ResponseHelper::jsonResponse(
@@ -113,8 +133,9 @@ class ExamService
 
         $exam->update([
             'school_day_id' => $request->school_day_id,
-            'grade_id' => MainSubject::findOrFail($request->main_subject_id)->grade_id,
-            'main_subject_id' => $request->main_subject_id,
+            'grade_id' => Subject::findOrFail($request->subject_id)->getGrade()->id,
+            'subject_id' => $request->subject_id,
+            'type' => $request->type ?? ExamType::EXAM,
         ]);
 
          $exam->load(['schoolDay', 'grade', 'subject']);
@@ -174,47 +195,5 @@ class ExamService
         );
     }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getBySchoolDay($schoolDayId): JsonResponse
-    {
-        $this->checkPermission(PermissionEnum::VIEW_EXAMS);
 
-        $exams = Exam::with([
-             'schoolDay',
-             'grade',
-             'mainSubject',
-        ])
-            ->where('school_day_id', $schoolDayId)
-            ->orderBy('id', 'desc')
-            ->get();
-
-        return ResponseHelper::jsonResponse(
-            ExamResource::collection($exams),
-            __('messages.exam.listed')
-        );
-    }
-
-    /**
-     * @throws PermissionException
-     */
-    public function getByGrade($gradeId): JsonResponse
-    {
-        $this->checkPermission(PermissionEnum::VIEW_EXAMS);
-
-        $exams = Exam::with([
-             'schoolDay',
-             'grade',
-             'mainSubject',
-        ])
-            ->where('grade_id', $gradeId)
-            ->orderBy('id', 'desc')
-            ->get();
-
-        return ResponseHelper::jsonResponse(
-            ExamResource::collection($exams),
-            __('messages.exam.listed')
-        );
-    }
 }
