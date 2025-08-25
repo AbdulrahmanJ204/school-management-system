@@ -11,6 +11,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScoreQuizController;
+use App\Http\Controllers\StudentComplaintController;
 use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\StudentHomeController;
 use App\Http\Controllers\StudentTimetableController;
@@ -78,6 +79,14 @@ Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(fun
     Route::get('student/home', [StudentHomeController::class, 'home'])->name('student.home');
     Route::get('student/timetable', [StudentTimetableController::class, 'timetable'])->name('student.timetable');
     Route::get('student/exams', [StudentExamController::class, 'index'])->name('student.exams');
+    
+    // Student complaint routes
+    Route::prefix('student/complaints')->name('student.complaints.')->group(function () {
+        Route::post('/', [StudentComplaintController::class, 'store'])->name('store');
+        Route::put('/', [StudentComplaintController::class, 'update'])->name('update');
+        Route::delete('/{id}', [StudentComplaintController::class, 'destroy'])->name('destroy');
+        Route::get('/', [StudentComplaintController::class, 'index'])->name('index');
+    });
 });
 
 require __DIR__.'/news.php';
