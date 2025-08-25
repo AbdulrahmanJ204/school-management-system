@@ -17,7 +17,9 @@ class QuestionResource extends JsonResource
         return [
             'id'              => $this->id,
             'quiz_id'         => $this->quiz_id,
-            'question_text'   => $this->question_text,
+            'question_text'  => $this->question_text
+                ? json_decode($this->question_text, true)
+                : null,
             'question_photo'  => $this->question_photo
                 ? asset('storage/' . $this->question_photo)
                 : asset('storage/question_images/default.png'),
