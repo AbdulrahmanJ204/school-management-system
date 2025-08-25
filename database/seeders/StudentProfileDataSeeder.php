@@ -147,33 +147,25 @@ class StudentProfileDataSeeder extends Seeder
             foreach ($sectionEnrollments as $enrollment) {
                 $student = $enrollment->student;
                 
-                // Check if attendance record already exists
-                $existingAttendance = StudentAttendance::where('student_id', $student->id)
-                    ->where('class_session_id', $classSession->id)
-                    ->first();
-
-                if (!$existingAttendance) {
-                    $status = $this->getRandomAttendanceStatus();
-                    
-                    // Only create records for absences and late arrivals
-                    if ($status !== 'present') {
-                        $attendanceRecords[] = [
+                $status = $this->getRandomAttendanceStatus();
+                
+                // Only create records for absences and late arrivals (using updateOrCreate to respect unique constraint)
+                if ($status !== 'present') {
+                    StudentAttendance::updateOrCreate(
+                        [
                             'student_id' => $student->id,
                             'class_session_id' => $classSession->id,
+                        ],
+                        [
                             'status' => $status,
                             'created_by' => 1,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ];
-                    }
+                        ]
+                    );
                 }
             }
         }
 
-        if (!empty($attendanceRecords)) {
-            DB::table('student_attendances')->insert($attendanceRecords);
-            $this->command->info("Created " . count($attendanceRecords) . " attendance records.");
-        }
+        $this->command->info("Attendance records created using updateOrCreate to respect unique constraint.");
     }
 
     /**
