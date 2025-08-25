@@ -27,6 +27,10 @@ class QuizTargetResource extends JsonResource
                 'id'   => $this->semester->id ?? null,
                 'name' => $this->semester->name ?? null,
             ],
+            'year' => [
+                'id'   => $this->semester->year->id ?? null,
+                'name' => $this->semester->year->name ?? null,
+            ],
             'sections' => $this->section
                 ? [
                     'id'   => $this->section->id,
