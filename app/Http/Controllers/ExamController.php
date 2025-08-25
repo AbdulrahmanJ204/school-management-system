@@ -80,19 +80,5 @@ class ExamController extends Controller
         return $this->examService->forceDeleteExam($id);
     }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getBySchoolDay($schoolDayId): JsonResponse
-    {
-        return $this->examService->getBySchoolDay($schoolDayId);
-    }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getByGrade($gradeId): JsonResponse
-    {
-        return $this->examService->getByGrade($gradeId);
-    }
 }
