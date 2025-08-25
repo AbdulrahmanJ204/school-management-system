@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ExamType;
 use App\Enums\PermissionEnum;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
@@ -67,7 +68,7 @@ class ExamService
             ->with([
                  'schoolDay',
                  'grade',
-                 'mainSubject',
+                 'subject',
             ])
             ->orderBy('id', 'desc')
             ->get();
@@ -87,8 +88,9 @@ class ExamService
 
         $exam = Exam::create([
             'school_day_id' => $request->school_day_id,
-            'grade_id' => MainSubject::findOrFail($request->main_subject_id)->grade_id,
-            'main_subject_id' => $request->main_subject_id,
+            'grade_id' => Subject::findOrFail($request->subject_id)->getGrade()->id,
+            'subject_id' => $request->subject_id,
+            'type' => $request->type ?? ExamType::EXAM,
             'created_by' => auth()->id(),
         ]);
 
@@ -111,7 +113,7 @@ class ExamService
         $exam = Exam::with([
              'schoolDay',
              'grade',
-             'mainSubject',
+             'subject',
         ])->findOrFail($id);
 
         return ResponseHelper::jsonResponse(
@@ -131,8 +133,9 @@ class ExamService
 
         $exam->update([
             'school_day_id' => $request->school_day_id,
-            'grade_id' => MainSubject::findOrFail($request->main_subject_id)->grade_id,
-            'main_subject_id' => $request->main_subject_id,
+            'grade_id' => Subject::findOrFail($request->subject_id)->getGrade()->id,
+            'subject_id' => $request->subject_id,
+            'type' => $request->type ?? ExamType::EXAM,
         ]);
 
          $exam->load(['schoolDay', 'grade', 'subject']);

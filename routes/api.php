@@ -11,6 +11,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScoreQuizController;
+use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\StudentHomeController;
 use App\Http\Controllers\StudentTimetableController;
 use App\Http\Controllers\TeacherController;
@@ -76,6 +77,7 @@ Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(fun
     Route::post('score-quizzes', [ScoreQuizController::class, 'create']);
     Route::get('student/home', [StudentHomeController::class, 'home'])->name('student.home');
     Route::get('student/timetable', [StudentTimetableController::class, 'timetable'])->name('student.timetable');
+    Route::get('student/exams', [StudentExamController::class, 'index'])->name('student.exams');
 });
 
 require __DIR__.'/news.php';

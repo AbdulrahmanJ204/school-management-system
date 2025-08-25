@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
+use App\Http\Requests\ExamFilterRequest;
 use App\Http\Requests\ExamRequest;
 use App\Services\ExamService;
 use Illuminate\Http\JsonResponse;
@@ -19,9 +20,9 @@ class ExamController extends Controller
     /**
      * @throws PermissionException
      */
-    public function index(): JsonResponse
+    public function index(ExamFilterRequest $request): JsonResponse
     {
-        return $this->examService->listExams();
+        return $this->examService->listExams($request);
     }
 
     /**

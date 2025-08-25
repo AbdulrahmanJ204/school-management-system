@@ -18,13 +18,14 @@ class ExamResource extends JsonResource
             'id' => $this->id,
             'school_day_id' => $this->school_day_id,
             'grade_id' => $this->grade_id,
-            'main_subject_id' => $this->main_subject_id,
+            'subject_id' => $this->subject_id,
+            'type' => $this->type->value,
             'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
 
             // Relationships
             'school_day' => new SchoolDayResource($this->whenLoaded('schoolDay')),
             'grade' => new GradeResource($this->whenLoaded('grade')),
-            'main_subject' => new MainSubjectResource($this->whenLoaded('mainSubject')),
+            'subject' => new SubjectResource($this->whenLoaded('subject')),
 
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),

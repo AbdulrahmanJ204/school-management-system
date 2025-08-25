@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ExamType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,8 +15,13 @@ class Exam extends Model
     protected $fillable = [
         'school_day_id',
         'grade_id',
-        'main_subject_id',
+        'subject_id',
+        'type',
         'created_by'
+    ];
+
+    protected $casts = [
+        'type' => ExamType::class,
     ];
 
     public function schoolDay(): BelongsTo
@@ -28,9 +34,9 @@ class Exam extends Model
         return $this->belongsTo(Grade::class, 'grade_id');
     }
 
-    public function mainSubject(): BelongsTo
+    public function subject(): BelongsTo
     {
-        return $this->belongsTo(MainSubject::class, 'main_subject_id');
+        return $this->belongsTo(Subject::class, 'subject_id');
     }
 
     public function createdBy(): BelongsTo
