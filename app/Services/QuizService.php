@@ -52,7 +52,7 @@ class QuizService
         $credentials = $request->validated();
 
         $query = Quiz::withCount('questions')
-            ->with(['targets.subject', 'targets.section.grade', 'targets.semester'])
+            ->with(['targets.subject', 'targets.section.grade', 'targets.semester', 'questions'])
             ->where('created_by', $user->id);
 
         if ($user->user_type === 'teacher') {

@@ -25,7 +25,7 @@ class UpdateQuestionRequest extends BaseRequest
             'choices' => 'nullable|json',
             'choices_count'   => 'nullable|integer|min:2',
             'right_choice' => 'nullable|integer|min:0',
-            'hint' => 'nullable|string',
+            'hint' => 'nullable|json',
             'hint_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'order' => 'nullable|integer|min:1',
         ];

@@ -21,6 +21,7 @@ class QuizResource extends JsonResource
             'is_active'   => (bool) $this->is_active,
             'taken_at'    => $this->taken_at ? $this->taken_at->format('Y-m-d H:i:s') : null,
             'questions_count' => $this->questions_count ?? $this->questions()->count(),
+            'student_count' => $this->scores()->count(),
             'quiz_photo'  => $this->quiz_photo
                 ? asset('storage/' . $this->quiz_photo)
                 : asset('storage/quiz_images/default.png'),
@@ -32,6 +33,7 @@ class QuizResource extends JsonResource
 
             // Multiple targets
             'targets' => QuizTargetResource::collection($this->whenLoaded('targets')),
+            'questions'       => QuestionResource::collection($this->whenLoaded('questions')),
 
             'created_at'  => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at'  => $this->updated_at->format('Y-m-d H:i:s'),

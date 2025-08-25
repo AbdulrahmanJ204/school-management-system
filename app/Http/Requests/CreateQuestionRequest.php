@@ -25,7 +25,7 @@ class CreateQuestionRequest extends BaseRequest
             'choices' => 'required|json',
             'choices_count'   => 'required|integer|min:2',
             'right_choice' => 'required|integer|min:0',
-            'hint' => 'nullable|string',
+            'hint' => 'nullable|json',
             'hint_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'order' => 'required|integer|min:1',
         ];
