@@ -36,7 +36,7 @@ class QuizTargetResource extends JsonResource
                     'id'   => $this->section->id,
                     'name' => $this->section->title,
                 ]
-                : 'All Sections',
+                :'All Sections',
         ];
     }
 }
