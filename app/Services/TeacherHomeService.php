@@ -175,8 +175,8 @@ class TeacherHomeService
                 'teacher_name' => $schedule->teacherSectionSubject->teacher->user->first_name . ' ' . $schedule->teacherSectionSubject->teacher->user->last_name,
                 'start_time' => Carbon::parse($schedule->classPeriod->start_time)->format('H:i'),
                 'end_time' => Carbon::parse($schedule->classPeriod->end_time)->format('H:i'),
-                'section' => $schedule->teacherSectionSubject->section->title,
-                'grade' => $schedule->teacherSectionSubject->grade->title,
+                'section_name' => $schedule->teacherSectionSubject->section->title,
+                'grade_name' => $schedule->teacherSectionSubject->grade->title,
                 'class_session' => $todayClassSession ? [
                     'id' => $todayClassSession->id,
                     'status' => $todayClassSession->status,
