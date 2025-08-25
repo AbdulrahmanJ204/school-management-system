@@ -12,6 +12,7 @@ use App\Models\StudentEnrollment;
 use App\Models\StudentMark;
 use App\Models\StudentAttendance;
 use App\Models\ClassSession;
+use App\Models\Semester;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
@@ -38,6 +39,47 @@ class StudentService
             true,
             $students->lastPage(),
             $students->total()
+        );
+    }
+
+    /**
+     * Get students by section using current active semester
+     * @throws PermissionException
+     */
+    public function getStudentsBySection($sectionId): JsonResponse
+    {
+        if (!auth()->user()->hasPermissionTo('عرض الطلاب')) {
+            throw new PermissionException();
+        }
+
+        // Get current active semester
+        $currentSemester = Semester::where('is_active', true)->first();
+
+        if (!$currentSemester) {
+            return ResponseHelper::jsonResponse(
+                [],
+                'No active semester found',
+                404,
+                false
+            );
+        }
+
+        $students = User::where('user_type', 'student')
+            ->whereHas('student.studentEnrollments', function ($query) use ($sectionId, $currentSemester) {
+                $query->where('section_id', $sectionId)
+                    ->where('semester_id', $currentSemester->id);
+            })
+            ->with(['devices', 'student.studentEnrollments' => function ($query) use ($sectionId, $currentSemester) {
+                $query->where('section_id', $sectionId)
+                    ->where('semester_id', $currentSemester->id)
+                    ->with(['section', 'semester', 'year']);
+            }])
+            ->orderBy('first_name', 'asc')
+            ->get();
+
+        return ResponseHelper::jsonResponse(
+            UserResource::collection($students),
+            'Students retrieved successfully for section ' . $sectionId
         );
     }
 
