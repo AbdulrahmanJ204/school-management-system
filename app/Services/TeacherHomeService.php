@@ -75,7 +75,6 @@ class TeacherHomeService
 
         // Get current day of week (1=Sunday, 7=Saturday)
         $today = Carbon::now();
-//        $tomorrow = Carbon::now()->addDay();
 
         // Convert Carbon dayOfWeek to WeekDay enum
         $carbonDayOfWeek = $today->dayOfWeek; // 0=Sunday, 1=Monday, ..., 6=Saturday
@@ -113,17 +112,6 @@ class TeacherHomeService
                 ];
             }
         }
-//
-//        // Get tomorrow's schedule (if it's a different day)
-//        if ($tomorrowDayOfWeek && $tomorrowDayOfWeek !== $todayDayOfWeek) {
-//            $tomorrowSchedules = $this->getSchedulesForDay($teacher, $activeTimetable, $tomorrowDayOfWeek);
-//            if (!empty($tomorrowSchedules)) {
-//                $result[] = [
-//                    'day_name' => $dayNames[$tomorrowDayOfWeek],
-//                    'lectures' => $tomorrowSchedules
-//                ];
-//            }
-//        }
 
         return $result;
     }
