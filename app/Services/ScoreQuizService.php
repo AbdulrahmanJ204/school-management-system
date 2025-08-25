@@ -6,6 +6,8 @@ use App\Exceptions\PermissionException;
 use App\Exceptions\QuizAlreadySubmittedException;
 use App\Exceptions\StudentNotFoundException;
 use App\Helpers\ResponseHelper;
+use App\Http\Resources\ScoreQuizResource;
+use App\Models\Quiz;
 use App\Models\ScoreQuiz;
 
 class ScoreQuizService
@@ -14,7 +16,7 @@ class ScoreQuizService
     {
         $user = auth()->user();
 
-        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('انشاء نتيجة اختبار مؤتمت'))) {
+        if ($user->user_type !== 'student') {
             throw new PermissionException();
         }
 
@@ -36,19 +38,22 @@ class ScoreQuizService
             throw new QuizAlreadySubmittedException();
         }
 
-        if ($credentials['score'] > $credentials['full_score']) {
-            ResponseHelper::jsonResponse([
+        $quiz = Quiz::select('id', 'full_score')
+            ->find($credentials['quiz_id']);
+
+        if ($credentials['score'] > $quiz->full_score) {
+            return ResponseHelper::jsonResponse(
                 null,
-                __('messages.quiz.score_must_not_exceed {$credentials->full_score}.'),
+                __('messages.quiz.score_must_not_exceed', ['score' => $quiz->full_score]),
                 400,
                 false
-            ]);
+            );
         }
 
-        ScoreQuiz::create($credentials);
+        $scoreQuiz = ScoreQuiz::create($credentials);
 
         return ResponseHelper::jsonResponse(
-            null,
+            new ScoreQuizResource($scoreQuiz->load('quiz')),
             __('messages.quiz.score_created'),
             200
         );

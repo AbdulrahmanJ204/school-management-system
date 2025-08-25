@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
-class CreateAndUpdateQuizRequest extends BaseRequest
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateQuizRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +24,12 @@ class CreateAndUpdateQuizRequest extends BaseRequest
         return [
             'is_active' => 'prohibited',
             'taken_at' => 'prohibited',
-            'name' => 'required|string|max:255|unique:quizzes,name',
-            'full_score'  => 'required|integer|min:1',
+            'name' => 'nullable|string|max:255|unique:quizzes,name',
+            'full_score'  => 'nullable|integer|min:1',
             'quiz_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'grade_id'    => 'required|exists:grades,id',
-            'subject_id'  => 'required|exists:subjects,id',
-            'semester_id' => 'required|exists:semesters,id',
+            'grade_id'    => 'nullable|exists:grades,id',
+            'subject_id'  => 'nullable|exists:subjects,id',
+            'semester_id' => 'nullable|exists:semesters,id',
             'section_ids' => 'nullable|array',
             'section_ids.*' => 'exists:sections,id',
         ];
