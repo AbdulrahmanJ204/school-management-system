@@ -39,4 +39,14 @@ class StudentController extends Controller
     {
         return $this->studentService->getMyProfile();
     }
+
+    /**
+     * Get all years and semesters for student
+     * 
+     * @return JsonResponse
+     */
+    public function getYearsAndSemesters(): JsonResponse
+    {
+        return $this->studentService->getYearsAndSemesters();
+    }
 }

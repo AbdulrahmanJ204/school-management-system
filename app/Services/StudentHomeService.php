@@ -88,10 +88,10 @@ class StudentHomeService
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'photo' => $user->image ? url('storage/' . $user->image) : null,
-            'grade' => $enrollment->section->grade->title,
-            'section' => $enrollment->section->title,
-            'academic_average' => number_format($academicAverage, 2),
-            'average_presence' => number_format($attendanceAverage, 2)
+            'grade_name' => $enrollment->section->grade->title,
+            'section_name' => $enrollment->section->title,
+            'academic_average' => round($academicAverage, 2),
+            'average_presence' => round($attendanceAverage, 2)
         ];
     }
 

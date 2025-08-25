@@ -13,6 +13,7 @@ use App\Models\StudentMark;
 use App\Models\StudentAttendance;
 use App\Models\ClassSession;
 use App\Models\Semester;
+use App\Models\Year;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
@@ -349,5 +350,59 @@ class StudentService
             'justifiedAbsencePercentage' => $totalClassSessions > 0 ? round(($excusedAbsences / $totalClassSessions) * 100, 2) : 0.0,
             'latenessPercentage' => $totalClassSessions > 0 ? round(($lateRecords / $totalClassSessions) * 100, 2) : 0.0,
         ];
+    }
+
+    /**
+     * Get all years and semesters for student
+     *
+     * @return JsonResponse
+     */
+    public function getYearsAndSemesters(): JsonResponse
+    {
+        try {
+            // Get all years with their semesters
+            $years = Year::with(['semesters'])
+                ->orderBy('start_date', 'desc')
+                ->get();
+
+            $yearsData = [];
+
+            foreach ($years as $year) {
+                $semestersData = [];
+
+                foreach ($year->semesters as $semester) {
+                    $semestersData[] = [
+                        'id' => $semester->id,
+                        'name' => $semester->name,
+                        'start_date' => $semester->start_date->format('Y-m-d'),
+                        'end_date' => $semester->end_date->format('Y-m-d'),
+                        'year_id' => $semester->year_id,
+                        'is_current' => $semester->is_active && $year->is_active
+                    ];
+                }
+
+                $yearsData[] = [
+                    'id' => $year->id,
+                    'name' => $year->name,
+                    'start_date' => $year->start_date->format('Y-m-d'),
+                    'end_date' => $year->end_date->format('Y-m-d'),
+                    'is_active' => $year->is_active,
+                    'semesters' => $semestersData
+                ];
+            }
+
+            return ResponseHelper::jsonResponse(
+                $yearsData,
+                'تم جلب السنوات والفصول الدراسية بنجاح'
+            );
+
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'حدث خطأ في جلب السنوات والفصول الدراسية: ' . $e->getMessage(),
+                500,
+                false
+            );
+        }
     }
 }
