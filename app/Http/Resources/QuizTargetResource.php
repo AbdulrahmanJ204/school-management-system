@@ -15,13 +15,24 @@ class QuizTargetResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'grade'    => $this->grade->title ?? null,
-            'subject'  => $this->subject->name ?? null,
-            'semester' => $this->semester->name ?? null,
-            'sections' => $this->section ? [
-                'id'   => $this->section->id,
-                'name' => $this->section->title,
-            ] : 'All Sections',
+            'grade' => [
+                'id'    => $this->grade->id ?? null,
+                'title' => $this->grade->title ?? null,
+            ],
+            'subject' => [
+                'id'   => $this->subject->id ?? null,
+                'name' => $this->subject->name ?? null,
+            ],
+            'semester' => [
+                'id'   => $this->semester->id ?? null,
+                'name' => $this->semester->name ?? null,
+            ],
+            'sections' => $this->section
+                ? [
+                    'id'   => $this->section->id,
+                    'name' => $this->section->title,
+                ]
+                : 'All Sections',
         ];
     }
 }
