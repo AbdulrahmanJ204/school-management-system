@@ -21,6 +21,7 @@ class QuestionSeeder extends Seeder
                 ]
             ]),
             'choices' => json_encode(["1", "2", "3", "4"]),
+            'choices_count' => 4,
             'right_choice' => 3, // index of "4"
             'hint' => "It’s basic math.",
             'order' => 1,
@@ -34,6 +35,7 @@ class QuestionSeeder extends Seeder
                 ]
             ]),
             'choices' => json_encode(["Earth", "Venus", "Mars", "Jupiter"]),
+            'choices_count' => 4,
             'right_choice' => 2, // "Mars"
             'hint' => "It’s the 4th planet from the Sun.",
             'order' => 2,
@@ -47,6 +49,7 @@ class QuestionSeeder extends Seeder
                 ]
             ]),
             'choices' => json_encode(["Charles Dickens", "Shakespeare", "Homer", "Tolstoy"]),
+            'choices_count' => 4,
             'right_choice' => 1, // "Shakespeare"
             'hint' => "English playwright from the 16th century.",
             'order' => 3,
