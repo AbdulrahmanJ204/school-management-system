@@ -22,7 +22,6 @@ class CreateScoreQuizRequest extends BaseRequest
         return [
             'quiz_id' => 'required|integer|exists:quizzes,id',
             'score'       => 'required|integer|min:0',
-            'full_score' => 'required|numeric|min:0',
         ];
     }
 }
