@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GetStudentsBySectionSemesterRequest extends FormRequest
+class GetStudentsBySectionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,18 @@ class GetStudentsBySectionSemesterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'section_id' => 'required|integer|exists:sections,id',
-            'semester_id' => 'required|integer|exists:semesters,id',
+            'sectionId' => 'required|integer|exists:sections,id',
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'sectionId' => $this->route('sectionId'),
+        ]);
     }
 
     /**
@@ -35,12 +44,9 @@ class GetStudentsBySectionSemesterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'section_id.required' => 'Section ID is required.',
-            'section_id.integer' => 'Section ID must be an integer.',
-            'section_id.exists' => 'The selected section does not exist.',
-            'semester_id.required' => 'Semester ID is required.',
-            'semester_id.integer' => 'Semester ID must be an integer.',
-            'semester_id.exists' => 'The selected semester does not exist.',
+            'sectionId.required' => 'Section ID is required.',
+            'sectionId.integer' => 'Section ID must be an integer.',
+            'sectionId.exists' => 'The selected section does not exist.',
         ];
     }
 }
