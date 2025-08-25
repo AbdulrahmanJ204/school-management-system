@@ -151,7 +151,7 @@ GET /api/teacher-attendances/report/generate
 - `late`: Teacher was late
 - `not_marked`: Attendance not recorded
 - `holiday`: School holiday
-- `no_sessions`: No sessions scheduled for this day
+- `notOccurredYet`: No sessions scheduled for this day
 
 ## Day Status Values
 - `present`: All sessions for the day were attended
@@ -159,7 +159,7 @@ GET /api/teacher-attendances/report/generate
 - `late`: Teacher was late for at least one session
 - `mixed`: Mixed attendance status for the day
 - `holiday`: School holiday
-- `no_sessions`: No sessions scheduled
+- `notOccurredYet`: No sessions scheduled
 
 ## Authentication
 This endpoint requires authentication. Include the Bearer token in the Authorization header:

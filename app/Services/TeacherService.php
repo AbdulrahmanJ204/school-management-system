@@ -199,7 +199,7 @@ class TeacherService
                     'last_name' => $user->last_name,
                     'father_name' => $user->father_name,
                     'mother_name' => $user->mother_name,
-                    'photo_link' => $user->image ? asset('storage/' . $user->image) : asset('storage/user_images/default.png'),
+                    'photo' => $user->image ? asset('storage/' . $user->image) : asset('storage/user_images/default.png'),
                     'birth_date' => $user->birth_date,
                     'gender' => $user->gender,
                     'phone_number' => $user->phone,

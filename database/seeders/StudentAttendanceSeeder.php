@@ -40,7 +40,7 @@ class StudentAttendanceSeeder extends Seeder
             // Create attendance records for each enrolled student
             foreach ($enrolledStudents as $enrollment) {
                 $student = $enrollment->student;
-                
+
                 // Check if attendance record already exists for this student and session
                 $existingAttendance = StudentAttendance::where('student_id', $student->id)
                     ->where('class_session_id', $classSession->id)
@@ -50,7 +50,7 @@ class StudentAttendanceSeeder extends Seeder
                     // For completed sessions, create attendance records
                     if ($classSession->status === 'completed') {
                         $status = $this->getRandomAttendanceStatus();
-                        
+
                         StudentAttendance::create([
                             'student_id' => $student->id,
                             'class_session_id' => $classSession->id,
@@ -59,9 +59,9 @@ class StudentAttendanceSeeder extends Seeder
                         ]);
                     }
                     // For scheduled sessions, create some attendance records (simulating early attendance tracking)
-                    elseif ($classSession->status === 'scheduled' && rand(1, 100) <= 20) {
+                    elseif ($classSession->status === 'scheduled' && rand(1, 100) <= 99) {
                         $status = $this->getRandomScheduledAttendanceStatus();
-                        
+
                         StudentAttendance::create([
                             'student_id' => $student->id,
                             'class_session_id' => $classSession->id,
@@ -73,7 +73,7 @@ class StudentAttendanceSeeder extends Seeder
             }
 
             // Create additional attendance records for some students (simulating multiple attendance checks per session)
-            if ($classSession->status === 'completed' && rand(1, 100) <= 30) {
+            if ($classSession->status === 'completed' && rand(1, 100) <= 99) {
                 $this->createAdditionalAttendanceRecords($classSession, $enrolledStudents);
             }
         }
@@ -85,7 +85,7 @@ class StudentAttendanceSeeder extends Seeder
     /**
      * Generate extra attendance records for the first 5 students
      */
-    private function generateExtraAttendanceForFirstFiveStudents()
+    private function generateExtraAttendanceForFirstFiveStudents(): void
     {
         $firstFiveStudents = Student::take(5)->get();
         $allClassSessions = ClassSession::all();
@@ -93,7 +93,7 @@ class StudentAttendanceSeeder extends Seeder
         foreach ($firstFiveStudents as $student) {
             // Get current attendance count for this student
             $currentAttendanceCount = StudentAttendance::where('student_id', $student->id)->count();
-            
+
             // Calculate how many more records we need to reach at least 100
             $targetCount = 100 + rand(10, 50); // 100-150 records per student
             $neededRecords = max(0, $targetCount - $currentAttendanceCount);
@@ -112,10 +112,10 @@ class StudentAttendanceSeeder extends Seeder
                 } else {
                     // Create attendance for random available sessions
                     $randomSessions = $availableSessions->random(min($neededRecords, $availableSessions->count()));
-                    
+
                     foreach ($randomSessions as $session) {
                         $status = $this->getRandomAttendanceStatus();
-                        
+
                         StudentAttendance::create([
                             'student_id' => $student->id,
                             'class_session_id' => $session->id,
@@ -131,14 +131,14 @@ class StudentAttendanceSeeder extends Seeder
     /**
      * Create multiple attendance records for a student (for sessions that already have attendance)
      */
-    private function createMultipleAttendanceForStudent($student, $count)
+    private function createMultipleAttendanceForStudent($student, $count): void
     {
         $classSessions = ClassSession::all();
-        
+
         for ($i = 0; $i < $count; $i++) {
             $randomSession = $classSessions->random();
             $status = $this->getRandomAttendanceStatus();
-            
+
             StudentAttendance::create([
                 'student_id' => $student->id,
                 'class_session_id' => $randomSession->id,
@@ -155,10 +155,10 @@ class StudentAttendanceSeeder extends Seeder
     {
         // Select random students for additional attendance records
         $randomStudents = $enrolledStudents->random(min(5, $enrolledStudents->count()));
-        
+
         foreach ($randomStudents as $enrollment) {
             $student = $enrollment->student;
-            
+
             // Check if we already have multiple attendance records for this student and session
             $existingCount = StudentAttendance::where('student_id', $student->id)
                 ->where('class_session_id', $classSession->id)
@@ -166,7 +166,7 @@ class StudentAttendanceSeeder extends Seeder
 
             if ($existingCount < 2) { // Allow up to 2 attendance records per student per session
                 $status = $this->getRandomAttendanceStatus();
-                
+
                 StudentAttendance::create([
                     'student_id' => $student->id,
                     'class_session_id' => $classSession->id,
@@ -183,7 +183,7 @@ class StudentAttendanceSeeder extends Seeder
     private function getRandomAttendanceStatus(): string
     {
         $rand = rand(1, 100);
-        
+
         if ($rand <= 70) {
             return 'present'; // 70% present
         } elseif ($rand <= 80) {
@@ -203,7 +203,7 @@ class StudentAttendanceSeeder extends Seeder
     private function getRandomScheduledAttendanceStatus(): string
     {
         $rand = rand(1, 100);
-        
+
         if ($rand <= 85) {
             return 'present'; // 85% present for scheduled sessions
         } elseif ($rand <= 95) {

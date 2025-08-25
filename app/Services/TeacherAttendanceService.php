@@ -430,10 +430,10 @@ class TeacherAttendanceService
     /**
      * Determine overall day status
      */
-    private function determineDayStatus($daySessions, $teacherAttendances, $date)
+    private function determineDayStatus($daySessions, $teacherAttendances, $date): string
     {
         if ($daySessions->isEmpty()) {
-            return 'no_sessions';
+            return 'notOccurredYet';
         }
 
         $hasPresent = false;

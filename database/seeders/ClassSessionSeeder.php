@@ -19,14 +19,13 @@ class ClassSessionSeeder extends Seeder
     public function run(): void
     {
         $schedules = Schedule::all();
-        // Get recent school days (last 20 school days from the available data)
-        $schoolDays = SchoolDay::orderBy('date', 'desc')->limit(20)->get();
+        $schoolDays = SchoolDay::all();
         $teachers = Teacher::all();
         $subjects = Subject::all();
         $sections = Section::all();
         $classPeriods = ClassPeriod::all();
 
-        if ($schedules->isEmpty() || $schoolDays->isEmpty() || $teachers->isEmpty() || 
+        if ($schedules->isEmpty() || $schoolDays->isEmpty() || $teachers->isEmpty() ||
             $subjects->isEmpty() || $sections->isEmpty() || $classPeriods->isEmpty()) {
             return;
         }
@@ -34,7 +33,7 @@ class ClassSessionSeeder extends Seeder
         foreach ($schoolDays as $schoolDay) {
             // Create 2-5 class sessions per school day
             $sessionsCount = rand(2, 5);
-            
+
             for ($i = 0; $i < $sessionsCount; $i++) {
                 $schedule = $schedules->random();
                 $teacher = $teachers->random();

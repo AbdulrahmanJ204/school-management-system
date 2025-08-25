@@ -6,7 +6,9 @@ use App\Enums\PermissionEnum;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\StudentAttendanceResource;
+use App\Models\ClassSession;
 use App\Models\SchoolDay;
+use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\Year;
@@ -203,10 +205,10 @@ class StudentAttendanceService
         }
 
         // Get all semesters for the current academic year
-        $semesters = \App\Models\Semester::where('year_id', $currentAcademicYear->id)
+        $semesters = Semester::where('year_id', $currentAcademicYear->id)
             ->orderBy('start_date')
             ->get();
-        
+
         if ($semesters->isEmpty()) {
             return ResponseHelper::jsonResponse(
                 ['months' => []],
@@ -215,7 +217,7 @@ class StudentAttendanceService
                 false
             );
         }
-        
+
         // Generate data for each semester, breaking down into months
         foreach ($semesters as $semester) {
             $semesterMonths = $this->generateSemesterMonthsData($studentId, $semester);
@@ -257,7 +259,7 @@ class StudentAttendanceService
             return null; // No enrollment for this semester
         }
 
-        $classSessions = \App\Models\ClassSession::where('section_id', $studentEnrollment->section_id)
+        $classSessions = ClassSession::where('section_id', $studentEnrollment->section_id)
             ->whereHas('schoolDay', function ($query) use ($semester) {
                 $query->where('semester_id', $semester->id);
             })
@@ -361,7 +363,7 @@ class StudentAttendanceService
     /**
      * Build daily attendance data
      */
-    private function buildDaysData($schoolDays, $classSessions, $studentAttendances)
+    private function buildDaysData($schoolDays, $classSessions, $studentAttendances): array
     {
         $days = [];
 
@@ -418,7 +420,7 @@ class StudentAttendanceService
     private function determineDayStatus($daySessions, $studentAttendances, $date): string
     {
         if ($daySessions->isEmpty()) {
-            return 'no_sessions';
+            return 'notOccurredYet';
         }
 
         $hasPresent = false;
@@ -466,26 +468,21 @@ class StudentAttendanceService
     /**
      * Map attendance status to frontend format
      */
-    private function mapAttendanceStatus($status)
+    private function mapAttendanceStatus($status): string
     {
-        switch ($status) {
-            case 'present':
-                return 'present';
-            case 'Unexcused absence':
-                return 'absent';
-            case 'Excused absence':
-                return 'justified_absent';
-            case 'Late':
-                return 'late';
-            default:
-                return 'not_marked';
-        }
+        return match ($status) {
+            'present' => 'present',
+            'Unexcused absence' => 'absent',
+            'Excused absence' => 'justified_absent',
+            'Late' => 'late',
+            default => 'present',
+        };
     }
 
     /**
      * Count present days
      */
-    private function countPresentDays($schoolDays, $studentAttendances, $classSessions)
+    private function countPresentDays($schoolDays, $studentAttendances, $classSessions): int
     {
         $presentDays = 0;
 
@@ -515,7 +512,7 @@ class StudentAttendanceService
     /**
      * Count absent days
      */
-    private function countAbsentDays($schoolDays, $studentAttendances)
+    private function countAbsentDays($schoolDays, $studentAttendances): int
     {
         $absentDays = 0;
 
@@ -536,7 +533,7 @@ class StudentAttendanceService
     /**
      * Count justified absent days
      */
-    private function countJustifiedAbsentDays($schoolDays, $studentAttendances)
+    private function countJustifiedAbsentDays($schoolDays, $studentAttendances): int
     {
         $justifiedAbsentDays = 0;
 
@@ -557,7 +554,7 @@ class StudentAttendanceService
     /**
      * Count late days
      */
-    private function countLateDays($schoolDays, $studentAttendances)
+    private function countLateDays($schoolDays, $studentAttendances): int
     {
         $lateDays = 0;
 
