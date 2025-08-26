@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\StudyNote;
 
+use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class ListStudyNoteRequest extends \App\Http\Requests\BaseRequest
+class ListStudyNoteRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.

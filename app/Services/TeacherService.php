@@ -194,7 +194,7 @@ class TeacherService
                 $mark = $enrollment->studentMarks->first();
 
                 return [
-                    'id' => $user->id,
+                    'id' => $user->student->id,
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
                     'father_name' => $user->father_name,

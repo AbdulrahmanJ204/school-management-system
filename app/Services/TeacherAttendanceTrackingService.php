@@ -85,10 +85,12 @@ class TeacherAttendanceTrackingService
             ];
         });
 
+        // Add students to statistics
+        $statistics['students'] = $studentsData;
+
         return ResponseHelper::jsonResponse(
             [
-                'statistics' => $statistics,
-                'students' => $studentsData
+                'statistics' => $statistics
             ],
             'تم عرض حضور الطلاب بنجاح'
         );
