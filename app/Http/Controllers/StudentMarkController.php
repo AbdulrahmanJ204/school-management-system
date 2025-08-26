@@ -89,4 +89,25 @@ class StudentMarkController extends Controller
     {
         return $this->studentMarkService->getMarksBySubjectAndSection($subjectId, $sectionId);
     }
+
+    /**
+     * Get authenticated student's marks for a specific semester
+     *
+     * @param int $semesterId
+     * @return JsonResponse
+     */
+    public function getMyMarks(int $semesterId): JsonResponse
+    {
+        return $this->studentMarkService->getMyMarks($semesterId);
+    }
+
+    /**
+     * Get authenticated student's marks for a specific semester
+     *
+     * @return JsonResponse
+     */
+    public function getMyAllMarks(): JsonResponse
+    {
+        return $this->studentMarkService->getMyAllMarks();
+    }
 }

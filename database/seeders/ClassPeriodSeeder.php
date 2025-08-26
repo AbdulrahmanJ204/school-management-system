@@ -15,7 +15,7 @@ class ClassPeriodSeeder extends Seeder
     public function run(): void
     {
         $schoolShifts = SchoolShift::all();
-        
+
         if ($schoolShifts->isEmpty()) {
             // Create a default school shift if none exists
             $schoolShift = SchoolShift::create([
@@ -47,14 +47,14 @@ class ClassPeriodSeeder extends Seeder
                 'type' => ClassPeriodType::STUDY,
                 'duration_minutes' => 45,
             ],
-            [
-                'name' => 'Third Period',
-                'start_time' => '08:40:00',
-                'end_time' => '09:25:00',
-                'period_order' => 3,
-                'type' => ClassPeriodType::STUDY,
-                'duration_minutes' => 45,
-            ],
+//            [
+//                'name' => 'Third Period',
+//                'start_time' => '08:40:00',
+//                'end_time' => '09:25:00',
+//                'period_order' => 3,
+//                'type' => ClassPeriodType::STUDY,
+//                'duration_minutes' => 45,
+//            ],
             [
                 'name' => 'Break',
                 'start_time' => '09:25:00',
@@ -63,54 +63,54 @@ class ClassPeriodSeeder extends Seeder
                 'type' => ClassPeriodType::OPPORTUNITY,
                 'duration_minutes' => 20,
             ],
-            [
-                'name' => 'Fourth Period',
-                'start_time' => '09:45:00',
-                'end_time' => '10:30:00',
-                'period_order' => 5,
-                'type' => ClassPeriodType::STUDY,
-                'duration_minutes' => 45,
-            ],
-            [
-                'name' => 'Fifth Period',
-                'start_time' => '10:35:00',
-                'end_time' => '11:20:00',
-                'period_order' => 6,
-                'type' => ClassPeriodType::STUDY,
-                'duration_minutes' => 45,
-            ],
-            [
-                'name' => 'Sixth Period',
-                'start_time' => '11:25:00',
-                'end_time' => '12:10:00',
-                'period_order' => 7,
-                'type' => ClassPeriodType::STUDY,
-                'duration_minutes' => 45,
-            ],
-            [
-                'name' => 'Lunch Break',
-                'start_time' => '12:10:00',
-                'end_time' => '12:40:00',
-                'period_order' => 8,
-                'type' => ClassPeriodType::OPPORTUNITY,
-                'duration_minutes' => 30,
-            ],
-            [
-                'name' => 'Seventh Period',
-                'start_time' => '12:40:00',
-                'end_time' => '13:25:00',
-                'period_order' => 9,
-                'type' => ClassPeriodType::STUDY,
-                'duration_minutes' => 45,
-            ],
-            [
-                'name' => 'Eighth Period',
-                'start_time' => '13:30:00',
-                'end_time' => '14:00:00',
-                'period_order' => 10,
-                'type' => ClassPeriodType::STUDY,
-                'duration_minutes' => 30,
-            ],
+//            [
+//                'name' => 'Fourth Period',
+//                'start_time' => '09:45:00',
+//                'end_time' => '10:30:00',
+//                'period_order' => 5,
+//                'type' => ClassPeriodType::STUDY,
+//                'duration_minutes' => 45,
+//            ],
+//            [
+//                'name' => 'Fifth Period',
+//                'start_time' => '10:35:00',
+//                'end_time' => '11:20:00',
+//                'period_order' => 6,
+//                'type' => ClassPeriodType::STUDY,
+//                'duration_minutes' => 45,
+//            ],
+//            [
+//                'name' => 'Sixth Period',
+//                'start_time' => '11:25:00',
+//                'end_time' => '12:10:00',
+//                'period_order' => 7,
+//                'type' => ClassPeriodType::STUDY,
+//                'duration_minutes' => 45,
+//            ],
+//            [
+//                'name' => 'Lunch Break',
+//                'start_time' => '12:10:00',
+//                'end_time' => '12:40:00',
+//                'period_order' => 8,
+//                'type' => ClassPeriodType::OPPORTUNITY,
+//                'duration_minutes' => 30,
+//            ],
+//            [
+//                'name' => 'Seventh Period',
+//                'start_time' => '12:40:00',
+//                'end_time' => '13:25:00',
+//                'period_order' => 9,
+//                'type' => ClassPeriodType::STUDY,
+//                'duration_minutes' => 45,
+//            ],
+//            [
+//                'name' => 'Eighth Period',
+//                'start_time' => '13:30:00',
+//                'end_time' => '14:00:00',
+//                'period_order' => 10,
+//                'type' => ClassPeriodType::STUDY,
+//                'duration_minutes' => 30,
+//            ],
         ];
 
         foreach ($periods as $period) {

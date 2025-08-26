@@ -114,6 +114,7 @@ require __DIR__.'/messages.php';
 require __DIR__.'/class-sessions.php';
 require __DIR__.'/student-attendances.php';
 require __DIR__.'/teacher-attendances.php';
+require __DIR__.'/teacher-attendance-tracking.php';
 require __DIR__.'/assignments.php';
 require __DIR__.'/logs.php';
-
+require __DIR__.'/app-updates.php';

@@ -10,7 +10,9 @@ use App\Models\Schedule;
 use App\Models\TimeTable;
 use App\Models\ClassSession;
 use App\Models\User;
+use App\Enums\WeekDay;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
 
 class StudentHomeService
@@ -20,26 +22,27 @@ class StudentHomeService
      *
      * @param int $userId
      * @return array
+     * @throws Exception
      */
     public function getStudentHomeData(int $userId): array
     {
         $user = User::with(['student'])->findOrFail($userId);
         $student = $user->student;
-        
+
         if (!$student) {
-            throw new \Exception('Student not found');
+            throw new Exception('Student not found');
         }
 
         // Get current enrollment
         $currentEnrollment = $this->getCurrentEnrollment($student);
-        
+
         if (!$currentEnrollment) {
-            throw new \Exception('No active enrollment found for student');
+            throw new Exception('No active enrollment found for student');
         }
 
         // Get user basic info
         $userInfo = $this->getUserInfo($user, $currentEnrollment);
-        
+
         // Get weekly timetable
         $timetable = $this->getWeeklyTimetable($currentEnrollment);
 
@@ -85,10 +88,10 @@ class StudentHomeService
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'photo' => $user->image ? url('storage/' . $user->image) : null,
-            'grade' => $enrollment->section->grade->title,
-            'section' => $enrollment->section->title,
-            'academic_average' => number_format($academicAverage, 2),
-            'average_presence' => number_format($attendanceAverage, 2)
+            'grade_name' => $enrollment->section->grade->title,
+            'section_name' => $enrollment->section->title,
+            'academic_average' => round($academicAverage, 2),
+            'average_presence' => round($attendanceAverage, 2)
         ];
     }
 
@@ -114,7 +117,7 @@ class StudentHomeService
         foreach ($studentMarks as $mark) {
             // Calculate actual score (quiz + exam)
             $actualScore = ($mark->quiz ?? 0) + ($mark->exam ?? 0);
-            
+
             // Calculate max possible score from subject percentages
             $subject = $mark->subject;
             $maxQuizScore = ($subject->full_mark * $subject->quiz_percentage) / 100;
@@ -193,20 +196,20 @@ class StudentHomeService
 
         // Group schedules by day
         $weekDays = [
-            1 => 'الأحد',
-            2 => 'الإثنين',
-            3 => 'الثلاثاء',
-            4 => 'الأربعاء',
-            5 => 'الخميس',
-            6 => 'الجمعة',
-            7 => 'السبت'
+            WeekDay::SUNDAY->value => 'الأحد',
+            WeekDay::MONDAY->value => 'الإثنين',
+            WeekDay::TUESDAY->value => 'الثلاثاء',
+            WeekDay::WEDNESDAY->value => 'الأربعاء',
+            WeekDay::THURSDAY->value => 'الخميس',
+            WeekDay::FRIDAY->value => 'الجمعة',
+            WeekDay::SATURDAY->value => 'السبت'
         ];
 
         $timetable = [];
 
-        foreach ($weekDays as $dayNumber => $dayName) {
-            $daySchedules = $schedules->where('week_day', $dayNumber);
-            
+        foreach ($weekDays as $dayValue => $dayName) {
+            $daySchedules = $schedules->where('week_day', $dayValue);
+
             $lectures = [];
             foreach ($daySchedules as $schedule) {
                 $lectures[] = [
@@ -215,8 +218,8 @@ class StudentHomeService
                     'teacher_name' => $schedule->teacherSectionSubject->teacher->user->first_name . ' ' . $schedule->teacherSectionSubject->teacher->user->last_name,
                     'start_time' => Carbon::parse($schedule->classPeriod->start_time)->format('H:i'),
                     'end_time' => Carbon::parse($schedule->classPeriod->end_time)->format('H:i'),
-                    'section' => $schedule->teacherSectionSubject->section->title,
-                    'grade' => $schedule->teacherSectionSubject->grade->title
+                    'section_name' => $schedule->teacherSectionSubject->section->title,
+                    'grade_name' => $schedule->teacherSectionSubject->grade->title
                 ];
             }
 

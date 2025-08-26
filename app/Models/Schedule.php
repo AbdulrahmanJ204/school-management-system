@@ -29,4 +29,9 @@ class Schedule extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function classSessions()
+    {
+        return $this->hasMany(ClassSession::class);
+    }
 }

@@ -42,7 +42,7 @@ class TeacherSectionSubjectSeeder extends Seeder
                         'grade_id' => $section->grade_id,
                         'subject_id' => $subject->id,
                         'section_id' => $section->id,
-                        'is_active' => rand(0, 1), // Random active status
+                        'is_active' => 1,
                         'num_class_period' => rand(2, 6), // Random number of class periods
                         'created_by' => 1,
                         'created_at' => now(),

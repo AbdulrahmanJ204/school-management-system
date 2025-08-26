@@ -53,6 +53,7 @@ class DatabaseSeeder extends Seeder
             FileSeeder::class,
             AssignmentSeeder::class,
             QuestionSeeder::class,
+            AppUpdateSeeder::class,
         ]);
     }
 }

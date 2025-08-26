@@ -49,6 +49,11 @@ class SchoolDay extends Model
         return $this->hasMany(StudyNote::class);
     }
 
+    public function classSessions(): HasMany
+    {
+        return $this->hasMany(ClassSession::class);
+    }
+
     public function studentAttendances(): HasMany
     {
         return $this->hasMany(StudentAttendance::class);

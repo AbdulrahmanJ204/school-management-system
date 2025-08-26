@@ -8,6 +8,8 @@ use App\Http\Resources\StudentMarkResource;
 use App\Models\StudentMark;
 use App\Models\StudentEnrollment;
 use App\Models\Subject;
+use App\Models\Student;
+use App\Models\User;
 use App\Exceptions\PermissionException;
 use App\Traits\HasPermissionChecks;
 use Illuminate\Http\JsonResponse;
@@ -221,7 +223,7 @@ class StudentMarkService
         }
 
         $total = 0;
-        
+
         if (isset($credentials['homework']) && $credentials['homework'] !== null) {
             $total += ($credentials['homework'] * $subject->homework_percentage) / 100;
         }
@@ -239,5 +241,182 @@ class StudentMarkService
         }
 
         return round($total, 2);
+    }
+
+    /**
+     * Get authenticated student's quiz and exam marks for a specific semester
+     *
+     * @param int $semesterId
+     * @return JsonResponse
+     */
+    public function getMyMarks(int $semesterId): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+
+            $student = $user->student;
+            if (!$student) {
+                return ResponseHelper::jsonResponse(
+                    null,
+                    'لم يتم العثور على بيانات الطالب',
+                    404,
+                    false
+                );
+            }
+
+            // Get student enrollment for the specified semester
+            $enrollment = $student->studentEnrollments()
+                ->where('semester_id', $semesterId)
+                ->first();
+
+            if (!$enrollment) {
+                return ResponseHelper::jsonResponse(
+                    null,
+                    'لم يتم العثور على تسجيل للطالب في هذا الفصل الدراسي',
+                    404,
+                    false
+                );
+            }
+
+            // Get student marks for this enrollment
+            $studentMarks = StudentMark::where('enrollment_id', $enrollment->id)
+                ->with(['subject'])
+                ->get();
+
+            $subjectsMarks = [];
+
+            foreach ($studentMarks as $mark) {
+                $subject = $mark->subject;
+
+                // Calculate max and min marks for quiz
+                if ($mark->quiz !== null) {
+                    $quizMaxMark = ($subject->quiz_percentage / 100) * $subject->full_mark;
+                    $quizMinMark = $quizMaxMark * ($subject->mainSubject->success_rate / 100);
+
+                    $subjectsMarks[] = [
+                        'id' => $mark->id,
+                        'subject_name' => $subject->name,
+                        'type' => 'مذاكرة',
+                        'max_mark' => round($quizMaxMark),
+                        'min_mark' => round($quizMinMark),
+                        'student_mark' => $mark->quiz
+                    ];
+                }
+
+                // Calculate max and min marks for exam
+                if ($mark->exam !== null) {
+                    $examMaxMark = ($subject->exam_percentage / 100) * $subject->full_mark;
+                    $examMinMark = $examMaxMark * ($subject->mainSubject->success_rate / 100);
+
+                    $subjectsMarks[] = [
+                        'id' => $mark->id,
+                        'subject_name' => $subject->name,
+                        'type' => 'امتحان',
+                        'max_mark' => round($examMaxMark),
+                        'min_mark' => round($examMinMark),
+                        'student_mark' => $mark->exam
+                    ];
+                }
+            }
+
+            return ResponseHelper::jsonResponse(
+                ['subjects_marks' => $subjectsMarks],
+                'تم جلب علامات الطالب بنجاح'
+            );
+
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'حدث خطأ في جلب علامات الطالب: ' . $e->getMessage(),
+                500,
+                false
+            );
+        }
+    }
+
+    public function getMyAllMarks(): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+
+            $student = $user->student;
+            if (!$student) {
+                return ResponseHelper::jsonResponse(
+                    null,
+                    'لم يتم العثور على بيانات الطالب',
+                    404,
+                    false
+                );
+            }
+
+            // Get student enrollment for All semester
+            $enrollments = $student->studentEnrollments()
+                ->get();
+
+            if (!$enrollments) {
+                return ResponseHelper::jsonResponse(
+                    null,
+                    'لم يتم العثور على تسجيل للطالب',
+                    404,
+                    false
+                );
+            }
+
+            // Get student marks for all enrollments
+            $subjectsMarks = [];
+
+            foreach ($enrollments as $enrollment) {
+                $studentMarks = StudentMark::where('enrollment_id', $enrollment->id)
+                    ->with(['subject', 'subject.mainSubject'])
+                    ->get();
+
+                foreach ($studentMarks as $mark) {
+                    $subject = $mark->subject;
+
+                    // Quiz
+                    if ($mark->quiz !== null) {
+                        $quizMaxMark = ($subject->quiz_percentage / 100) * $subject->full_mark;
+                        $quizMinMark = $quizMaxMark * ($subject->mainSubject->success_rate / 100);
+
+                        $subjectsMarks[] = [
+                            'id' => $mark->id,
+                            'subject_name' => $subject->name,
+                            'type' => 'مذاكرة',
+                            'max_mark' => round($quizMaxMark),
+                            'min_mark' => round($quizMinMark),
+                            'student_mark' => $mark->quiz
+                        ];
+                    }
+
+                    // Exam
+                    if ($mark->exam !== null) {
+                        $examMaxMark = ($subject->exam_percentage / 100) * $subject->full_mark;
+                        $examMinMark = $examMaxMark * ($subject->mainSubject->success_rate / 100);
+
+                        $subjectsMarks[] = [
+                            'id' => $mark->id,
+                            'subject_name' => $subject->name,
+                            'type' => 'امتحان',
+                            'max_mark' => round($examMaxMark),
+                            'min_mark' => round($examMinMark),
+                            'student_mark' => $mark->exam
+                        ];
+                    }
+                }
+            }
+
+            return ResponseHelper::jsonResponse(
+                ['subjects_marks' => $subjectsMarks],
+                'تم جلب علامات الطالب بنجاح'
+            );
+
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'حدث خطأ في جلب علامات الطالب: ' . $e->getMessage(),
+                500,
+                false
+            );
+        }
     }
 }

@@ -20,14 +20,13 @@ class FileResource extends JsonResource
         $user_type = auth()->user()->user_type;
         $array = $this->studentArray();
 
-        if ($user_type === UserType::Admin->value || $user_type === UserType::Teacher->value) {
+        if ($user_type === UserType::Admin->value) {
             $array = array_merge($array, $this->adminAdditionalAttributes());
-            if($user_type === UserType::Teacher->value) {
-                $array[FileApi::apiCanDelete->value] =
-                    auth()->user()->hasPermissionTo(FilesPermission::softDelete->value)
-                    && $this->belongsToOneTeacher()
-                    && !$array['deleted_at'];
-            }
+
+        }
+        if ($user_type === UserType::Teacher->value) {
+            $array = array_merge($array, $this->teacherAdditionalAttributes());
+
         }
         return $array;
     }
@@ -42,7 +41,7 @@ class FileResource extends JsonResource
             'name' => $this->title,
             "description" => $this->description,
             "type" => $this->type,
-            "size" => round($this->size / (1024 * 1024), 2),
+            "size" => $this->size,
             "publish date" => $this->publish_date->format('Y-m-d h:i:s A'),
             'subject' => $this->subject ?? null
         ];
@@ -72,6 +71,25 @@ class FileResource extends JsonResource
         return [
             'deleted_at' => $this->deleted_at?->format('Y-m-d h:i:s A'),
             'targets' => $targetsArray
+        ];
+    }
+
+    private function teacherAdditionalAttributes(): array
+    {
+        $targets = $this->whenLoaded('targets');
+        $targets->whereNotNull('section')->pluck('section')->unique()->values();
+
+        $sections = SectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
+        $grade = $sections[0]->grade ?? 'غير محدد';
+
+        $deleted = $this->deleted_at?->format('Y-m-d h:i:s A');
+        $canDel = auth()->user()->hasPermissionTo(FilesPermission::softDelete->value)
+            && $this->belongsToOneTeacher()
+            && !$deleted;
+        return [
+            'grade' => $grade,
+            'sections' => $sections,
+            FileApi::apiCanDelete->value => $canDel,
         ];
     }
 }
