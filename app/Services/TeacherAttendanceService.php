@@ -9,6 +9,7 @@ use App\Http\Resources\TeacherAttendanceResource;
 use App\Models\ClassSession;
 use App\Models\SchoolDay;
 use App\Models\Semester;
+use App\Models\Teacher;
 use App\Models\TeacherAttendance;
 use App\Models\Year;
 use App\Traits\HasPermissionChecks;
@@ -201,7 +202,7 @@ class TeacherAttendanceService
 
         // Get teacher_id from authenticated user
         $user = auth()->user();
-        $teacher = \App\Models\Teacher::where('user_id', $user->id)->first();
+        $teacher = Teacher::where('user_id', $user->id)->first();
 
         if (!$teacher) {
             return ResponseHelper::jsonResponse(

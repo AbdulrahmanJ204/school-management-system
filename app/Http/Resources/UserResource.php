@@ -31,13 +31,23 @@ class UserResource extends JsonResource
             'image' => $this->image ? asset('storage/' . $this->image) : asset('storage/user_images/default.png'),
         ];
 
+        if ($this->user_type === 'student') {
+            $baseData['id'] = $this->student->id;
+        }
+        if ($this->user_type === 'admin') {
+            $baseData['id'] = $this->admin->id;
+        }
+        if ($this->user_type === 'teacher') {
+            $baseData['id'] = $this->teacher->id;
+        }
+
         if ($this->user_type !== 'student') {
             $baseData['email'] = $this->email;
         }
         else {
             $baseData['last_year_gpa'] = $this->student?->studentEnrollments()
                 ->latest('year_id')
-                ->first();;
+                ->first();
         }
 
         // Add tokens for login response

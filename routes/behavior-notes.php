@@ -8,6 +8,4 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('behavior-notes', BehaviorNoteController::class);
     Route::patch('behavior-notes/{id}/restore', [BehaviorNoteController::class, 'restore']);
     Route::delete('behavior-notes/{id}/force-delete', [BehaviorNoteController::class, 'forceDelete']);
-    Route::get('behavior-notes/student/{studentId}', [BehaviorNoteController::class, 'getByStudent']);
-    Route::get('behavior-notes/school-day/{schoolDayId}', [BehaviorNoteController::class, 'getBySchoolDay']);
 });

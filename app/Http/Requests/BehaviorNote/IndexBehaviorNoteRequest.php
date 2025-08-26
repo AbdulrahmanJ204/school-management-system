@@ -2,16 +2,17 @@
 
 namespace App\Http\Requests\BehaviorNote;
 
+use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class ListBehaviorNoteRequest extends \App\Http\Requests\BaseRequest
+class IndexBehaviorNoteRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->user()->hasPermissionTo('عرض ملاحظات السلوك');
     }
 
     /**
@@ -57,6 +58,12 @@ class ListBehaviorNoteRequest extends \App\Http\Requests\BaseRequest
                 'date',
                 'date_format:Y-m-d',
                 'after_or_equal:date_from'
+            ],
+            'per_page' => [
+                'nullable',
+                'integer',
+                'min:1',
+                'max:100'
             ]
         ];
     }
@@ -94,7 +101,12 @@ class ListBehaviorNoteRequest extends \App\Http\Requests\BaseRequest
             'date_to.nullable' => 'تاريخ النهاية اختياري',
             'date_to.date' => 'تاريخ النهاية يجب أن يكون تاريخاً صحيحاً',
             'date_to.date_format' => 'تاريخ النهاية يجب أن يكون بالتنسيق Y-m-d',
-            'date_to.after_or_equal' => 'تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية'
+            'date_to.after_or_equal' => 'تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية',
+
+            'per_page.nullable' => 'عدد العناصر في الصفحة اختياري',
+            'per_page.integer' => 'عدد العناصر في الصفحة يجب أن يكون رقماً صحيحاً',
+            'per_page.min' => 'عدد العناصر في الصفحة يجب أن يكون 1 على الأقل',
+            'per_page.max' => 'عدد العناصر في الصفحة يجب أن لا يتجاوز 100'
         ];
     }
 }

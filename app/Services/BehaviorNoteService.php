@@ -20,16 +20,64 @@ class BehaviorNoteService
     /**
      * @throws PermissionException
      */
-    public function listBehaviorNotes(): JsonResponse
+    public function listBehaviorNotes($request = null): JsonResponse
     {
         $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTES);
 
-        $behaviorNotes = BehaviorNote::with([
+        $query = BehaviorNote::with([
            'student',
            'schoolDay',
-        ])
-            ->orderBy('id', 'desc')
-            ->paginate(50);
+        ]);
+
+        // Apply filters if request is provided
+        if ($request) {
+            $filters = $request->validated();
+
+            // Filter by student_id
+            if (isset($filters['student_id'])) {
+                $query->where('student_id', $filters['student_id']);
+            }
+
+            // Filter by school_day_id
+            if (isset($filters['school_day_id'])) {
+                $query->where('school_day_id', $filters['school_day_id']);
+            }
+
+            // Filter by semester_id
+            if (isset($filters['semester_id'])) {
+                $query->whereHas('schoolDay', function ($q) use ($filters) {
+                    $q->where('semester_id', $filters['semester_id']);
+                });
+            }
+
+            // Filter by behavior_type
+            if (isset($filters['behavior_type'])) {
+                $query->where('behavior_type', $filters['behavior_type']);
+            }
+
+            // Filter by section_id
+            if (isset($filters['section_id'])) {
+                $query->whereHas('student.studentEnrollments', function ($q) use ($filters) {
+                    $q->where('section_id', $filters['section_id']);
+                });
+            }
+
+            // Filter by date range
+            if (isset($filters['date_from'])) {
+                $query->whereHas('schoolDay', function ($q) use ($filters) {
+                    $q->where('date', '>=', $filters['date_from']);
+                });
+            }
+
+            if (isset($filters['date_to'])) {
+                $query->whereHas('schoolDay', function ($q) use ($filters) {
+                    $q->where('date', '<=', $filters['date_to']);
+                });
+            }
+        }
+
+        $perPage = isset($filters['per_page']) ? $filters['per_page'] : 50;
+        $behaviorNotes = $query->orderBy('id', 'desc')->paginate($perPage);
 
         return ResponseHelper::jsonResponse(
             BehaviorNoteResource::collection($behaviorNotes),
@@ -156,7 +204,7 @@ class BehaviorNoteService
                 'student',
                 'schoolDay',
             ])),
-            __('messages.behavior_note.restore'),
+            __('messages.behavior_note.restored'),
         );
     }
 
@@ -167,61 +215,12 @@ class BehaviorNoteService
     {
         $this->checkPermission(PermissionEnum::MANAGE_DELETED_BEHAVIOR_NOTES);
 
-//        $behaviorNote = BehaviorNote::onlyTrashed()->findOrFail($id);
-        $behaviorNote = BehaviorNote::findOrFail($id);
+        $behaviorNote = BehaviorNote::onlyTrashed()->findOrFail($id);
         $behaviorNote->forceDelete();
 
         return ResponseHelper::jsonResponse(
             null,
             __('messages.behavior_note.force_deleted'),
-        );
-    }
-
-    /**
-     * @throws PermissionException
-     */
-    public function getByStudent($studentId): JsonResponse
-    {
-        $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTES);
-
-        $behaviorNotes = BehaviorNote::where('student_id', $studentId)
-            ->with([
-                'student',
-                'schoolDay',
-            ])
-            ->orderBy('id', 'desc')
-            ->paginate(50);
-
-        return ResponseHelper::jsonResponse(
-            BehaviorNoteResource::collection($behaviorNotes),
-            __('messages.behavior_note.listed'),
-            200,
-            true,
-            $behaviorNotes->lastPage()
-        );
-    }
-
-    /**
-     * @throws PermissionException
-     */
-    public function getBySchoolDay($schoolDayId): JsonResponse
-    {
-        $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTES);
-
-        $behaviorNotes = BehaviorNote::where('school_day_id', $schoolDayId)
-            ->with([
-                'student',
-                'schoolDay',
-            ])
-            ->orderBy('id', 'desc')
-            ->paginate(50);
-
-        return ResponseHelper::jsonResponse(
-            BehaviorNoteResource::collection($behaviorNotes),
-            __('messages.behavior_note.listed'),
-            200,
-            true,
-            $behaviorNotes->lastPage()
         );
     }
 
