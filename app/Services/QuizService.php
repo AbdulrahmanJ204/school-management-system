@@ -84,6 +84,10 @@ class QuizService
             $query->whereHas('targets.subject', function ($q) use ($credentials) {$q->where('id', $credentials['subject_id']);});
         }
 
+        if (isset($credentials['year_id'])) {
+            $query->whereHas('targets.semester', function ($q) use ($credentials) {$q->where('year_id', $credentials['year_id']);});
+        }
+
         $quizzes = $query->get();
 
         return ResponseHelper::jsonResponse(

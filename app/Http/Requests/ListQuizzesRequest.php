@@ -24,6 +24,8 @@ class ListQuizzesRequest extends FormRequest
         return [
             'grade_id'   => 'sometimes|integer|exists:grades,id',
             'section_id' => 'sometimes|integer|exists:sections,id',
+            'subject_id' => 'sometimes|integer|exists:subjects,id',
+            'year_id'    => 'sometimes|integer|exists:years,id'
         ];
     }
 }
