@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Permissions\TimetablePermission;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateSchoolShiftRequest extends FormRequest
@@ -18,7 +19,7 @@ class CreateSchoolShiftRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -27,9 +28,13 @@ class CreateSchoolShiftRequest extends FormRequest
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'is_active' => 'required|boolean',
-            'targets'                => 'required|array',
-            'targets.*.grade_id'     => 'required|exists:grades,id',
-            'targets.*.section_id'   => 'nullable|exists:sections,id',
+            'section_ids' => 'array',
+            'section_ids' . '.*' => 'exists:sections,id',
+            'grade_ids' => [
+                'array',
+                'missing_with:' . 'section_ids',
+            ],
+            'grade_ids' . '.*' => 'exists:grades,id',
         ];
     }
 }
