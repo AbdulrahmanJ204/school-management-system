@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('change_log')->nullable();
             $table->boolean('is_force_update');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('created_by')->constrained('users');
         });
     }
