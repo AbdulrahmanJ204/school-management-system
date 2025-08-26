@@ -5,7 +5,10 @@ namespace App\Services;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\UserResource;
+use App\Models\Section;
 use App\Models\Semester;
+use App\Models\Student;
+use App\Models\Subject;
 use App\Models\TeacherAttendance;
 use App\Models\User;
 use App\Models\TeacherSectionSubject;
@@ -373,5 +376,163 @@ class TeacherService
         ];
 
         return $arabicToNumber[$sectionName] ?? (int) $sectionName;
+    }
+
+    /**
+     * Add or update student marks for a specific subject
+     *
+     * @param int $studentId
+     * @param array $markData
+     * @return JsonResponse
+     */
+    public function addOrUpdateStudentMarks(int $studentId, array $markData): JsonResponse
+    {
+        $teacherId = auth()->user()->teacher->id;
+        $subjectId = $markData['subject_id'];
+
+        // Get the student
+        $student = Student::find($studentId);
+        if (!$student) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'الطالب غير موجود',
+                404,
+                false
+            );
+        }
+
+        // Get the specified semester
+        $semester = Semester::find($markData['semester_id']);
+        if (!$semester) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'الفصل الدراسي المحدد غير موجود',
+                404,
+                false
+            );
+        }
+
+        // Get the specified section
+        $section = Section::find($markData['section_id']);
+        if (!$section) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'الشعبة المحددة غير موجودة',
+                404,
+                false
+            );
+        }
+
+        // Verify that the teacher is assigned to teach this subject for the specified section
+        $teacherAssignment = TeacherSectionSubject::where('teacher_id', $teacherId)
+            ->where('subject_id', $subjectId)
+            ->where('section_id', $markData['section_id'])
+            ->where('is_active', true)
+            ->first();
+
+        if (!$teacherAssignment) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'غير مصرح لك بتدريس هذه المادة في هذه الشعبة',
+                403,
+                false
+            );
+        }
+
+        // Get student's enrollment for the specified semester and section
+        $enrollment = StudentEnrollment::where('student_id', $studentId)
+            ->where('semester_id', $markData['semester_id'])
+            ->where('section_id', $markData['section_id'])
+            ->first();
+
+        if (!$enrollment) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'الطالب غير مسجل في هذه الشعبة للفصل الدراسي المحدد',
+                404,
+                false
+            );
+        }
+
+        // Get the subject to calculate total
+        $subject = Subject::find($subjectId);
+        if (!$subject) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'المادة غير موجودة',
+                404,
+                false
+            );
+        }
+
+        // Check if marks already exist for this student-subject-enrollment combination
+        $existingMark = StudentMark::where('enrollment_id', $enrollment->id)
+            ->where('subject_id', $subjectId)
+            ->first();
+
+        // Calculate total based on subject percentages
+        $total = 0;
+        if (isset($markData['homework']) && $markData['homework'] !== null) {
+            $total += ($markData['homework'] * $subject->homework_percentage) / 100;
+        }
+        if (isset($markData['oral']) && $markData['oral'] !== null) {
+            $total += ($markData['oral'] * $subject->oral_percentage) / 100;
+        }
+        if (isset($markData['activity']) && $markData['activity'] !== null) {
+            $total += ($markData['activity'] * $subject->activity_percentage) / 100;
+        }
+        if (isset($markData['quiz']) && $markData['quiz'] !== null) {
+            $total += ($markData['quiz'] * $subject->quiz_percentage) / 100;
+        }
+        if (isset($markData['exam']) && $markData['exam'] !== null) {
+            $total += ($markData['exam'] * $subject->exam_percentage) / 100;
+        }
+
+        // Prepare data for creation/update
+        $markData['enrollment_id'] = $enrollment->id;
+        $markData['total'] = round($total);
+        $markData['created_by'] = auth()->id();
+
+        if ($existingMark) {
+            // Update existing marks
+            $existingMark->update($markData);
+            $studentMark = $existingMark->fresh();
+            $message = 'تم تحديث علامات الطالب بنجاح';
+            $statusCode = 200;
+        } else {
+            // Create new marks
+            $studentMark = StudentMark::create($markData);
+            $message = 'تم حفظ علامات الطالب بنجاح';
+            $statusCode = 201;
+        }
+
+        // Load relationships for response
+        $studentMark->load([
+            'subject',
+            'enrollment.student.user',
+            'enrollment.section',
+            'enrollment.semester'
+        ]);
+
+        // Prepare response data
+        $responseData = [
+            'student_id' => $studentId,
+            'subject_id' => $subjectId,
+            'homework' => $markData['homework'] ?? null,
+            'oral' => $markData['oral'] ?? null,
+            'activity' => $markData['activity'] ?? null,
+            'quiz' => $markData['quiz'] ?? null,
+            'exam' => $markData['exam'] ?? null,
+            'total' => $markData['total'],
+            'enrollment_id' => $enrollment->id,
+            'id' => $studentMark->id
+        ];
+
+        return ResponseHelper::jsonResponse(
+            $responseData,
+            $message,
+            $statusCode,
+            true
+        );
     }
 }

@@ -74,6 +74,10 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::get('teacher/timetable', [TeacherTimetableController::class, 'timetable'])->name('teacher.timetable');
 });
 
+Route::middleware(['auth:api', 'user_type:teacher', 'throttle:60,1'])->group(function () {
+    Route::post('teacher/students/{student_id}/marks', [TeacherController::class, 'addOrUpdateStudentMarks'])->name('teacher.students.marks');
+});
+
 Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(function () {
     Route::post('score-quizzes', [ScoreQuizController::class, 'create']);
     Route::get('student/home', [StudentHomeController::class, 'home'])->name('student.home');
