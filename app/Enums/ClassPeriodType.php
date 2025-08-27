@@ -5,13 +5,13 @@ namespace App\Enums;
 enum ClassPeriodType: string
 {
     case STUDY = 'study';
-    case OPPORTUNITY = 'opportunity';
+    case BREAK = 'break';
 
     public function label(): string
     {
         return match ($this) {
             self::STUDY => 'Study',
-            self::OPPORTUNITY => 'Opportunity',
+            self::BREAK => 'Break',
         };
     }
 

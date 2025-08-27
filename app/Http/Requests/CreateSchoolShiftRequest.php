@@ -29,12 +29,12 @@ class CreateSchoolShiftRequest extends FormRequest
             'end_time' => 'required|date_format:H:i|after:start_time',
             'is_active' => 'required|boolean',
             'section_ids' => 'array',
-            'section_ids' . '.*' => 'exists:sections,id',
+            'section_ids.*' => 'exists:sections,id',
             'grade_ids' => [
                 'array',
-                'missing_with:' . 'section_ids',
+                'missing_with:section_ids',
             ],
-            'grade_ids' . '.*' => 'exists:grades,id',
+            'grade_ids.*' => 'exists:grades,id',
         ];
     }
 }
