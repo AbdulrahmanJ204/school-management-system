@@ -275,15 +275,15 @@ class TeacherService
             $absenceRecords = TeacherAttendance::where('teacher_id', $teacher->id)->get();
 
             $absencePercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
-                ->where('status', 'Unexcused absence')
+                ->where('status', 'absent')
                 ->count() / $totalSessions) * 100);
 
             $latenessPercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
-                ->where('status', 'Late')
+                ->where('status', 'late')
                 ->count() / $totalSessions) * 100);
 
             $justifiedAbsencePercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
-                ->where('status', 'Excused absence')
+                ->where('status', 'justified_absent')
                 ->count() / $totalSessions) * 100);
         } else {
             $attendancePercentage = 0;

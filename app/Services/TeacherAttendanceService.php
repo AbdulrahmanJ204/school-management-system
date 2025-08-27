@@ -350,9 +350,9 @@ class TeacherAttendanceService
 
         // Count explicit attendance records
         $presentSessions = $teacherAttendances->where('status', 'present')->count();
-        $absentSessions = $teacherAttendances->where('status', 'Unexcused absence')->count();
-        $justifiedAbsentSessions = $teacherAttendances->where('status', 'Excused absence')->count();
-        $lateSessions = $teacherAttendances->where('status', 'Late')->count();
+        $absentSessions = $teacherAttendances->where('status', 'absent')->count();
+        $justifiedAbsentSessions = $teacherAttendances->where('status', 'justified_absent')->count();
+        $lateSessions = $teacherAttendances->where('status', 'late')->count();
 
         // For sessions without explicit attendance records, assume present (old system behavior)
         $sessionsWithRecords = $presentSessions + $absentSessions + $justifiedAbsentSessions + $lateSessions;
@@ -452,11 +452,11 @@ class TeacherAttendanceService
                     case 'present':
                         $hasPresent = true;
                         break;
-                    case 'Unexcused absence':
-                    case 'Excused absence':
+                    case 'absent':
+                    case 'justified_absent':
                         $hasAbsent = true;
                         break;
-                    case 'Late':
+                    case 'late':
                         $hasLate = true;
                         break;
                 }
@@ -487,9 +487,9 @@ class TeacherAttendanceService
     {
         return match ($status) {
             'present' => 'present',
-            'Unexcused absence' => 'absent',
-            'Excused absence' => 'justified_absent',
-            'Late' => 'late',
+            'absent' => 'absent',
+            'justified_absent' => 'justified_absent',
+            'late' => 'late',
             default => 'present',
         };
     }
@@ -537,7 +537,7 @@ class TeacherAttendanceService
                 return $attendance->classSession->schoolDay->date->format('Y-m-d') === $date;
             });
 
-            if ($dayAttendances->where('status', 'Unexcused absence')->count() > 0) {
+            if ($dayAttendances->where('status', 'absent')->count() > 0) {
                 $absentDays++;
             }
         }
@@ -558,7 +558,7 @@ class TeacherAttendanceService
                 return $attendance->classSession->schoolDay->date->format('Y-m-d') === $date;
             });
 
-            if ($dayAttendances->where('status', 'Excused absence')->count() > 0) {
+            if ($dayAttendances->where('status', 'justified_absent')->count() > 0) {
                 $justifiedAbsentDays++;
             }
         }
@@ -579,7 +579,7 @@ class TeacherAttendanceService
                 return $attendance->classSession->schoolDay->date->format('Y-m-d') === $date;
             });
 
-            if ($dayAttendances->where('status', 'Late')->count() > 0) {
+            if ($dayAttendances->where('status', 'late')->count() > 0) {
                 $lateDays++;
             }
         }
