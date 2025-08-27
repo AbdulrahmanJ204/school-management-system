@@ -26,7 +26,9 @@ class Semester extends Model
         'end_date' => 'date',
         'is_active' => 'boolean'
     ];
-
+    protected $with =[
+        'year',
+    ];
     // Relations
     public function year(): BelongsTo
     {
