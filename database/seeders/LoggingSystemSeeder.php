@@ -92,7 +92,7 @@ class LoggingSystemSeeder extends Seeder
     {
         for ($i = 1; $i <= 7; $i++) {
             $date = Carbon::now()->subDays($i);
-            
+
             DailyLogReport::create([
                 'report_date' => $date->format('Y-m-d'),
                 'total_logs' => rand(10, 100),
@@ -115,7 +115,7 @@ class LoggingSystemSeeder extends Seeder
             'grade' => ['old' => 'A', 'new' => 'B'],
         ];
 
-        return array_rand($changes) ? $changes : null;
+        return array_rand($changes);
     }
 
     /**

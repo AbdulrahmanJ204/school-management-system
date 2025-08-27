@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Grade;
 use App\Models\Section;
 use App\Models\Semester;
 use App\Models\Student;
@@ -17,29 +18,40 @@ class StudentEnrollmentSeeder extends Seeder
     public function run(): void
     {
         $students = Student::all();
-        $currentSemester = Semester::where('year_id', Year::where('is_active', true)->first()->id)->first();
+        $currentYear = Year::where('is_active', true)->first();
+        $currentSemester = Semester::where('year_id', $currentYear->id)->first();
 
         if (!$currentSemester) {
             return;
         }
 
-        foreach ($students as $student) {
-            // Assuming students have a grade_level attribute or similar
-            // You may need to adjust this based on your Student model
-            $gradeId = rand(1, 3); // Random grade for demo purposes
-            $sectionsInGrade = Section::where('grade_id', $gradeId)->get();
+        $grades = Grade::with('sections')->get(); // load all grades with sections
+        $sections = $grades->flatMap->sections;   // flatten into single collection of sections
 
-            if ($sectionsInGrade->count() > 0) {
-                $randomSection = $sectionsInGrade->random();
+        $totalStudents = $students->count();      // e.g. 100
+        $totalSections = $sections->count();      // e.g. 9
+        $basePerSection = intdiv($totalStudents, $totalSections); // e.g. 11
+        $extra = $totalStudents % $totalSections;                 // remainder (some sections get 1 extra)
+
+        $studentIndex = 0;
+
+        foreach ($sections as $index => $section) {
+            // number of students for this section
+            $studentsForThisSection = $basePerSection + ($index < $extra ? 1 : 0);
+
+            for ($i = 0; $i < $studentsForThisSection && $studentIndex < $totalStudents; $i++) {
+                $student = $students[$studentIndex];
 
                 StudentEnrollment::create([
                     'student_id' => $student->id,
-                    'section_id' => $randomSection->id,
-                    'grade_id' => $gradeId,
+                    'section_id' => $section->id,
+                    'grade_id' => $section->grade_id,
                     'semester_id' => $currentSemester->id,
                     'year_id' => $currentSemester->year_id,
                     'created_by' => 1,
                 ]);
+
+                $studentIndex++;
             }
         }
     }

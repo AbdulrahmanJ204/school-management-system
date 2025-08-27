@@ -28,13 +28,13 @@ class GradeSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-            // [
-            //     'title' => 'الصف الثالث الابتدائي',
-            //     'year_id' => 2, // 2024-2025 (active year)
-            //     'created_by' => 1,
-            //     'created_at' => now(),
-            //     'updated_at' => now(),
-            // ],
+            [
+                 'title' => 'الصف الثالث الابتدائي',
+                 'year_id' => 2, // 2024-2025 (active year)
+                 'created_by' => 1,
+                 'created_at' => now(),
+                 'updated_at' => now(),
+            ],
             // [
             //     'title' => 'الصف الرابع الابتدائي',
             //     'year_id' => 2, // 2024-2025 (active year)

@@ -46,27 +46,31 @@ class StudyNoteSeeder extends Seeder
         ];
 
         foreach ($students as $student) {
-            // Create 2-5 study notes per student
-            $numNotes = rand(2, 5);
-
-            for ($i = 0; $i < $numNotes; $i++) {
+            // Ensure each student has one note from each NoteTypeEnum
+            foreach (NoteTypeEnum::cases() as $noteType) {
                 $schoolDay = $schoolDays->random();
                 $subject = $subjects->random();
 
                 $studyNotes[] = [
-                    'student_id' => $student->id,
+                    'student_id'    => $student->id,
                     'school_day_id' => $schoolDay->id,
-                    'subject_id' => $subject->id,
-                    'note_type' => NoteTypeEnum::cases()[array_rand(NoteTypeEnum::cases())]->value,
-                    'note' => $notes[array_rand($notes)],
-                    'marks' => rand(1, 5), // Random marks between 1-5
-                    'created_by' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'subject_id'    => $subject->id,
+                    'note_type'     => $noteType->value,
+                    'note'          => $notes[array_rand($notes)],
+                    'marks'         => rand(1, 5), // Random marks between 1-5
+                    'created_by'    => 1,
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
                 ];
             }
         }
 
-        DB::table('study_notes')->insert($studyNotes);
+        // Insert in chunks for performance
+        $chunks = array_chunk($studyNotes, 100);
+        foreach ($chunks as $chunk) {
+            DB::table('study_notes')->insert($chunk);
+        }
+
+        $this->command->info('Study notes seeded successfully, each student got one note per type!');
     }
 }

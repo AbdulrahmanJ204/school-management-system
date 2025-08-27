@@ -16,9 +16,9 @@ class SectionSeeder extends Seeder
         $sectionNames = ['الأولى', 'الثانية', 'الثالثة'];
 
         // Create sections for each grade (grades 1-2, since only 2 grades exist)
-        for ($gradeId = 1; $gradeId <= 2; $gradeId++) {
+        for ($gradeId = 1; $gradeId <= 3; $gradeId++) {
             // Primary grades (1-2) have 2 sections each
-            $numSections = 2;
+            $numSections = 3;
 
             for ($i = 0; $i < $numSections; $i++) {
                 $sections[] = [
