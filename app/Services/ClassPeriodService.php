@@ -4,16 +4,22 @@ namespace App\Services;
 
 use App\Enums\Permissions\TimetablePermission;
 use App\Exceptions\ClassPeriodNotFoundException;
+use App\Exceptions\PermissionException;
 use App\Helpers\AuthHelper;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\ClassPeriodResource;
 use App\Models\ClassPeriod;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class ClassPeriodService
 {
-    public function create($request)
+    /**
+     * @throws PermissionException
+     */
+    public function create($request): JsonResponse
     {
         $user = auth()->user();
 
@@ -43,21 +49,29 @@ class ClassPeriodService
 
             return ResponseHelper::jsonResponse(
                 new ClassPeriodResource($classPeriod),
-                __('messages.class_period.created'),
-                200
+                __('messages.class_period.created')
             );
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            return $e->getMessage();
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                400,
+                false
+            );
         }
     }
 
-    public function update($request, $id)
+    /**
+     * @throws ClassPeriodNotFoundException
+     * @throws PermissionException
+     */
+    public function update($request, $id): JsonResponse
     {
         AuthHelper::authorize(TimetablePermission::update_class_period->value);
 
-        $classPeriod = ClassPeriod::find($id);
+        $classPeriod = ClassPeriod::findOrFail($id);
 
         if (!$classPeriod) {
             throw new ClassPeriodNotFoundException();
@@ -90,12 +104,21 @@ class ClassPeriodService
                 201
             );
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            return $e->getMessage();
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                400,
+                false
+            );
         }
     }
-    public function list()
+
+    /**
+     * @throws PermissionException
+     */
+    public function list(): JsonResponse
     {
         AuthHelper::authorize(TimetablePermission::list_class_period->value);
 
@@ -106,11 +129,15 @@ class ClassPeriodService
 
         return ResponseHelper::jsonResponse(
             ClassPeriodResource::collection($classPeriods),
-            __('messages.class_period.list'),
-            200
+            __('messages.class_period.list')
         );
     }
-    public function get($id)
+
+    /**
+     * @throws ClassPeriodNotFoundException
+     * @throws PermissionException
+     */
+    public function get($id): JsonResponse
     {
         AuthHelper::authorize(TimetablePermission::get_class_period->value);
 
@@ -122,18 +149,39 @@ class ClassPeriodService
 
         return ResponseHelper::jsonResponse(
             new ClassPeriodResource($classPeriod),
-            __('messages.class_period.get'),
-            200
+            __('messages.class_period.get')
         );
     }
-    public function delete($id)
+
+    /**
+     * @throws ClassPeriodNotFoundException
+     * @throws PermissionException
+     */
+    public function delete($id): JsonResponse
     {
         AuthHelper::authorize(TimetablePermission::delete_class_period->value);
 
-        $classPeriod = ClassPeriod::find($id);
+        $classPeriod = ClassPeriod::findOrFail($id);
 
         if (!$classPeriod) {
             throw new ClassPeriodNotFoundException();
+        }
+
+        // Check if the class period can be deleted
+        if (!$classPeriod->canBeDeleted()) {
+            $reason = $classPeriod->getDeletionBlockReason();
+            $message = match($reason) {
+                'has_class_sessions' => __('messages.class_period.has_class_sessions'),
+                'has_schedules' => __('messages.class_period.has_schedules'),
+                default => __('messages.class_period.cannot_delete')
+            };
+            
+            return ResponseHelper::jsonResponse(
+                null,
+                $message,
+                400,
+                false
+            );
         }
 
         try {
@@ -145,12 +193,53 @@ class ClassPeriodService
 
             return ResponseHelper::jsonResponse(
                 null,
-                __('messages.class_period.deleted'),
-                200
+                __('messages.class_period.deleted')
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            return $e->getMessage();
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                400,
+                false
+            );
+        }
+    }
+
+    /**
+     * Force delete a class period and all related records
+     * @throws ClassPeriodNotFoundException
+     * @throws PermissionException
+     */
+    public function forceDelete($id): JsonResponse
+    {
+        AuthHelper::authorize(TimetablePermission::delete_class_period->value);
+
+        $classPeriod = ClassPeriod::findOrFail($id);
+
+        if (!$classPeriod) {
+            throw new ClassPeriodNotFoundException();
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $classPeriod->forceDelete();
+
+            DB::commit();
+
+            return ResponseHelper::jsonResponse(
+                null,
+                __('messages.class_period.force_deleted')
+            );
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                400,
+                false
+            );
         }
     }
 }

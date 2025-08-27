@@ -258,6 +258,19 @@ return [
         'list' => 'تم عرض الصلاحيات.'
     ],
 
+    'class_period' => [
+        'created' => 'Class period created successfully.',
+        'updated' => 'Class period updated successfully.',
+        'deleted' => 'Class period deleted successfully.',
+        'force_deleted' => 'Class period and all related records deleted successfully.',
+        'not_found' => 'Class period not found.',
+        'get' => 'Class period retrieved successfully.',
+        'list' => 'Class periods listed successfully.',
+        'has_class_sessions' => 'Cannot delete class period: It has related class sessions. Please delete the class sessions first or use force delete.',
+        'has_schedules' => 'Cannot delete class period: It has related schedules. Please delete the schedules first or use force delete.',
+        'cannot_delete' => 'Cannot delete class period due to existing relationships.'
+    ],
+
     'school_shift' => [
         'created' => 'School shift created successfully.',
         'updated' => 'School shift updated successfully.',

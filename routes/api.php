@@ -44,6 +44,7 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
     Route::resource('school_shifts', SchoolShiftController::class);
     Route::resource('timetable', TimeTableController::class);
     Route::resource('class_period', ClassPeriodController::class);
+    Route::delete('class_period/{id}/force', [ClassPeriodController::class, 'forceDelete'])->name('class_period.force_delete');
     Route::resource('schedules', ScheduleController::class);
     Route::post('class-sessions', [ClassSessionController::class, 'create']);
     Route::put('class-sessions/{id}', [ClassSessionController::class, 'update']);
