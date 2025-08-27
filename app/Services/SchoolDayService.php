@@ -97,8 +97,8 @@ class SchoolDayService
         $this->checkPermission(PermissionEnum::UPDATE_SCHOOL_DAY);
 
         $schoolDay->update([
-            'date' => $request->date,
-            'semester_id' => $request->semester_id,
+//            'date' => $request->date,
+//            'semester_id' => $request->semester_id,
             'type' => $request->type,
         ]);
 
