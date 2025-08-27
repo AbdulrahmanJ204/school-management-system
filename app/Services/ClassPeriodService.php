@@ -118,11 +118,18 @@ class ClassPeriodService
     /**
      * @throws PermissionException
      */
-    public function list(): JsonResponse
+    public function list($request): JsonResponse
     {
         AuthHelper::authorize(TimetablePermission::list_class_period->value);
 
-        $classPeriods = ClassPeriod::with('schoolShift')
+        $query = ClassPeriod::with('schoolShift');
+
+        // Apply school_shift_id filter if provided
+        if ($request->has('school_shift_id') && $request->school_shift_id) {
+            $query->where('school_shift_id', $request->school_shift_id);
+        }
+
+        $classPeriods = $query
             ->orderBy('school_shift_id')
             ->orderBy('period_order')
             ->get();
