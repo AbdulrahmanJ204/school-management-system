@@ -88,38 +88,44 @@ class BehaviorNoteSeeder extends Seeder
         $createdUsers = $users->pluck('id')->toArray();
 
         foreach ($students as $student) {
-            $noteCount = rand(2, 5);
+            // Pick 4 different random school days for the student
+            $randomSchoolDays = $schoolDays->random(min(4, $schoolDays->count()));
 
-            $randomSchoolDays = $schoolDays->random(min($noteCount, $schoolDays->count()));
-
-            for ($i = 0; $i < $noteCount && $i < $randomSchoolDays->count(); $i++) {
-                $behaviorType = rand(1, 10) <= 7 ? 'positive' : 'negative';
-
-                if ($behaviorType === 'positive') {
-                    $note = $positiveNotes[array_rand($positiveNotes)];
-                } else {
-                    $note = $negativeNotes[array_rand($negativeNotes)];
-                }
-
+            // Select 2 positive notes
+            $chosenPositive = array_rand($positiveNotes, 2);
+            foreach ((array) $chosenPositive as $index => $key) {
                 $behaviorNotes[] = [
-                    'student_id' => $student->id,
-                    'school_day_id' => $randomSchoolDays[$i]->id,
-                    'behavior_type' => $behaviorType,
-                    'note' => $note,
-                    'created_by' => $createdUsers[array_rand($createdUsers)],
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'student_id'    => $student->id,
+                    'school_day_id' => $randomSchoolDays[$index]->id,
+                    'behavior_type' => 'positive',
+                    'note'          => $positiveNotes[$key],
+                    'created_by'    => $createdUsers[array_rand($createdUsers)],
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ];
+            }
+
+            // Select 2 negative notes
+            $chosenNegative = array_rand($negativeNotes, 2);
+            foreach ((array) $chosenNegative as $index => $key) {
+                $behaviorNotes[] = [
+                    'student_id'    => $student->id,
+                    'school_day_id' => $randomSchoolDays[$index + 2]->id,
+                    'behavior_type' => 'negative',
+                    'note'          => $negativeNotes[$key],
+                    'created_by'    => $createdUsers[array_rand($createdUsers)],
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
                 ];
             }
         }
 
         try {
             $chunks = array_chunk($behaviorNotes, 100);
-
             foreach ($chunks as $chunk) {
                 DB::table('behavior_notes')->insert($chunk);
             }
-
+            $this->command->info('Behavior notes seeded successfully!');
         } catch (Exception $e) {
             $this->command->error('Error inserting behavior notes: ' . $e->getMessage());
             throw $e;

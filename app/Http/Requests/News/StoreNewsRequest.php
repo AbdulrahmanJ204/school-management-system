@@ -5,6 +5,7 @@ namespace App\Http\Requests\News;
 use App\Enums\Permissions\NewsPermission;
 use App\Enums\StringsManager\NewsStr;
 use App\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 class StoreNewsRequest extends BaseRequest
 {
@@ -19,7 +20,7 @@ class StoreNewsRequest extends BaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {

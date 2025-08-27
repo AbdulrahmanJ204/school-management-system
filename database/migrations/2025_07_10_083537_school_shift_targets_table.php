@@ -12,8 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('school_shift_id')->constrained('school_shifts');
             $table->foreignId('section_id')->nullable()->constrained('sections');
-            $table->foreignId('grade_id')->constrained('grades');
+            $table->foreignId('grade_id')->nullable()->constrained('grades');
             $table->timestamps();
+            $table->foreignId('created_by')->constrained('users');
         });
     }
     public function down(): void

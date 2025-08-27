@@ -85,10 +85,12 @@ class TeacherAttendanceTrackingService
             ];
         });
 
+        // Add students to statistics
+        $statistics['students'] = $studentsData;
+
         return ResponseHelper::jsonResponse(
             [
-                'statistics' => $statistics,
-                'students' => $studentsData
+                'statistics' => $statistics
             ],
             'تم عرض حضور الطلاب بنجاح'
         );
@@ -143,7 +145,7 @@ class TeacherAttendanceTrackingService
 
         // Get current semester
         $currentSemester = Semester::where('is_active', true)->first();
-        
+
         // Get all students enrolled in the session's section to return complete data
         $allStudents = User::where('user_type', 'student')
             ->whereHas('student.studentEnrollments', function ($query) use ($classSession, $currentSemester) {
@@ -228,11 +230,11 @@ class TeacherAttendanceTrackingService
         // Build response data
         $trackedDaysData = $trackedDays->map(function ($schoolDay) {
             $sessionsOrder = [];
-            
+
             // Get sessions with their IDs and period orders, sorted by period order
             $sortedSessions = $schoolDay->classSessions
                 ->sortBy('classPeriod.period_order');
-            
+
             foreach ($sortedSessions as $session) {
                 $periodOrder = $session->classPeriod->period_order;
                 $arabicOrdinal = $this->convertNumberToArabicOrdinal($periodOrder);
@@ -381,13 +383,13 @@ class TeacherAttendanceTrackingService
                     case 'present':
                         $presentCount++;
                         break;
-                    case 'Unexcused absence':
+                    case 'absence':
                         $absentCount++;
                         break;
-                    case 'Late':
+                    case 'late':
                         $lateCount++;
                         break;
-                    case 'Excused absence':
+                    case 'justified_absent':
                         $excusedCount++;
                         break;
                 }
@@ -423,13 +425,13 @@ class TeacherAttendanceTrackingService
                     case 'present':
                         $presentCount++;
                         break;
-                    case 'Unexcused absence':
+                    case 'Absent':
                         $absentCount++;
                         break;
-                    case 'Late':
+                    case 'late':
                         $lateCount++;
                         break;
-                    case 'Excused absence':
+                    case 'justified_absent':
                         $excusedCount++;
                         break;
                 }
@@ -479,13 +481,13 @@ class TeacherAttendanceTrackingService
                     case 'present':
                         $presentDays++;
                         break;
-                    case 'Late':
+                    case 'late':
                         $lateDays++;
                         break;
-                    case 'Excused absence':
+                    case 'justified_absent':
                         $justifiedAbsentDays++;
                         break;
-                    case 'Unexcused absence':
+                    case 'Absent':
                         $absentDays++;
                         break;
                 }
@@ -514,9 +516,9 @@ class TeacherAttendanceTrackingService
     {
         $mapping = match ($status) {
             'present' => 'present',
-            'Unexcused absence' => 'absent',
-            'Late' => 'lateness',
-            'Excused absence' => 'excused',
+            'absent' => 'absent',
+            'late' => 'lateness',
+            'justified_absent' => 'excused',
             default => 'present',
         };
 
@@ -530,8 +532,8 @@ class TeacherAttendanceTrackingService
     {
         return match ($status) {
             'present' => 'present',
-            'absent' => 'Unexcused absence',
-            'late' => 'Late',
+            'absent' => 'absent',
+            'late' => 'late',
             default => 'present',
         };
     }
@@ -543,9 +545,9 @@ class TeacherAttendanceTrackingService
     {
         return match ($status) {
             'present' => 'present',
-            'Unexcused absence' => 'absent',
-            'Late' => 'lateness',
-            'Excused absence' => 'justifiedAbsent',
+            'absent' => 'absent',
+            'late' => 'lateness',
+            'justified_absent' => 'justifiedAbsent',
             default => 'present',
         };
     }

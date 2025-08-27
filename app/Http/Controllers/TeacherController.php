@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
+use App\Http\Requests\TeacherStudentMarkRequest;
 use App\Services\TeacherService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,5 +46,17 @@ class TeacherController extends Controller
     public function getProfile(): JsonResponse
     {
         return $this->teacherService->getTeacherProfile();
+    }
+
+    /**
+     * Add or update student marks for a specific subject
+     * 
+     * @param TeacherStudentMarkRequest $request
+     * @param int $studentId
+     * @return JsonResponse
+     */
+    public function addOrUpdateStudentMarks(TeacherStudentMarkRequest $request, int $studentId): JsonResponse
+    {
+        return $this->teacherService->addOrUpdateStudentMarks($studentId, $request->validated());
     }
 }

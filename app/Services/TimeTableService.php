@@ -3,16 +3,22 @@
 namespace App\Services;
 
 use App\Enums\Permissions\TimetablePermission;
+use App\Exceptions\PermissionException;
 use App\Exceptions\TimetableNotFoundException;
 use App\Helpers\AuthHelper;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\TimeTableResource;
 use App\Models\TimeTable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class TimeTableService
 {
-    public function create($request)
+    /**
+     * @throws PermissionException
+     */
+    public function create($request): JsonResponse
     {
         $user = auth()->user();
 
@@ -37,17 +43,26 @@ class TimeTableService
                 __('messages.timetable.created'),
                 201
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            return $e->getMessage();
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                400,
+                false
+            );
         }
     }
 
-    public function update($request, $id)
+    /**
+     * @throws PermissionException
+     * @throws TimetableNotFoundException
+     */
+    public function update($request, $id): JsonResponse
     {
         AuthHelper::authorize(TimetablePermission::update_timetable->value);
 
-        $timetable = Timetable::find($id);
+        $timetable = Timetable::findOrFail($id);
 
         if (!$timetable) {
             throw new TimetableNotFoundException();
@@ -68,20 +83,29 @@ class TimeTableService
 
             return ResponseHelper::jsonResponse(
                 new TimetableResource($timetable),
-                __('messages.timetable.updated'),
-                200
+                __('messages.timetable.updated')
             );
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            return $e->getMessage();
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                400,
+                false
+            );
         }
     }
-    public function delete($id)
+
+    /**
+     * @throws PermissionException
+     * @throws TimetableNotFoundException
+     */
+    public function delete($id): JsonResponse
     {
         AuthHelper::authorize(TimetablePermission::delete_timetable->value);
 
-        $timetable = Timetable::find($id);
+        $timetable = Timetable::findOrFail($id);
         if (!$timetable) {
             throw new TimetableNotFoundException();
         }
@@ -95,20 +119,29 @@ class TimeTableService
 
             return ResponseHelper::jsonResponse(
                 null,
-                __('messages.timetable.deleted'),
-                200
+                __('messages.timetable.deleted')
             );
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
-            return $e->getMessage();
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                400,
+                false
+            );
         }
     }
-    public function get($id)
+
+    /**
+     * @throws PermissionException
+     * @throws TimetableNotFoundException
+     */
+    public function get($id): JsonResponse
     {
         AuthHelper::authorize(TimetablePermission::get_timetable->value);
 
-        $timetable = Timetable::find($id);
+        $timetable = Timetable::findOrFail($id);
 
         if (!$timetable) {
             throw new TimetableNotFoundException();
@@ -116,20 +149,22 @@ class TimeTableService
 
         return ResponseHelper::jsonResponse(
             new TimetableResource($timetable),
-            __('messages.timetable.get'),
-            200
+            __('messages.timetable.get')
         );
     }
-    public function list()
+
+    /**
+     * @throws PermissionException
+     */
+    public function list(): JsonResponse
     {
         AuthHelper::authorize(TimetablePermission::list_timetable->value);
 
-        $timetables = Timetable::latest()->paginate(10);
+        $timetables = Timetable::all();
 
         return ResponseHelper::jsonResponse(
             TimetableResource::collection($timetables),
-            __('messages.timetable.list'),
-            200
+            __('messages.timetable.list')
         );
     }
 }

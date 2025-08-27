@@ -44,7 +44,13 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
     Route::resource('school_shifts', SchoolShiftController::class);
     Route::resource('timetable', TimeTableController::class);
     Route::resource('class_period', ClassPeriodController::class);
+    Route::delete('class_period/{id}/force', [ClassPeriodController::class, 'forceDelete'])->name('class_period.force_delete');
     Route::resource('schedules', ScheduleController::class);
+
+    // Weekly Schedule Management APIs
+    Route::get('admin/schedules', [ScheduleController::class, 'getSchedulesForSection'])->name('admin.schedules.index');
+    Route::post('admin/schedules/bulk', [ScheduleController::class, 'createOrUpdateBulkSchedules'])->name('admin.schedules.bulk.create-or-update');
+
     Route::post('class-sessions', [ClassSessionController::class, 'create']);
     Route::put('class-sessions/{id}', [ClassSessionController::class, 'update']);
     Route::delete('class-sessions/{id}', [ClassSessionController::class, 'destroy']);
@@ -72,6 +78,10 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::get('teacher/profile', [TeacherController::class, 'getProfile'])->name('teacher.profile');
     Route::get('teacher/home', [TeacherHomeController::class, 'home'])->name('teacher.home');
     Route::get('teacher/timetable', [TeacherTimetableController::class, 'timetable'])->name('teacher.timetable');
+});
+
+Route::middleware(['auth:api', 'user_type:teacher', 'throttle:60,1'])->group(function () {
+    Route::post('teacher/students/{student_id}/marks', [TeacherController::class, 'addOrUpdateStudentMarks'])->name('teacher.students.marks');
 });
 
 Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(function () {
@@ -118,6 +128,7 @@ require __DIR__.'/teacher-attendance-tracking.php';
 require __DIR__.'/assignments.php';
 require __DIR__.'/logs.php';
 require __DIR__.'/app-updates.php';
+
 
 
 Route::post('/send-notification', [\App\Http\Controllers\NotificationController::class, 'sendToUser']);

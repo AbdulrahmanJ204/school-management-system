@@ -24,7 +24,7 @@ class ScheduleService
 
         $classPeriod = ClassPeriod::findOrFail($credentials['class_period_id']);
 
-        if ($classPeriod->type === 'opportunity') {
+        if ($classPeriod->type === 'break') {
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.schedule.cant_be_created'),
@@ -70,7 +70,7 @@ class ScheduleService
 
         $classPeriod = ClassPeriod::findOrFail($credentials['class_period_id']);
 
-        if ($classPeriod->type === 'opportunity') {
+        if ($classPeriod->type === 'break') {
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.schedule.cant_be_created'),

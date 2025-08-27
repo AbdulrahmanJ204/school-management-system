@@ -97,8 +97,8 @@ class SchoolDayService
         $this->checkPermission(PermissionEnum::UPDATE_SCHOOL_DAY);
 
         $schoolDay->update([
-            'date' => $request->date,
-            'semester_id' => $request->semester_id,
+//            'date' => $request->date,
+//            'semester_id' => $request->semester_id,
             'type' => $request->type,
         ]);
 
@@ -120,12 +120,8 @@ class SchoolDayService
         $this->checkPermission(PermissionEnum::DELETE_SCHOOL_DAY);
 
         // Check if school day has related data
-        if ($schoolDay->assignments()->exists() ||
-            $schoolDay->behaviorNotes()->exists() ||
-            $schoolDay->studyNotes()->exists() ||
-            $schoolDay->studentAttendances()->exists() ||
-            $schoolDay->teacherAttendances()->exists() ||
-            $schoolDay->news()->exists()) {
+        if ($schoolDay->behaviorNotes()->exists() ||
+            $schoolDay->studyNotes()->exists()) {
             return response()->json([
                 'message' => 'Cannot delete school day with existing related data'
             ], ResponseAlias::HTTP_CONFLICT);

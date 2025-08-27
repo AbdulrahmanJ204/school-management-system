@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\SchoolDayRequest;
+use App\Http\Requests\UpdateSchoolDayRequest;
 use App\Models\SchoolDay;
 use App\Models\Semester;
 use App\Services\SchoolDayService;
@@ -50,7 +51,7 @@ class SchoolDayController extends Controller
      * Update the specified resource in storage.
      * @throws PermissionException
      */
-    public function update(SchoolDayRequest $request, SchoolDay $schoolDay): JsonResponse
+    public function update(UpdateSchoolDayRequest $request, SchoolDay $schoolDay): JsonResponse
     {
         return $this->schoolDayService->updateSchoolDay($request, $schoolDay);
     }

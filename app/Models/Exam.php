@@ -23,7 +23,7 @@ class Exam extends Model
     protected $casts = [
         'type' => ExamType::class,
     ];
-
+    protected $with =['subject', 'grade'];
     public function schoolDay(): BelongsTo
     {
         return $this->belongsTo(SchoolDay::class, 'school_day_id');
@@ -43,4 +43,4 @@ class Exam extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-} 
+}

@@ -7,6 +7,7 @@ use App\Http\Requests\BehaviorNoteRequest;
 use App\Http\Requests\BehaviorNote\ListBehaviorNoteRequest;
 use App\Http\Requests\BehaviorNote\StoreBehaviorNoteRequest;
 use App\Http\Requests\BehaviorNote\UpdateBehaviorNoteRequest;
+use App\Http\Requests\BehaviorNote\IndexBehaviorNoteRequest;
 use App\Services\BehaviorNoteService;
 use Illuminate\Http\JsonResponse;
 
@@ -22,9 +23,9 @@ class BehaviorNoteController extends Controller
     /**
      * @throws PermissionException
      */
-    public function index(): JsonResponse
+    public function index(IndexBehaviorNoteRequest $request): JsonResponse
     {
-        return $this->behaviorNoteService->listBehaviorNotes();
+        return $this->behaviorNoteService->listBehaviorNotes($request);
     }
 
     /**
@@ -83,21 +84,7 @@ class BehaviorNoteController extends Controller
         return $this->behaviorNoteService->forceDeleteBehaviorNote($id);
     }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getByStudent($studentId): JsonResponse
-    {
-        return $this->behaviorNoteService->getByStudent($studentId);
-    }
 
-    /**
-     * @throws PermissionException
-     */
-    public function getBySchoolDay($schoolDayId): JsonResponse
-    {
-        return $this->behaviorNoteService->getBySchoolDay($schoolDayId);
-    }
 
     /**
      * Get behavior notes for student (no pagination, with filters)

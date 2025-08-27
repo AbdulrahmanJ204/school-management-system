@@ -23,8 +23,6 @@ class ClassPeriodResource extends JsonResource
             'period_order'     => $this->period_order,
             'type'             => $this->type,
             'duration_minutes' => $this->duration_minutes,
-            'created_by'       => $this->created_by,
-            'created_at'       => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }
 }

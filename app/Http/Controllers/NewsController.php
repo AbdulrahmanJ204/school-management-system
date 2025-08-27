@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ImageUploadFailed;
 use App\Exceptions\PermissionException;
 use App\Http\Requests\ListDeletedNewsRequest;
 use App\Http\Requests\News\ListNewsRequest;
 use App\Http\Requests\News\StoreNewsRequest;
 use App\Http\Requests\News\UpdateNewsRequest;
+use App\Http\Resources\NewsResource;
 use App\Models\News;
 use App\Services\News\NewsService;
 use Illuminate\Http\JsonResponse;
 
 class NewsController extends Controller
 {
-    protected $newsService;
+    protected NewsService $newsService;
 
     public function __construct(NewsService $newsService)
     {
@@ -36,10 +38,12 @@ class NewsController extends Controller
     {
         return $this->newsService->list($request , true);
     }
+
     /**
      * Store a newly created resource in storage.
+     * @throws ImageUploadFailed
      */
-    public function store(StoreNewsRequest $request)
+    public function store(StoreNewsRequest $request): NewsResource
     {
         return $this->newsService->store($request);
     }

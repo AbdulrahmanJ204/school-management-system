@@ -22,7 +22,10 @@ class SchoolDay extends Model
     protected $casts = [
         'date' => 'date'
     ];
-
+    protected $with =[
+        'semester',
+        'exams'
+    ];
     // Relations
     public function semester(): BelongsTo
     {

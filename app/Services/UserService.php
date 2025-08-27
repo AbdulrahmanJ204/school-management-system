@@ -111,7 +111,8 @@ class UserService
             // Update student enrollment if GPA or grade_id is provided
             if ($user->user_type === 'student' && (isset($credentials['last_year_gpa']) || isset($credentials['grade_id']))) {
                 // Get the current active year and first semester
-                $year = Grade::where('id', $credentials['grade_id'])->first()->year;
+                $year = isset($credentials['grade_id']) ?  Grade::where('id', $credentials['grade_id'])->first()->year
+                : Year::active()->first();
                 if ($year) {
                     $firstSemester = Semester::where('year_id', $year->id)
                         ->orderBy('start_date', 'asc')
@@ -145,7 +146,7 @@ class UserService
                                 'semester_id' => $firstSemester->id,
                                 'year_id' => $year->id,
                                 'last_year_gpa' => $credentials['last_year_gpa'] ?? null,
-                                'created_by' => $admin->id,
+                                'created_by' => $user->id,
                             ]);
                         }
                     }

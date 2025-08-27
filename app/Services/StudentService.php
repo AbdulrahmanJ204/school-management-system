@@ -335,9 +335,9 @@ class StudentService
             })
             ->get();
 
-        $excusedAbsences = $attendanceRecords->where('status', 'Excused absence')->count();
-        $unexcusedAbsences = $attendanceRecords->where('status', 'Unexcused absence')->count();
-        $lateRecords = $attendanceRecords->where('status', 'Late')->count();
+        $excusedAbsences = $attendanceRecords->where('status', 'justified_absent')->count();
+        $unexcusedAbsences = $attendanceRecords->where('status', 'absent')->count();
+        $lateRecords = $attendanceRecords->where('status', 'late')->count();
 
         $totalAbsences = $excusedAbsences + $unexcusedAbsences;
 

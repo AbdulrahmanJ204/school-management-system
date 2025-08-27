@@ -60,7 +60,7 @@ class ClassPeriodSeeder extends Seeder
                 'start_time' => '09:25:00',
                 'end_time' => '09:45:00',
                 'period_order' => 4,
-                'type' => ClassPeriodType::OPPORTUNITY,
+                'type' => ClassPeriodType::BREAK,
                 'duration_minutes' => 20,
             ],
 //            [
@@ -92,7 +92,7 @@ class ClassPeriodSeeder extends Seeder
 //                'start_time' => '12:10:00',
 //                'end_time' => '12:40:00',
 //                'period_order' => 8,
-//                'type' => ClassPeriodType::OPPORTUNITY,
+//                'type' => ClassPeriodType::BREAK,
 //                'duration_minutes' => 30,
 //            ],
 //            [

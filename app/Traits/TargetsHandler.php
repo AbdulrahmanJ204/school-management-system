@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\News;
 use App\Models\NewsTarget;
+use App\Models\SchoolShiftTarget;
 use App\Models\Year;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
