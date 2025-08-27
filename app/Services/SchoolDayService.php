@@ -120,7 +120,7 @@ class SchoolDayService
         $this->checkPermission(PermissionEnum::DELETE_SCHOOL_DAY);
 
         // Check if school day has related data
-        if ($schoolDay->assignments()->exists() ||
+        if (
             $schoolDay->behaviorNotes()->exists() ||
             $schoolDay->studyNotes()->exists() ||
             $schoolDay->studentAttendances()->exists() ||
