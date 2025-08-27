@@ -20,13 +20,13 @@ class CreateQuestionRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'question_text' => 'required|json',
-            'question_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'choices' => 'required|json',
+            'question_text' => 'required',
+            'question_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'choices' => 'required',
             'choices_count'   => 'required|integer|min:2',
             'right_choice' => 'required|integer|min:0',
-            'hint' => 'nullable|json',
-            'hint_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'hint' => 'nullable',
+            'hint_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'order' => 'required|integer|min:1',
         ];
     }

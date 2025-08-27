@@ -79,7 +79,7 @@ Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(fun
     Route::get('student/home', [StudentHomeController::class, 'home'])->name('student.home');
     Route::get('student/timetable', [StudentTimetableController::class, 'timetable'])->name('student.timetable');
     Route::get('student/exams', [StudentExamController::class, 'index'])->name('student.exams');
-    
+
     // Student complaint routes
     Route::prefix('student/complaints')->name('student.complaints.')->group(function () {
         Route::post('/', [StudentComplaintController::class, 'store'])->name('store');
@@ -118,3 +118,6 @@ require __DIR__.'/teacher-attendance-tracking.php';
 require __DIR__.'/assignments.php';
 require __DIR__.'/logs.php';
 require __DIR__.'/app-updates.php';
+
+
+Route::post('/send-notification', [\App\Http\Controllers\NotificationController::class, 'sendToUser']);

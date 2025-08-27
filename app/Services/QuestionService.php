@@ -44,6 +44,7 @@ class QuestionService
             throw new ImageUploadFailed(); // your custom exception
         }
     }
+
     private function normalizeDeltaToPlainText($delta)
     {
         if (is_string($delta)) {
@@ -79,7 +80,7 @@ class QuestionService
             throw new QuizNotFoundException();
         }
 
-        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('انشاء سؤال')) || $quiz->created_by !== $user->id) {
+        if ($user->user_type === 'student' || !$user->hasPermissionTo('انشاء سؤال')) {
             throw new PermissionException();
         }
 
@@ -128,7 +129,7 @@ class QuestionService
             throw new PermissionException();
         }
 
-        if(!$quiz) {
+        if (!$quiz) {
             throw new QuizNotFoundException();
         }
 

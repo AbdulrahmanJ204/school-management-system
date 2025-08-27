@@ -36,4 +36,15 @@ class FcmService
 
         return $this->messaging->send($message);
     }
+
+    public function sendToTopic(string $topic, string $title, string $body, array $data = []): array
+    {
+        $notification = Notification::create($title, $body);
+
+        $message = CloudMessage::withTarget('topic', $topic)
+            ->withNotification($notification)
+            ->withData($data);
+
+        return $this->messaging->send($message);
+    }
 }

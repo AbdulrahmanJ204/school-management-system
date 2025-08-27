@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +27,9 @@ class Semester extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'is_active' => 'boolean'
+    ];
+    protected $with = [
+        'year',
     ];
 
     // Relations
@@ -51,6 +56,13 @@ class Semester extends Model
     public function quizTargets(): HasMany
     {
         return $this->hasMany(QuizTarget::class);
+    }
+
+
+    #[Scope]
+    protected function active(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
     }
 }
 

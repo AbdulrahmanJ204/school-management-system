@@ -38,7 +38,7 @@ class TeacherSectionSubjectSeeder extends Seeder
                     $teacher = $teachers->random();
 
                     $teacherSectionSubjects[] = [
-                        'teacher_id' => $teacher->id,
+                        'teacher_id' => 1,
                         'grade_id' => $section->grade_id,
                         'subject_id' => $subject->id,
                         'section_id' => $section->id,

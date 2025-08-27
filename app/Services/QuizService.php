@@ -11,6 +11,7 @@ use App\Http\Resources\DetailedQuizResource;
 use App\Http\Resources\QuizResource;
 use App\Models\Quiz;
 use App\Models\Section;
+use App\Models\Semester;
 use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -45,9 +46,9 @@ class QuizService
         $user = auth()->user();
 
         // Check if authenticated and has the correct user_type
-        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('عرض الاختبارات المؤتمتة'))) {
-            throw new PermissionException(); // or return error response
-        }
+//        if ( $user->hasPermissionTo('عرض الاختبارات المؤتمتة')) {
+//            throw new PermissionException(); // or return error response
+//        }
 
         $credentials = $request->validated();
 
@@ -131,7 +132,9 @@ class QuizService
 
         $credentials['quiz_photo'] = $this->handleImageUpload($request, 'quiz_photo', 'quiz_images');
         $credentials['created_by'] = $user->id;
-
+        if(!isset($credentials['semester_id'])){
+        $credentials['semester_id'] = Semester::active()->first()->id;
+        }
         DB::beginTransaction();
 
         try {
@@ -230,9 +233,9 @@ class QuizService
             throw new QuizNotFoundException();
         }
 
-        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('تعطيل اختبار مؤتمت')) || $quiz->created_by !== $user->id) {
-            throw new PermissionException();
-        }
+//        if ($user->hasPermissionTo('تعطيل اختبار مؤتمت')) {
+//            throw new PermissionException();
+//        }
 
         if (!$quiz->is_active) {
             return ResponseHelper::jsonResponse(
