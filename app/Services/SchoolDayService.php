@@ -121,8 +121,7 @@ class SchoolDayService
 
         // Check if school day has related data
         if ($schoolDay->behaviorNotes()->exists() ||
-            $schoolDay->studyNotes()->exists() ||
-            $schoolDay->news()->exists()) {
+            $schoolDay->studyNotes()->exists()) {
             return response()->json([
                 'message' => 'Cannot delete school day with existing related data'
             ], ResponseAlias::HTTP_CONFLICT);
