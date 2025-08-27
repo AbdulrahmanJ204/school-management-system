@@ -478,14 +478,14 @@ class NewsSeeder extends Seeder
             case 2:
                 NewsTarget::create([
                     'news_id' => $newsId,
-                    'grade_id' => 5,
+                    'grade_id' => 1, // Changed from 5 to 1
                     'section_id' => null,
                     'created_by' => 1,
                 ]);
                 break;
 
             case 3:
-                $section = Section::where('grade_id', 3)->where('title', 'A')->first();
+                $section = Section::where('grade_id', 1)->where('title', 'الأولى')->first(); // Changed from grade_id 3 to 1 and title 'A' to 'الأولى'
                 if ($section) {
                     NewsTarget::create([
                         'news_id' => $newsId,

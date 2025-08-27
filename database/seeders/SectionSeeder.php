@@ -13,12 +13,12 @@ class SectionSeeder extends Seeder
     public function run(): void
     {
         $sections = [];
-        $sectionNames = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة'];
+        $sectionNames = ['الأولى', 'الثانية', 'الثالثة'];
 
-        // Create sections for each grade (grades 1-12)
-        for ($gradeId = 1; $gradeId <= 12; $gradeId++) {
-            // Primary grades (1-6) have fewer sections
-            $numSections = $gradeId <= 6 ? 3 : 5;
+        // Create sections for each grade (grades 1-2, since only 2 grades exist)
+        for ($gradeId = 1; $gradeId <= 2; $gradeId++) {
+            // Primary grades (1-2) have 2 sections each
+            $numSections = 2;
 
             for ($i = 0; $i < $numSections; $i++) {
                 $sections[] = [

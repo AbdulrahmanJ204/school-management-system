@@ -15,8 +15,8 @@ class YearSeeder extends Seeder
         $years = [
             [
                 'name' => '2023-2024',
-                'start_date' => now()->subYears(1)->format('Y-m-d'),
-                'end_date' => now()->subYears(1)->addMonths(8)->format('Y-m-d'),
+                'start_date' => now()->subYears()->format('Y-m-d'),
+                'end_date' => now()->subYears()->addMonths(2)->format('Y-m-d'),
                 'is_active' => false,
                 'created_by' => 1,
                 'created_at' => now(),
@@ -25,7 +25,7 @@ class YearSeeder extends Seeder
             [
                 'name' => '2024-2025',
                 'start_date' => now()->format('Y-m-d'),
-                'end_date' => now()->addMonths(8)->format('Y-m-d'),
+                'end_date' => now()->addMonths(2)->format('Y-m-d'),
                 'is_active' => true,
                 'created_by' => 1,
                 'created_at' => now(),
@@ -33,8 +33,8 @@ class YearSeeder extends Seeder
             ],
             [
                 'name' => '2025-2026',
-                'start_date' => now()->addYears(1)->format('Y-m-d'),
-                'end_date' => now()->addYears(1)->addMonths(8)->format('Y-m-d'),
+                'start_date' => now()->addYears()->format('Y-m-d'),
+                'end_date' => now()->addYears()->addMonths(2)->format('Y-m-d'),
                 'is_active' => false,
                 'created_by' => 1,
                 'created_at' => now(),

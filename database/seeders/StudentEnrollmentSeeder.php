@@ -26,7 +26,7 @@ class StudentEnrollmentSeeder extends Seeder
         foreach ($students as $student) {
             // Assuming students have a grade_level attribute or similar
             // You may need to adjust this based on your Student model
-            $gradeId = rand(1, 13); // Random grade for demo purposes
+            $gradeId = rand(1, 3); // Random grade for demo purposes
             $sectionsInGrade = Section::where('grade_id', $gradeId)->get();
 
             if ($sectionsInGrade->count() > 0) {
