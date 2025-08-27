@@ -46,6 +46,11 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
     Route::resource('class_period', ClassPeriodController::class);
     Route::delete('class_period/{id}/force', [ClassPeriodController::class, 'forceDelete'])->name('class_period.force_delete');
     Route::resource('schedules', ScheduleController::class);
+
+    // Weekly Schedule Management APIs
+    Route::get('admin/schedules', [ScheduleController::class, 'getSchedulesForSection'])->name('admin.schedules.index');
+    Route::post('admin/schedules/bulk', [ScheduleController::class, 'createOrUpdateBulkSchedules'])->name('admin.schedules.bulk.create-or-update');
+
     Route::post('class-sessions', [ClassSessionController::class, 'create']);
     Route::put('class-sessions/{id}', [ClassSessionController::class, 'update']);
     Route::delete('class-sessions/{id}', [ClassSessionController::class, 'destroy']);
@@ -84,7 +89,7 @@ Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(fun
     Route::get('student/home', [StudentHomeController::class, 'home'])->name('student.home');
     Route::get('student/timetable', [StudentTimetableController::class, 'timetable'])->name('student.timetable');
     Route::get('student/exams', [StudentExamController::class, 'index'])->name('student.exams');
-    
+
     // Student complaint routes
     Route::prefix('student/complaints')->name('student.complaints.')->group(function () {
         Route::post('/', [StudentComplaintController::class, 'store'])->name('store');

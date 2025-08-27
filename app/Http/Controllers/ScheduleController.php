@@ -2,56 +2,80 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateScheduleRequest;
-use App\Http\Requests\UpdateScheduleRequest;
+use App\Enums\WeekDay;
+use App\Helpers\ResponseHelper;
+use App\Http\Requests\BulkCreateScheduleRequest;
 use App\Services\ScheduleService;
+use App\Services\WeeklyScheduleService;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
 {
-    protected $scheduleService;
+    protected ScheduleService $scheduleService;
+    protected WeeklyScheduleService $weeklyScheduleService;
 
-    public function __construct(ScheduleService $scheduleService)
+    public function __construct(ScheduleService $scheduleService, WeeklyScheduleService $weeklyScheduleService)
     {
         $this->scheduleService = $scheduleService;
-    }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        return $this->scheduleService->list();
+        $this->weeklyScheduleService = $weeklyScheduleService;
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Get schedules for a section and timetable with comprehensive data
      */
-    public function store(CreateScheduleRequest $request)
+    public function getSchedulesForSection(Request $request): JsonResponse
     {
-        return $this->scheduleService->create($request);
+        $request->validate([
+            'section_id' => 'required|integer|exists:sections,id',
+            'timetable_id' => 'required|integer|exists:time_tables,id',
+            'week_day' => 'nullable|string|in:' . implode(',', WeekDay::values()),
+        ]);
+
+        $sectionId = $request->input('section_id');
+        $timetableId = $request->input('timetable_id');
+        $weekDay = $request->input('week_day');
+
+        try {
+            $result = $this->weeklyScheduleService->getSchedulesForSection($sectionId, $timetableId, $weekDay);
+
+            return ResponseHelper::jsonResponse(
+                $result,
+                'Schedules retrieved successfully'
+            );
+        } catch (Exception $e) {
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                400
+            );
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Replace all schedules for a section (clear existing + create new)
      */
-    public function show(int $id)
+    public function createOrUpdateBulkSchedules(BulkCreateScheduleRequest $request): JsonResponse
     {
-        return $this->scheduleService->get($id);
-    }
+        try {
+            $result = $this->weeklyScheduleService->createOrUpdateBulkSchedules($request->validated());
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateScheduleRequest $request, int $id)
-    {
-        return $this->scheduleService->update($request, $id);
-    }
+            $message = 'All schedules replaced successfully';
+            if ($result->deleted_count > 0) {
+                $message = "Replaced {$result->deleted_count} existing schedules with {$result->created_count} new schedules";
+            }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        return $this->scheduleService->delete($id);
+            return ResponseHelper::jsonResponse(
+                $result,
+                $message
+            );
+        } catch (Exception $e) {
+            return ResponseHelper::jsonResponse(
+                null,
+                $e->getMessage(),
+                400
+            );
+        }
     }
 }
