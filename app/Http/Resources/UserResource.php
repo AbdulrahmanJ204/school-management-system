@@ -6,7 +6,7 @@ use App\Enums\UserType;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 
-class UserResource extends JsonResource
+class   UserResource extends JsonResource
 {
     public function toArray($request): array
     {
@@ -32,13 +32,13 @@ class UserResource extends JsonResource
         ];
 
         if ($this->user_type === 'student') {
-            $baseData['id'] = $this->student->id;
+            $baseData['student_id'] = $this->student->id;
         }
         if ($this->user_type === 'admin') {
-            $baseData['id'] = $this->admin->id;
+            $baseData['admin_id'] = $this->admin->id;
         }
         if ($this->user_type === 'teacher') {
-            $baseData['id'] = $this->teacher->id;
+            $baseData['teacher_id'] = $this->teacher->id;
         }
 
         if ($this->user_type !== 'student') {
