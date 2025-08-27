@@ -120,11 +120,8 @@ class SchoolDayService
         $this->checkPermission(PermissionEnum::DELETE_SCHOOL_DAY);
 
         // Check if school day has related data
-        if (
-            $schoolDay->behaviorNotes()->exists() ||
+        if ($schoolDay->behaviorNotes()->exists() ||
             $schoolDay->studyNotes()->exists() ||
-            $schoolDay->studentAttendances()->exists() ||
-            $schoolDay->teacherAttendances()->exists() ||
             $schoolDay->news()->exists()) {
             return response()->json([
                 'message' => 'Cannot delete school day with existing related data'
