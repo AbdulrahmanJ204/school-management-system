@@ -35,6 +35,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'image',
         'user_type',
         'last_login',
+        'fcm_token',
     ];
 
     /**

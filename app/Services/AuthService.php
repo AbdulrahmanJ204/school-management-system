@@ -124,7 +124,7 @@ class AuthService
                     $firstSemester = Semester::where('year_id', $activeYear->id)
                         ->orderBy('start_date', 'asc')
                         ->first();
-                    
+
                     if ($firstSemester) {
                         StudentEnrollment::create([
                             'student_id' => $user->student->id,
@@ -239,7 +239,7 @@ class AuthService
 
             $user->access_token = $accessToken->plainTextToken;
             $user->refresh_token = $refreshToken->plainTextToken;
-
+            $user->fcm_token = $credentials['fcm_token'] ?? null;
             return ResponseHelper::jsonResponse([
                 'user' => new UserResource($user),
             ], __('messages.auth.login'));
