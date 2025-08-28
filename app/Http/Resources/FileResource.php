@@ -69,6 +69,7 @@ class FileResource extends JsonResource
         }
 
         return [
+            'download_count'=>$this->downloadsCount(),
             'deleted_at' => $this->deleted_at?->format('Y-m-d h:i:s A'),
             'targets' => $targetsArray
         ];

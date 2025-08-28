@@ -20,12 +20,12 @@ class UpdateQuestionRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'question_text' => 'nullable|json',
+            'question_text' => 'nullable',
             'question_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'choices' => 'nullable|json',
+            'choices' => 'nullable',
             'choices_count'   => 'nullable|integer|min:2',
             'right_choice' => 'nullable|integer|min:0',
-            'hint' => 'nullable|json',
+            'hint' => 'nullable',
             'hint_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'order' => 'nullable|integer|min:1',
         ];

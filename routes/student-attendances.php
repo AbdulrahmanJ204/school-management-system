@@ -8,8 +8,10 @@ Route::prefix('student-attendances')
     ->middleware('auth:api')
     ->group(function () {
         Route::get('/', 'index');
-        Route::get('/{studentAttendance}', 'show');
         Route::get('/report/generate', 'generateReport');
+        Route::get('/daily', 'getDailyStudentsAttendance');
+        Route::get('/sessions', 'getSessionsStudentsAttendance');
+        Route::get('/{studentAttendance}', 'show');
 
         Route::post('/store', 'store');
         Route::post('/{studentAttendance}', 'update');

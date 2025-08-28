@@ -27,11 +27,8 @@ trait DownloadFile
                 'downloaded_at' => now(),
             ]
         );
-        $name = $file->title;
+
         $filePath = $file->file;
-        // TODO: Add Download Method;
-
-
         $url = asset(Storage::url($filePath));
         return ResponseHelper::jsonResponse(['url'=>$url] , 'file url generated');
     }

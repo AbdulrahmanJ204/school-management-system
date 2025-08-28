@@ -61,6 +61,13 @@ class File extends Model
             ->where('deleted_at', $this->deleted_at);
 
     }
+    public function downloads(): HasMany{
+        return $this->hasMany(FileDownload::class);
+    }
+    public function downloadsCount(): int
+    {
+        return $this->downloads()->get()->count();
+    }
 
     public function allTargets(): HasMany
     {

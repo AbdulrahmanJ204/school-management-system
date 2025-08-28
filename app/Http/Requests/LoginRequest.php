@@ -31,6 +31,7 @@ class  LoginRequest extends BaseRequest
             'identifier'  => 'nullable|string',
             'os_version'  => 'nullable|string',
             'os_name'     => 'nullable|string',
+            'fcm_token'     => 'nullable|string',
         ];
     }
 }

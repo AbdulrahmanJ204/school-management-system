@@ -20,7 +20,7 @@ return new class extends Migration
             $table->json('choices');
             $table->tinyinteger('choices_count');
             $table->tinyInteger('right_choice');
-            $table->json('hint');
+            $table->json('hint')->nullable();
             $table->string('hint_photo')->nullable();
             $table->integer('order')->default(0);
             $table->timestamps();
