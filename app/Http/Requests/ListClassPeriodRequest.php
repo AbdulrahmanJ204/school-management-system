@@ -5,14 +5,14 @@ namespace App\Http\Requests;
 use App\Enums\Permissions\TimetablePermission;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTimeTableRequest extends FormRequest
+class ListClassPeriodRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(TimetablePermission::update_timetable->value);
+        return auth()->user()->hasPermissionTo(TimetablePermission::list_class_period->value);
     }
 
     /**
@@ -23,10 +23,19 @@ class UpdateTimeTableRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'      => 'nullable|string|max:255',
-            'valid_from' => 'nullable|date|before:valid_to',
-            'valid_to'   => 'nullable|date|after:valid_from',
-            'is_active'  => 'nullable|boolean',
+            'school_shift_id' => 'nullable|exists:school_shifts,id',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'school_shift_id.exists' => 'The selected school shift does not exist.',
         ];
     }
 }

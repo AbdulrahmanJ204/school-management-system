@@ -62,6 +62,9 @@ class SchoolShiftService
 
         DB::commit();
 
+        // Load the relationships before returning the resource
+        $shift->load(['targets.grade', 'targets.section']);
+
         return ResponseHelper::jsonResponse(
             new SchoolShiftResource($shift),
             __('messages.school_shift.created'),
@@ -105,7 +108,7 @@ class SchoolShiftService
 
             DB::commit();
 
-            $schoolShift->load('targets');
+            $schoolShift->load(['targets.grade', 'targets.section']);
 
             return ResponseHelper::jsonResponse(
                 new SchoolShiftResource($schoolShift),
@@ -195,6 +198,9 @@ class SchoolShiftService
             throw new SchoolShiftNotFoundException();
         }
 
+        // Load the relationships before returning the resource
+        $schoolShift->load(['targets.grade', 'targets.section']);
+
         return ResponseHelper::jsonResponse(
             new SchoolShiftResource($schoolShift),
             __('messages.school_shift.get')
@@ -208,7 +214,7 @@ class SchoolShiftService
     {
         AuthHelper::authorize(TimetablePermission::list->value);
 
-        $shifts = SchoolShift::latest()->get();
+        $shifts = SchoolShift::with(['targets.grade', 'targets.section'])->latest()->get();
 
         return ResponseHelper::jsonResponse(
             SchoolShiftResource::collection($shifts),

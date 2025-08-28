@@ -73,7 +73,7 @@ class TeacherService
             ->with([
                 'grade:id,title',
                 'section:id,title,grade_id',
-                'subject:id,name,full_mark,main_subject_id',
+                'subject:id,name,full_mark,main_subject_id,homework_percentage,oral_percentage,activity_percentage,quiz_percentage,exam_percentage',
                 'subject.mainSubject:id,success_rate'
             ])
             ->whereHas('subject')
@@ -109,7 +109,12 @@ class TeacherService
                                 'id' => $item->subject->id,
                                 'name' => $item->subject->name,
                                 'full_mark' => $item->subject->full_mark,
-                                'min_mark' => $minMark
+                                'min_mark' => $minMark,
+                                'max_homework_mark' => $item->subject->homework_percentage * $item->subject->full_mark / 100,
+                                'max_oral_mark' => $item->subject->oral_percentage * $item->subject->full_mark / 100,
+                                'max_activity_mark' => $item->subject->activity_percentage * $item->subject->full_mark / 100,
+                                'max_quiz_mark' => $item->subject->quiz_percentage * $item->subject->full_mark / 100,
+                                'max_exam_mark' => $item->subject->exam_percentage * $item->subject->full_mark / 100,
                             ];
                         })
                         ->filter() // Remove any null values
@@ -271,19 +276,19 @@ class TeacherService
 
             $attendancePercentage = round(($completedSessions / $totalSessions) * 100);
 
-            // Get absence records from TeacherAttendance
+            // Get absent records from TeacherAttendance
             $absenceRecords = TeacherAttendance::where('teacher_id', $teacher->id)->get();
 
             $absencePercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
-                ->where('status', 'Unexcused absence')
+                ->where('status', 'absent')
                 ->count() / $totalSessions) * 100);
 
             $latenessPercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
-                ->where('status', 'Late')
+                ->where('status', 'lateness')
                 ->count() / $totalSessions) * 100);
 
             $justifiedAbsencePercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
-                ->where('status', 'Excused absence')
+                ->where('status', 'justified_absent')
                 ->count() / $totalSessions) * 100);
         } else {
             $attendancePercentage = 0;
@@ -402,14 +407,13 @@ class TeacherService
         }
 
         // Get the specified semester
-        $semester = Semester::find($markData['semester_id']);
-        if (!$semester) {
-            return ResponseHelper::jsonResponse(
-                null,
-                'الفصل الدراسي المحدد غير موجود',
-                404,
-                false
-            );
+        if (isset($markData['semester_id'])) {
+            $semester = Semester::find($markData['semester_id']);
+            if (!$semester) {
+                $semester = Semester::where('is_active', true)->first();
+            }
+        } else {
+            $semester = Semester::where('is_active', true)->first();
         }
 
         // Get the specified section
@@ -426,7 +430,7 @@ class TeacherService
         // Verify that the teacher is assigned to teach this subject for the specified section
         $teacherAssignment = TeacherSectionSubject::where('teacher_id', $teacherId)
             ->where('subject_id', $subjectId)
-            ->where('section_id', $markData['section_id'])
+            ->where('section_id', $section->id)
             ->where('is_active', true)
             ->first();
 
@@ -441,8 +445,8 @@ class TeacherService
 
         // Get student's enrollment for the specified semester and section
         $enrollment = StudentEnrollment::where('student_id', $studentId)
-            ->where('semester_id', $markData['semester_id'])
-            ->where('section_id', $markData['section_id'])
+            ->where('semester_id', $semester->id)
+            ->where('section_id', $section->id)
             ->first();
 
         if (!$enrollment) {

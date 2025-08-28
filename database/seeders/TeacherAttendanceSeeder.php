@@ -84,11 +84,11 @@ class TeacherAttendanceSeeder extends Seeder
         $rand = rand(1, 100);
 
         if ($rand <= 70) {
-            return 'Late'; // 70% late (teachers are mostly on time)
+            return 'lateness'; // 70% lateness (teachers are mostly on time)
         } elseif ($rand <= 85) {
-            return 'Excused absence'; // 15% excused absence
+            return 'justified_absent'; // 15% excused absent
         } else {
-            return 'Unexcused absence'; // 15% unexcused absence
+            return 'absent'; // 15% unexcused absent
         }
     }
 
@@ -102,11 +102,11 @@ class TeacherAttendanceSeeder extends Seeder
         if ($rand <= 50) {
             return 'present'; // 50% present for scheduled sessions
         } elseif ($rand <= 70) {
-            return 'Excused absence'; // 20% Excused absence
+            return 'justified_absent'; // 20% justified_absent
         } elseif ($rand <= 85) {
-            return 'Late'; // 15% late
+            return 'lateness'; // 15% lateness
         } else {
-            return 'Unexcused absence'; // 15% absence
+            return 'absent'; // 15% absent
         }
     }
 }

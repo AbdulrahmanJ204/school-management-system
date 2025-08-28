@@ -3,6 +3,7 @@
 namespace App\Http\Requests\TeacherAttendance;
 
 use App\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 class ListTeacherAttendanceRequest extends BaseRequest
 {
@@ -17,14 +18,14 @@ class ListTeacherAttendanceRequest extends BaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
             'teacher_id' => 'sometimes|exists:teachers,id',
             'class_session_id' => 'sometimes|exists:class_sessions,id',
-            'status' => 'sometimes|in:Excused absence,Unexcused absence,Late',
+            'status' => 'sometimes|in:present,justified_absent,absent,lateness',
             'date_from' => 'sometimes|date',
             'date_to' => 'sometimes|date|after_or_equal:date_from',
         ];

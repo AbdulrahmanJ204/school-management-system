@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
 use App\Http\Requests\CreateClassPeriodRequest;
+use App\Http\Requests\ListClassPeriodRequest;
 use App\Http\Requests\UpdateClassPeriodRequest;
 use App\Services\ClassPeriodService;
 use Illuminate\Http\JsonResponse;
@@ -21,9 +22,9 @@ class ClassPeriodController extends Controller
      * Display a listing of the resource.
      * @throws PermissionException
      */
-    public function index(): JsonResponse
+    public function index(ListClassPeriodRequest $request): JsonResponse
     {
-        return $this->classperiodService->list();
+        return $this->classperiodService->list($request);
     }
 
     /**

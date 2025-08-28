@@ -21,7 +21,9 @@ class SectionResource extends JsonResource
             'grade_id' => $this->grade_id,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
-            'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
+            'created_by' => $this->whenLoaded('createdBy', function () {
+                return $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name;
+            }),
 
             'grade' => new GradeResource($this->whenLoaded('grade')),
             'student_enrollments' => StudentEnrollmentResource::collection($this->whenLoaded('studentEnrollments')),

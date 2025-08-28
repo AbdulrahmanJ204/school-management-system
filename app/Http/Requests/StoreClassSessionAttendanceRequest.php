@@ -33,7 +33,7 @@ class StoreClassSessionAttendanceRequest extends BaseRequest
             'attendances.*.status' => [
                 'required',
                 'string',
-                'in:present,absent,late'
+                'in:present,absent,lateness'
             ],
         ];
     }
@@ -47,14 +47,14 @@ class StoreClassSessionAttendanceRequest extends BaseRequest
             'attendances.required' => 'بيانات الحضور مطلوبة',
             'attendances.array' => 'بيانات الحضور يجب أن تكون مصفوفة',
             'attendances.min' => 'يجب إدخال بيانات حضور طالب واحد على الأقل',
-            
+
             'attendances.*.student_id.required' => 'معرف الطالب مطلوب',
             'attendances.*.student_id.integer' => 'معرف الطالب يجب أن يكون رقماً صحيحاً',
             'attendances.*.student_id.exists' => 'الطالب المحدد غير موجود',
-            
+
             'attendances.*.status.required' => 'حالة الحضور مطلوبة',
             'attendances.*.status.string' => 'حالة الحضور يجب أن تكون نصاً',
-            'attendances.*.status.in' => 'حالة الحضور يجب أن تكون إحدى القيم: present, absent, late'
+            'attendances.*.status.in' => 'حالة الحضور يجب أن تكون إحدى القيم: present, absent, lateness'
         ];
     }
 }
