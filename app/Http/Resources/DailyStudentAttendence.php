@@ -17,21 +17,5 @@ class DailyStudentAttendence extends JsonResource
         return parent::toArray($request);
     }
 }
-// school day id
-// query params : grade , section
-// return
-// { data :
-// { students [
-//      {id  ,name , status}
-// ]
-//
 
-// to update send student id , school day id , status
 
-// {
-//    school day id
-//  [{
-//  student id
-//  status
-//}]
-//}
