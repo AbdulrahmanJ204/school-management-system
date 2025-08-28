@@ -26,6 +26,7 @@ class ScheduleSeeder extends Seeder
         if ($timetables->isEmpty()) {
             // Create a default timetable if none exists
             $timetable = TimeTable::create([
+                'title' => 'Default Timetable',
                 'valid_from' => now()->startOfYear(),
                 'valid_to' => now()->endOfYear(),
                 'is_active' => true,

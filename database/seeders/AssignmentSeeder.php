@@ -24,7 +24,7 @@ class AssignmentSeeder extends Seeder
         }
 
         // Assignment types available
-        $assignmentTypes = ['homework', 'oral', 'quiz', 'project'];
+        $assignmentTypes = ['homework', 'oral', 'quiz'];
 
         // Sample assignment data for different subjects
         $assignmentData = [
