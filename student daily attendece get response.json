@@ -1,0 +1,19 @@
+// queryParams: school_day_id , section
+
+{
+    "data": {
+        "students":
+    [
+        {
+            "id": 1,
+            "full_name": "manar",
+            "status": "'present', 'justified_absent', 'absent', 'lateness'"
+        },
+        {
+            "id": 2,
+            "full_name": "manar2",
+            "status": "'present', 'justified_absent', 'absent', 'lateness'"
+        }
+    ]
+    }
+}
