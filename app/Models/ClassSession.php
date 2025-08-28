@@ -71,7 +71,12 @@ class ClassSession extends Model
 
     public function assignments(): HasMany
     {
-        return $this->hasMany(Assignment::class);
+        return $this->hasMany(Assignment::class, 'assigned_session_id');
+    }
+
+    public function dueAssignments(): HasMany
+    {
+        return $this->hasMany(Assignment::class, 'due_session_id');
     }
 
     public function studyNotes(): HasMany
