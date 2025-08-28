@@ -64,7 +64,7 @@ class StudentProfileDataSeeder extends Seeder
     private function generateStudentMarks($enrollments): void
     {
         $subjects = Subject::all();
-        
+
         if ($subjects->isEmpty()) {
             $this->command->warn('No subjects found. Please run SubjectSeeder first.');
             return;
@@ -74,7 +74,7 @@ class StudentProfileDataSeeder extends Seeder
 
         foreach ($enrollments as $enrollment) {
             // Get subjects for this enrollment's grade
-            $gradeSubjects = $subjects->where('main_subject_id', 
+            $gradeSubjects = $subjects->where('main_subject_id',
                 $enrollment->section->grade->mainSubjects->first()->id ?? 1);
 
             foreach ($gradeSubjects as $subject) {
@@ -146,10 +146,10 @@ class StudentProfileDataSeeder extends Seeder
 
             foreach ($sectionEnrollments as $enrollment) {
                 $student = $enrollment->student;
-                
+
                 $status = $this->getRandomAttendanceStatus();
-                
-                // Only create records for absences and late arrivals (using updateOrCreate to respect unique constraint)
+
+                // Only create records for absences and lateness arrivals (using updateOrCreate to respect unique constraint)
                 if ($status !== 'present') {
                     StudentAttendance::updateOrCreate(
                         [
@@ -174,17 +174,17 @@ class StudentProfileDataSeeder extends Seeder
     private function getRandomAttendanceStatus(): string
     {
         $rand = rand(1, 100);
-        
+
         if ($rand <= 75) {
             return 'present'; // 75% present (no record created)
         } elseif ($rand <= 85) {
-            return 'Unexcused absence'; // 10% unexcused absence
+            return 'absent'; // 10% unexcused absent
         } elseif ($rand <= 90) {
-            return 'Late'; // 5% late
+            return 'lateness'; // 5% lateness
         } elseif ($rand <= 95) {
-            return 'Excused absence'; // 5% excused absence
+            return 'justified_absent'; // 5% excused absent
         } else {
-            return 'Unexcused absence'; // 5% more absences
+            return 'absent'; // 5% more absences
         }
     }
 }
