@@ -148,10 +148,8 @@ class StudentAttendanceSeeder extends Seeder
             return 'Unexcused absence'; // 10% unexcused absence
         } elseif ($rand <= 85) {
             return 'Late'; // 5% late
-        } elseif ($rand <= 90) {
-            return 'Excused absence'; // 5% excused absence
         } else {
-            return 'Unexcused absence'; // 10% more absences
+            return 'Excused absence'; // 15% excused absence
         }
     }
 

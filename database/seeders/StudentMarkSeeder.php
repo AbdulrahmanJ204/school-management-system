@@ -14,51 +14,69 @@ class StudentMarkSeeder extends Seeder
      */
     public function run(): void
     {
-        $enrollments = StudentEnrollment::with(['section', 'semester'])->get();
-        $subjects = Subject::all();
+        $enrollments = StudentEnrollment::with(['section.grade.mainSubjects'])->get();
 
-        if ($enrollments->isEmpty() || $subjects->isEmpty()) {
-            $this->command->warn('Student Enrollments or Subjects not found. Please run StudentEnrollmentSeeder and SubjectSeeder first.');
+        if ($enrollments->isEmpty()) {
+            $this->command->warn('Student Enrollments not found. Please run StudentEnrollmentSeeder first.');
             return;
         }
 
         $marks = [];
 
         foreach ($enrollments as $enrollment) {
-            // Get subjects for this enrollment's section
-            $sectionSubjects = $subjects->where('main_subject_id', $enrollment->section->grade->mainSubjects->first()->id ?? 1);
+            $grade = $enrollment->section->grade;
+
+            if (!$grade || $grade->mainSubjects->isEmpty()) {
+                $this->command->warn("No subjects found for Grade ID {$grade->id} (Enrollment ID {$enrollment->id}). Skipping.");
+                continue;
+            }
+
+            // collect all subjects belonging to this grade's main subjects
+            $gradeSubjectIds = $grade->mainSubjects->pluck('id')->toArray();
+
+            $sectionSubjects = Subject::whereIn('main_subject_id', $gradeSubjectIds)->get();
+
+            if ($sectionSubjects->isEmpty()) {
+                $this->command->warn("No subjects linked to Grade ID {$grade->id}. Skipping.");
+                continue;
+            }
 
             foreach ($sectionSubjects as $subject) {
-                // Generate random marks based on subject percentages
+                // Generate random marks
                 $homework = rand(0, 100);
                 $oral = rand(0, 100);
                 $activity = rand(0, 100);
                 $quiz = rand(0, 100);
                 $exam = rand(0, 100);
 
-                // Calculate total based on subject percentages
+                // Calculate weighted total
                 $total = ($homework * $subject->homework_percentage / 100) +
-                        ($oral * $subject->oral_percentage / 100) +
-                        ($activity * $subject->activity_percentage / 100) +
-                        ($quiz * $subject->quiz_percentage / 100) +
-                        ($exam * $subject->exam_percentage / 100);
+                    ($oral * $subject->oral_percentage / 100) +
+                    ($activity * $subject->activity_percentage / 100) +
+                    ($quiz * $subject->quiz_percentage / 100) +
+                    ($exam * $subject->exam_percentage / 100);
 
                 $marks[] = [
                     'enrollment_id' => $enrollment->id,
-                    'subject_id' => $subject->id,
-                    'homework' => $homework,
-                    'oral' => $oral,
-                    'activity' => $activity,
-                    'quiz' => $quiz,
-                    'exam' => $exam,
-                    'total' => round($total),
-                    'created_by' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'subject_id'    => $subject->id,
+                    'homework'      => $homework,
+                    'oral'          => $oral,
+                    'activity'      => $activity,
+                    'quiz'          => $quiz,
+                    'exam'          => $exam,
+                    'total'         => round($total),
+                    'created_by'    => 1,
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
                 ];
             }
         }
 
-        DB::table('student_marks')->insert($marks);
+        if (!empty($marks)) {
+            DB::table('student_marks')->insert($marks);
+            $this->command->info(count($marks) . ' student marks inserted successfully.');
+        } else {
+            $this->command->warn('No student marks were generated.');
+        }
     }
 }
