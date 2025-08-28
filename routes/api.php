@@ -52,6 +52,9 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
     Route::get('admin/schedules', [ScheduleController::class, 'getSchedulesForSection'])->name('admin.schedules.index');
     Route::post('admin/schedules/bulk', [ScheduleController::class, 'createOrUpdateBulkSchedules'])->name('admin.schedules.bulk.create-or-update');
 
+    // Class Periods Management APIs
+    Route::get('admin/class-periods', [AdminController::class, 'getClassPeriodsBySection'])->name('admin.class-periods.by-section');
+
     Route::post('class-sessions', [ClassSessionController::class, 'create']);
     Route::put('class-sessions/{id}', [ClassSessionController::class, 'update']);
     Route::delete('class-sessions/{id}', [ClassSessionController::class, 'destroy']);
