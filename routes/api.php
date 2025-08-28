@@ -16,6 +16,7 @@ use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\StudentHomeController;
 use App\Http\Controllers\StudentTimetableController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherClassSessionController;
 use App\Http\Controllers\TeacherHomeController;
 use App\Http\Controllers\TeacherTimetableController;
 use App\Http\Controllers\TimeTableController;
@@ -78,6 +79,10 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::get('teacher/profile', [TeacherController::class, 'getProfile'])->name('teacher.profile');
     Route::get('teacher/home', [TeacherHomeController::class, 'home'])->name('teacher.home');
     Route::get('teacher/timetable', [TeacherTimetableController::class, 'timetable'])->name('teacher.timetable');
+    
+    // Teacher Class Sessions APIs
+    Route::get('teacher/class-sessions/past-week', [TeacherClassSessionController::class, 'getPastWeekSessions'])->name('teacher.class-sessions.past-week');
+    Route::get('teacher/class-sessions/upcoming', [TeacherClassSessionController::class, 'getUpcomingSessions'])->name('teacher.class-sessions.upcoming');
 });
 
 Route::middleware(['auth:api', 'user_type:teacher', 'throttle:60,1'])->group(function () {

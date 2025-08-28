@@ -24,7 +24,7 @@ class AssignmentSeeder extends Seeder
         }
 
         // Assignment types available
-        $assignmentTypes = ['homework', 'oral', 'quiz', 'project'];
+        $assignmentTypes = ['homework', 'oral', 'quiz'];
 
         // Sample assignment data for different subjects
         $assignmentData = [
@@ -103,36 +103,6 @@ class AssignmentSeeder extends Seeder
                     'Writing Quiz - Essay Structure',
                     'Reading Comprehension Quiz'
                 ]
-            ],
-            'project' => [
-                'Science' => [
-                    'Design and build a simple machine',
-                    'Create a model of the solar system',
-                    'Conduct a science fair project',
-                    'Build an ecosystem in a bottle',
-                    'Create a weather station'
-                ],
-                'Mathematics' => [
-                    'Create a mathematical model',
-                    'Design a geometric art project',
-                    'Build a scale model using math',
-                    'Create a statistical analysis project',
-                    'Design a mathematical game'
-                ],
-                'English' => [
-                    'Create a digital storytelling project',
-                    'Design a magazine layout',
-                    'Produce a short film',
-                    'Create a poetry anthology',
-                    'Design a book cover'
-                ],
-                'History' => [
-                    'Create a historical timeline',
-                    'Build a model of ancient architecture',
-                    'Design a museum exhibit',
-                    'Create a documentary',
-                    'Build a historical diorama'
-                ]
             ]
         ];
 
@@ -201,13 +171,6 @@ class AssignmentSeeder extends Seeder
                 'This assessment will evaluate your knowledge of the subject matter. Make sure to review all covered material.',
                 'The quiz will be comprehensive and will test both theoretical and practical knowledge.',
                 'Prepare for this quiz by reviewing your notes and completing the practice problems.'
-            ],
-            'project' => [
-                'This project will allow you to demonstrate your creativity and understanding of the subject. Plan your work carefully.',
-                'Work on this project individually or in groups as assigned. Be creative and thorough in your approach.',
-                'This project will showcase your skills and knowledge. Take your time and produce quality work.',
-                'Plan and execute this project carefully. It will be a significant part of your grade for this unit.',
-                'This project will require research, planning, and presentation. Start early and work consistently.'
             ]
         ];
 
