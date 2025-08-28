@@ -22,18 +22,18 @@ Route::middleware(['auth:api', 'user_type:student'])->prefix('student')->group(f
     });
 });
 
-// General assignment routes (existing)
-Route::prefix('assignments')
-    ->controller(AssignmentController::class)
-    ->middleware('auth:api')
-    ->group(function () {
-        Route::get('/', 'index');
-        Route::get('/{assignment}', 'show');
+// // General assignment routes (existing)
+// Route::prefix('assignments')
+//     ->controller(AssignmentController::class)
+//     ->middleware('auth:api')
+//     ->group(function () {
+//         Route::get('/', 'index');
+//         Route::get('/{assignment}', 'show');
 
-        Route::post('/store', 'store');
-        Route::post('/restore/{assignment}', 'restore');
-        Route::post('/{assignment}', 'update');
+//         Route::post('/store', 'store');
+//         Route::post('/restore/{assignment}', 'restore');
+//         Route::post('/{assignment}', 'update');
 
-        Route::delete('/delete/{assignment}', 'delete');
-        Route::delete('/{assignment}', 'destroy');
-    });
+//         Route::delete('/delete/{assignment}', 'delete');
+//         Route::delete('/{assignment}', 'destroy');
+//     });
