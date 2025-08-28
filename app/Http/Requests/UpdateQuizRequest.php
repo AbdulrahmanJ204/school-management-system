@@ -22,11 +22,11 @@ class UpdateQuizRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'is_active' => 'prohibited',
+//            'is_active' => 'prohibited',
             'taken_at' => 'prohibited',
-            'name' => 'nullable|string|max:255|unique:quizzes,name',
+            'name' => 'nullable|string|max:255',
             'full_score'  => 'nullable|integer|min:1',
-            'quiz_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'quiz_photo' => 'sometimes|image|mimes:jpg,jpeg,png,webp',
             'grade_id'    => 'nullable|exists:grades,id',
             'subject_id'  => 'nullable|exists:subjects,id',
             'semester_id' => 'nullable|exists:semesters,id',

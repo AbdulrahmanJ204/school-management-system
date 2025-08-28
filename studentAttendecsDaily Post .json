@@ -1,0 +1,9 @@
+{
+    "school_day_id": 1,
+    "students":[
+        {
+            "id" : 1,
+            "status" : "present | absent | lateness "
+        }
+    ]
+}

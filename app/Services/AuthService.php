@@ -235,11 +235,15 @@ class AuthService
             $refreshToken->accessToken->device_id = $device->id;
             $refreshToken->accessToken->save();
 
+            if(isset($credentials['fcm_token'])){
+//                dd($credentials['fcm_token']);
+                $user->update(['fcm_token' => $credentials['fcm_token']]);
+            }
+
             DB::commit();
 
             $user->access_token = $accessToken->plainTextToken;
             $user->refresh_token = $refreshToken->plainTextToken;
-            $user->fcm_token = $credentials['fcm_token'] ?? null;
             return ResponseHelper::jsonResponse([
                 'user' => new UserResource($user),
             ], __('messages.auth.login'));

@@ -39,7 +39,7 @@ class QuizService
             }
         }
 
-        return "{$folder}/default.png";
+        return null;
     }
     public function listQuizzes($request)
     {
@@ -270,22 +270,24 @@ class QuizService
 
         $credentials = $request->validated();
 
+        $array = [
+            'name'       => $credentials['name']       ?? $quiz->name,
+            'full_score' => $credentials['full_score'] ?? $quiz->full_score,
+          ];
+
         if ($request->hasFile('quiz_photo')) {
-            if ($quiz->quiz_photo && $quiz->quiz_photo !== 'quiz_images/default.png') {
+            if ($quiz->quiz_photo) {
                 Storage::disk('public')->delete($quiz->quiz_photo);
             }
 
-            $credentials['quiz_photo'] = $this->handleImageUpload($request, 'quiz_photo', 'quiz_images');
+            $array['quiz_photo'] = $this->handleImageUpload($request, 'quiz_photo', 'quiz_images');
+
         }
 
         DB::beginTransaction();
 
         try {
-            $quiz->update([
-                'name'       => $credentials['name']       ?? $quiz->name,
-                'full_score' => $credentials['full_score'] ?? $quiz->full_score,
-                'quiz_photo' => $credentials['quiz_photo']
-            ]);
+            $quiz->update($array);
 
             // Only rebuild targets if user passed grade/subject/semester/sections
             if (isset($credentials['grade_id'], $credentials['subject_id'], $credentials['semester_id'])) {

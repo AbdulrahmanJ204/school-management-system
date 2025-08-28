@@ -31,9 +31,11 @@ trait DownloadFile
         $filePath = $file->file;
         // TODO: Add Download Method;
 
-
+        Storage::disk('public')->download($filePath ,$name);
         $url = asset(Storage::url($filePath));
-        return ResponseHelper::jsonResponse(['url'=>$url] , 'file url generated');
+        return ResponseHelper::jsonResponse(['url'=>$url,
+            'downloads_count'
+            ] , 'file url generated');
     }
 
 }
