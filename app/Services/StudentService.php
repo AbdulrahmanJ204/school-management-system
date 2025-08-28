@@ -327,7 +327,7 @@ class StudentService
             ];
         }
 
-        // Get attendance records for the student (only absences and late records exist)
+        // Get attendance records for the student (only absences and lateness records exist)
         $attendanceRecords = StudentAttendance::where('student_id', $student->id)
             ->whereHas('classSession', function($query) use ($currentEnrollment) {
                 $query->where('section_id', $currentEnrollment->section_id)
@@ -337,11 +337,11 @@ class StudentService
 
         $excusedAbsences = $attendanceRecords->where('status', 'justified_absent')->count();
         $unexcusedAbsences = $attendanceRecords->where('status', 'absent')->count();
-        $lateRecords = $attendanceRecords->where('status', 'late')->count();
+        $lateRecords = $attendanceRecords->where('status', 'lateness')->count();
 
         $totalAbsences = $excusedAbsences + $unexcusedAbsences;
 
-        // Present sessions = total sessions - absences (late is considered present but late)
+        // Present sessions = total sessions - absences (lateness is considered present but lateness)
         $presentSessions = $totalClassSessions - $totalAbsences;
 
         return [

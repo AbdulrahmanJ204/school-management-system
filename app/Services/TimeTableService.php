@@ -30,6 +30,7 @@ class TimeTableService
             DB::beginTransaction();
 
             $timetable = Timetable::create([
+                'title'      => $credentials['title'] ?? null,
                 'valid_from' => $credentials['valid_from'],
                 'valid_to'   => $credentials['valid_to'],
                 'is_active'  => $credentials['is_active'],
@@ -74,6 +75,7 @@ class TimeTableService
             DB::beginTransaction();
 
             $timetable->update([
+                'title'      => $credentials['title'] ?? $timetable->title,
                 'valid_from' => $credentials['valid_from'] ?? $timetable->valid_from,
                 'valid_to'   => $credentials['valid_to'] ?? $timetable->valid_to,
                 'is_active'  => $credentials['is_active'] ?? $timetable->is_active,

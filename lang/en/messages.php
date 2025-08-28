@@ -282,5 +282,15 @@ return [
         'has_class_periods' => 'Cannot delete school shift, it contains class periods.',
         'has_schedules' => 'Cannot delete school shift, it contains schedules.',
         'deletion_failed' => 'Failed to delete school shift.'
+    ],
+
+    'timetable' => [
+        'created' => 'Timetable created successfully.',
+        'updated' => 'Timetable updated successfully.',
+        'not_found' => 'Timetable not found.',
+        'deleted' => 'Timetable deleted successfully.',
+        'get' => 'Timetable retrieved successfully.',
+        'list' => 'Timetables listed successfully.',
+        'not_active' => 'Timetable is not active.'
     ]
 ];

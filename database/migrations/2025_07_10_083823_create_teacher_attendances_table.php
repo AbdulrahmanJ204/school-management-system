@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('class_session_id')->constrained('class_sessions');
             $table->foreignId('teacher_id')->constrained('teachers');
-            $table->enum('status', ['present', 'Excused absence', 'Unexcused absence', 'Late']);
+            $table->enum('status', ['present', 'justified_absent', 'absent', 'lateness']);
             $table->timestamps();
             $table->foreignId('created_by')->constrained('users');
 

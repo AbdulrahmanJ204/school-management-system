@@ -136,7 +136,7 @@ class StudentHomeService
     }
 
     /**
-     * Calculate attendance average (present + late days / total days)
+     * Calculate attendance average (present + lateness days / total days)
      *
      * @param StudentEnrollment $enrollment
      * @return float
@@ -154,7 +154,7 @@ class StudentHomeService
         }
 
         $totalDays = $attendanceRecords->count();
-        $presentDays = $attendanceRecords->whereIn('status', ['present', 'late'])->count();
+        $presentDays = $attendanceRecords->whereIn('status', ['present', 'lateness'])->count();
 
         return ($presentDays / $totalDays) * 100;
     }

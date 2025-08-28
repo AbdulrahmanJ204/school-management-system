@@ -352,7 +352,7 @@ class TeacherAttendanceService
         $presentSessions = $teacherAttendances->where('status', 'present')->count();
         $absentSessions = $teacherAttendances->where('status', 'absent')->count();
         $justifiedAbsentSessions = $teacherAttendances->where('status', 'justified_absent')->count();
-        $lateSessions = $teacherAttendances->where('status', 'late')->count();
+        $lateSessions = $teacherAttendances->where('status', 'lateness')->count();
 
         // For sessions without explicit attendance records, assume present (old system behavior)
         $sessionsWithRecords = $presentSessions + $absentSessions + $justifiedAbsentSessions + $lateSessions;
@@ -456,7 +456,7 @@ class TeacherAttendanceService
                     case 'justified_absent':
                         $hasAbsent = true;
                         break;
-                    case 'late':
+                    case 'lateness':
                         $hasLate = true;
                         break;
                 }
@@ -473,7 +473,7 @@ class TeacherAttendanceService
         } elseif ($hasAbsent && !$hasPresent) {
             return 'absent';
         } elseif ($hasLate) {
-            return 'late';
+            return 'lateness';
         } else {
 //            Todo after handel error
             return 'present';
@@ -489,7 +489,7 @@ class TeacherAttendanceService
             'present' => 'present',
             'absent' => 'absent',
             'justified_absent' => 'justified_absent',
-            'late' => 'late',
+            'lateness' => 'lateness',
             default => 'present',
         };
     }
@@ -567,7 +567,7 @@ class TeacherAttendanceService
     }
 
     /**
-     * Count late days
+     * Count lateness days
      */
     private function countLateDays($schoolDays, $teacherAttendances)
     {
@@ -579,7 +579,7 @@ class TeacherAttendanceService
                 return $attendance->classSession->schoolDay->date->format('Y-m-d') === $date;
             });
 
-            if ($dayAttendances->where('status', 'late')->count() > 0) {
+            if ($dayAttendances->where('status', 'lateness')->count() > 0) {
                 $lateDays++;
             }
         }

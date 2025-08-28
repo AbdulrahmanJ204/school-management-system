@@ -40,7 +40,7 @@ class TeacherStudentMarkRequest extends BaseRequest
                 'exists:subjects,id'
             ],
             'semester_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:semesters,id'
             ],
@@ -89,10 +89,10 @@ class TeacherStudentMarkRequest extends BaseRequest
     {
         $validator->after(function ($validator) {
             // Check if at least one mark is provided
-            $hasMarks = $this->homework !== null || 
-                       $this->oral !== null || 
-                       $this->activity !== null || 
-                       $this->quiz !== null || 
+            $hasMarks = $this->homework !== null ||
+                       $this->oral !== null ||
+                       $this->activity !== null ||
+                       $this->quiz !== null ||
                        $this->exam !== null;
 
             if (!$hasMarks) {
@@ -111,7 +111,6 @@ class TeacherStudentMarkRequest extends BaseRequest
             'subject_id.integer' => 'معرف المادة يجب أن تكون رقماً صحيحاً',
             'subject_id.exists' => 'المادة المحددة غير موجودة',
 
-            'semester_id.required' => 'معرف الفصل الدراسي مطلوب',
             'semester_id.integer' => 'معرف الفصل الدراسي يجب أن يكون رقماً صحيحاً',
             'semester_id.exists' => 'الفصل الدراسي المحدد غير موجود',
 

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TimeTable extends Model
 {
     protected $fillable = [
+        'title',
         'valid_from',
         'valid_to',
         'is_active',
