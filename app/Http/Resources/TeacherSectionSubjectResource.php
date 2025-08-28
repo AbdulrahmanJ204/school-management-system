@@ -25,7 +25,7 @@ class TeacherSectionSubjectResource extends JsonResource
             'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
 
             // Relationships
-            'teacher' => new UserResource($this->whenLoaded('teacher')),
+            'teacher' => $this->teacher && $this->teacher->user ? new UserResource($this->teacher->user) : null,
             'grade' => new GradeResource($this->whenLoaded('grade')),
             'subject' => new SubjectResource($this->whenLoaded('subject')),
             'section' => new SectionResource($this->whenLoaded('section')),
