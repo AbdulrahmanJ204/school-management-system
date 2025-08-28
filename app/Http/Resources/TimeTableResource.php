@@ -16,6 +16,7 @@ class TimeTableResource extends JsonResource
     {
         return [
             'id'          => $this->id,
+            'title'       => $this->title,
             'valid_from'  => $this->valid_from->format('Y-m-d'),
             'valid_to'    => $this->valid_to->format('Y-m-d'),
             'is_active'   => (bool) $this->is_active,

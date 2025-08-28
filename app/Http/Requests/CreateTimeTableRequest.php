@@ -23,6 +23,7 @@ class CreateTimeTableRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title'      => 'required|string|max:255',
             'valid_from' => 'required|date|before:valid_to',
             'valid_to'   => 'required|date|after:valid_from',
             'is_active'  => 'required|boolean',

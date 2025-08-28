@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('time_tables', function (Blueprint $table) {
             $table->id();
+            $table->string('title')->nullable();
             $table->date('valid_from');
             $table->date('valid_to');
             $table->boolean('is_active');

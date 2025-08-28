@@ -23,6 +23,7 @@ class UpdateTimeTableRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title'      => 'nullable|string|max:255',
             'valid_from' => 'nullable|date|before:valid_to',
             'valid_to'   => 'nullable|date|after:valid_from',
             'is_active'  => 'nullable|boolean',
