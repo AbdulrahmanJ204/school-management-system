@@ -257,7 +257,6 @@ class SubjectSeeder extends Seeder
                 'updated_at' => now(),
             ],
         ];
-
         DB::table('subjects')->insert($subjects);
     }
 }
