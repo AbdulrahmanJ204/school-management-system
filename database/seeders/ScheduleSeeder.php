@@ -45,7 +45,7 @@ class ScheduleSeeder extends Seeder
         }
 
         // Create schedules for each day of the week
-        $weekDays = [WeekDay::WEDNESDAY, WeekDay::THURSDAY, WeekDay::FRIDAY, WeekDay::SATURDAY , WeekDay::FRIDAY,WeekDay::SATURDAY,];
+        $weekDays = [WeekDay::WEDNESDAY, WeekDay::THURSDAY, WeekDay::FRIDAY, WeekDay::SATURDAY];
 //        $weekDays = [WeekDay::SUNDAY, WeekDay::MONDAY, WeekDay::TUESDAY, WeekDay::WEDNESDAY, WeekDay::THURSDAY];
 
         $this->command->info("Creating schedules for {$sections->count()} sections, " . count($weekDays) . " weekdays, and {$classPeriods->count()} class periods each...");
