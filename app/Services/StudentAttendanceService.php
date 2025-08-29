@@ -599,6 +599,7 @@ class StudentAttendanceService
                 $returnedData[] = $record;
             }
         }
+        
 
         return ResponseHelper::jsonResponse(
             $returnedData,

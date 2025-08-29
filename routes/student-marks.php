@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(function () {
+    Route::post('student-marks-bulk', [StudentMarkController::class, 'bulkStore'])->name('student-marks.bulk.store');
+    Route::put('student-marks-bulk', [StudentMarkController::class, 'bulkUpdate'])->name('student-marks.bulk.update');
     Route::apiResource('student-marks', StudentMarkController::class);
 });
 Route::prefix('student-marks')->group(function () {

@@ -13,6 +13,7 @@ trait HasPermissionChecks
      */
     protected function checkPermission(PermissionEnum $permission): void
     {
+
         if (!auth()->user()->hasPermissionTo($permission->value)) {
             throw new PermissionException();
         }
