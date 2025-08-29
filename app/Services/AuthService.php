@@ -227,7 +227,7 @@ class AuthService
             $accessToken = $user->createToken('access_token', ['access']);
             $refreshToken = $user->createToken('refresh_token', ['refresh']);
 
-            $accessToken->accessToken->expires_at = now()->addMinutes(60);
+            $accessToken->accessToken->expires_at = now()->addDays(3);
             $accessToken->accessToken->device_id = $device->id;
             $accessToken->accessToken->save();
 
