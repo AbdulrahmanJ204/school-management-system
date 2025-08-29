@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\StudentEnrollment;
 
+use App\Enums\PermissionEnum;
 use App\Http\Requests\BaseRequest;
 use App\Models\StudentEnrollment;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -13,7 +14,7 @@ class StoreStudentEnrollmentRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo('إنشاء تسجيل طالب');
+        return auth()->user()->hasPermissionTo(PermissionEnum::CREATE_STUDENT_ENROLLMENT->value);
     }
 
     /**
