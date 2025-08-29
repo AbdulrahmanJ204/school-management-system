@@ -15,7 +15,6 @@ use App\Models\Semester;
 use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
 class QuizService
 {
     private function handleImageUpload($request, string $fieldName, string $folder): ?string
