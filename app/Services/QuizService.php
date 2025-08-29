@@ -147,9 +147,9 @@ class QuizService
 
             $subject = Subject::findOrFail($credentials['subject_id']);
 
-            if ($subject->getGrade()->id != $credentials['grade_id']) {
-                throw new InvalidTargetException(__('messages.quiz.subject_grade_mismatch'));
-            }
+            // if ($subject->getGrade()->id != $credentials['grade_id']) {
+            //     throw new InvalidTargetException(__('messages.quiz.subject_grade_mismatch'));
+            // }
 
             if (!empty($credentials['section_ids'])) {
                 foreach ($credentials['section_ids'] as $sectionId) {

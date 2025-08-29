@@ -39,7 +39,6 @@ class QuestionService
             }
 
             return $filename;
-
         } catch (\Exception $e) {
             throw new ImageUploadFailed(); // your custom exception
         }
@@ -156,20 +155,18 @@ class QuestionService
         if ($request->hasFile('question_photo')) {
             if ($question->question_photo && $question->question_photo !== 'question_images/default.png') {
                 Storage::disk('public')->delete($question->question_photo);
+                $credentials['question_photo'] = $this->handleImageUpload($request, 'question_photo', 'question_images');
             }
-
-            $credentials['question_photo'] = $this->handleImageUpload($request, 'question_photo', 'question_images');
         }
 
         if ($request->hasFile('hint_photo')) {
             if ($question->hint_photo && $question->hint_photo !== 'hint_images/default.png') {
                 Storage::disk('public')->delete($question->hint_photo);
+                $credentials['hint_photo'] = $this->handleImageUpload($request, 'hint_photo', 'hint_images');
             }
-
-            $credentials['hint_photo'] = $this->handleImageUpload($request, 'hint_photo', 'hint_images');
         }
 
-        if ($credentials['right_choice'] >= $credentials['choices_count']) {
+        if ($credentials['right_choice'] > $credentials['choices_count']) {
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.question.invalid_right_choice'),

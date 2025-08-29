@@ -31,7 +31,9 @@ class QuestionResource extends JsonResource
                 json_decode($this->choices, true)
             ,
             'right_choice' => $this->right_choice,
-            'hint' => json_decode($this->hint),
+            'hint' => is_array($this->hint)
+                ? $this->hint
+                : json_decode($this->hint, true),
             'hint_photo' => $this->hint_photo
                 ? asset('storage/' . $this->hint_photo)
                 : asset('storage/hint_images/default.png'),
