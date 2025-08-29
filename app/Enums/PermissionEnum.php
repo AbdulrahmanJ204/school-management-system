@@ -58,6 +58,7 @@ enum PermissionEnum: string
     case UPDATE_STUDENT_MARK = 'تعديل درجة طالب';
     case DELETE_STUDENT_MARK = 'حذف درجة طالب';
     case MANAGE_DELETED_STUDENT_MARKS = 'إدارة درجات الطلاب المحذوفة';
+    case VIEW_STUDENT_REPORT = 'عرض تقرير الطالب';
 
     // Student Enrollments
     case VIEW_STUDENT_ENROLLMENTS = 'عرض تسجيلات الطلاب';
@@ -284,6 +285,7 @@ enum PermissionEnum: string
                 self::UPDATE_STUDENT_MARK->value,
                 self::DELETE_STUDENT_MARK->value,
                 self::MANAGE_DELETED_STUDENT_MARKS->value,
+                self::VIEW_STUDENT_REPORT->value,
             ],
             'teacher_section_subject' => [
                 self::VIEW_TEACHER_SECTION_SUBJECTS->value,

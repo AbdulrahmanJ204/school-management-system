@@ -55,6 +55,9 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
     // Class Periods Management APIs
     Route::get('admin/class-periods', [AdminController::class, 'getClassPeriodsBySection'])->name('admin.class-periods.by-section');
 
+    // Student Report Management APIs
+    Route::get('admin/student-report', [AdminController::class, 'getStudentReport'])->name('admin.student-report');
+
     Route::post('class-sessions', [ClassSessionController::class, 'create']);
     Route::put('class-sessions/{id}', [ClassSessionController::class, 'update']);
     Route::delete('class-sessions/{id}', [ClassSessionController::class, 'destroy']);

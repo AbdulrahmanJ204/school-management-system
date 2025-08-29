@@ -33,6 +33,11 @@ class StudentEnrollment extends Model
         return $this->belongsTo(Section::class);
     }
 
+    public function grade(): BelongsTo
+    {
+        return $this->belongsTo(Grade::class);
+    }
+
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
