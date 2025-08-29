@@ -22,7 +22,7 @@ class UpdateQuizRequest extends FormRequest
     public function rules(): array
     {
         return [
-//            'is_active' => 'prohibited',
+            'is_active' => 'sometimes',
             'taken_at' => 'prohibited',
             'name' => 'nullable|string|max:255',
             'full_score'  => 'nullable|integer|min:1',

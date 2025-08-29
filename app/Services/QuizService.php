@@ -273,6 +273,7 @@ class QuizService
         $array = [
             'name'       => $credentials['name']       ?? $quiz->name,
             'full_score' => $credentials['full_score'] ?? $quiz->full_score,
+            'is_active'  => $credentials['is_active'] ?? $quiz->is_active,
           ];
 
         if ($request->hasFile('quiz_photo')) {

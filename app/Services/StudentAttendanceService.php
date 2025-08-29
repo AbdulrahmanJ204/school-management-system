@@ -584,7 +584,7 @@ class StudentAttendanceService
             foreach ($sessions as $session) {
                 $record = StudentAttendance::where('student_id', $student['id'])
                     ->where('class_session_id', $session->id)->first();
-                if ($record->count() > 0) {
+                if ($record) {
                     $record->update([
                         'status' => $student['status'],
                     ]);
@@ -616,7 +616,7 @@ class StudentAttendanceService
             foreach ($student['class_sessions'] as $class_session) {
                 $record = StudentAttendance::where('student_id', $student['id'])
                     ->where('class_session_id', $class_session['id'])->first();
-                if ($record->count() > 0) {
+                if ($record) {
                     $record->update([
                         'status' => $class_session['status'],
                         'created_by' => auth('api')->id(),

@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Middleware\ResourceRelationshipMiddleware;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,7 +29,7 @@ abstract class BaseResource extends JsonResource
     protected function getCreatedByName(): ?string
     {
         if ($this->relationLoaded('createdBy') && $this->createdBy) {
-            return $this->createdBy->id . '-' . 
+            return $this->createdBy->id . '-' .
                    trim($this->createdBy->first_name . ' ' . $this->createdBy->last_name);
         }
         return null;
@@ -79,10 +79,7 @@ abstract class BaseResource extends JsonResource
      * Check if relationship should be included based on request
      * التحقق من وجوب تضمين العلاقة بناءً على الطلب
      */
-    protected function shouldIncludeRelationship(Request $request, string $relationship): bool
-    {
-        return ResourceRelationshipMiddleware::shouldInclude($request, $relationship);
-    }
+
 
     /**
      * Conditionally include relationship based on request
@@ -105,7 +102,7 @@ abstract class BaseResource extends JsonResource
         return $this->when(
             $this->shouldIncludeRelationship($request, $relationship),
             function () use ($relationship, $resourceClass) {
-                return $this->relationLoaded($relationship) 
+                return $this->relationLoaded($relationship)
                     ? new $resourceClass($this->{$relationship})
                     : null;
             }
@@ -121,7 +118,7 @@ abstract class BaseResource extends JsonResource
         return $this->when(
             $this->shouldIncludeRelationship($request, $relationship),
             function () use ($relationship, $resourceClass) {
-                return $this->relationLoaded($relationship) 
+                return $this->relationLoaded($relationship)
                     ? $resourceClass::collection($this->{$relationship})
                     : null;
             }
