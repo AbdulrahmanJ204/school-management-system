@@ -12,8 +12,10 @@ Route::prefix('student-attendances')
         Route::get('/daily', 'getDailyStudentsAttendance');
         Route::get('/sessions', 'getSessionsStudentsAttendance');
         Route::get('/{studentAttendance}', 'show');
-
+        
         Route::post('/store', 'store');
+        Route::post('/daily', 'updateDailyStudentsAttendance');
+        Route::post('/sessions', 'updateSessionsStudentsAttendance');
         Route::post('/{studentAttendance}', 'update');
 
         Route::delete('/{studentAttendance}', 'destroy');

@@ -5,6 +5,10 @@ namespace App\Services;
 use App\Enums\PermissionEnum;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\ListDailyAttendanceRequest;
+use App\Http\Requests\ListSessionsAttendanceRequest;
+use App\Http\Requests\UpdateDailyAttendanceRequest;
+use App\Http\Requests\UpdateSessionsAttendanceRequest;
 use App\Http\Resources\StudentAttendanceResource;
 use App\Models\ClassSession;
 use App\Models\SchoolDay;
@@ -423,10 +427,12 @@ class StudentAttendanceService
             return 'notOccurredYet';
         }
 
-        $hasPresent = false;
-        $hasAbsent = false;
-        $hasLate = false;
+
         $sessionsWithRecords = 0;
+        $presentCount = 0;
+        $absentCount = 0;
+        $justifiedAbsentCount = 0;
+        $lateCount = 0;
 
         foreach ($daySessions as $session) {
             $attendanceKey = $date . '_' . $session->classPeriod->id;
@@ -436,14 +442,14 @@ class StudentAttendanceService
                 $sessionsWithRecords++;
                 switch ($attendance->status) {
                     case 'present':
-                        $hasPresent = true;
+                        $presentCount++;
                         break;
                     case 'absent':
                     case 'justified_absent':
-                        $hasAbsent = true;
+                        $justifiedAbsentCount++;
                         break;
                     case 'lateness':
-                        $hasLate = true;
+                        $lateCount++;
                         break;
                 }
             }
@@ -454,15 +460,7 @@ class StudentAttendanceService
             return 'present';
         }
 
-        if ($hasPresent && !$hasAbsent && !$hasLate) {
-            return 'present';
-        } elseif ($hasAbsent && !$hasPresent) {
-            return 'absent';
-        } elseif ($hasLate) {
-            return 'lateness';
-        } else {
-            return 'mixed';
-        }
+        return $this->determineDayStatusByCount($presentCount, $sessionsWithRecords, $absentCount, $justifiedAbsentCount, $lateCount);
     }
 
     /**
@@ -570,5 +568,184 @@ class StudentAttendanceService
         }
 
         return $lateDays;
+    }
+
+
+
+    public function updateDailyStudentsAttendance(UpdateDailyAttendanceRequest $request): JsonResponse
+    {
+
+        $data = $request->validated();
+        $sessions = ClassSession::where('school_day_id', $data['school_day_id'])
+            ->where('section_id', $data['section_id'])->get();
+        $returnedData = [];
+
+        foreach ($data['students'] as $student) {
+            foreach ($sessions as $session) {
+                $record = StudentAttendance::where('student_id', $student['id'])
+                    ->where('class_session_id', $session->id)->first();
+                if ($record->count() > 0) {
+                    $record->update([
+                        'status' => $student['status'],
+                    ]);
+                } else {
+                    StudentAttendance::create([
+                        'student_id' => $student['id'],
+                        'class_session_id' => $session->id,
+                        'status' => $student['status'],
+                        'created_by' => auth('api')->id(),
+                    ]);
+                }
+                $returnedData[] = $record;
+            }
+        }
+
+        return ResponseHelper::jsonResponse(
+            $returnedData,
+            'تم تحديث حضور الطلاب بنجاح'
+        );
+    }
+
+    public function updateSessionsStudentsAttendance(UpdateSessionsAttendanceRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $returnedData = [];
+
+
+        foreach ($data['students'] as $student) {
+            foreach ($student['class_sessions'] as $class_session) {
+                $record = StudentAttendance::where('student_id', $student['id'])
+                    ->where('class_session_id', $class_session['id'])->first();
+                if ($record->count() > 0) {
+                    $record->update([
+                        'status' => $class_session['status'],
+                        'created_by' => auth('api')->id(),
+                    ]);
+                } else {
+                    $record = StudentAttendance::create([
+                        'student_id' => $student['id'],
+                        'class_session_id' => $class_session['id'],
+                        'status' => $class_session['status'],
+                        'created_by' => auth('api')->id(),
+                    ]);
+                }
+                $returnedData[] = $record;
+            }
+        }
+
+        return ResponseHelper::jsonResponse(
+            $returnedData,
+            'تم تحديث حضور الطلاب بنجاح'
+        );
+    }
+
+    public function getDailyStudentsAttendance(ListDailyAttendanceRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $sessions = ClassSession::where('school_day_id', $data['school_day_id'])
+            ->where('section_id', $data['section_id'])
+            ->get();
+        $students = Student::whereHas(
+            'studentEnrollments',
+            function ($query) use ($data) {
+                $query->where('section_id', $data['section_id']);
+            }
+        )->get();
+
+        $data = [];
+
+        foreach ($students as $student) {
+            $finalStatus = 'present';
+            $totalCount = $sessions->count();
+            $presentCount = 0;
+            $absentCount = 0;
+            $justifiedAbsentCount = 0;
+            $lateCount = 0;
+            foreach ($sessions as $classSession) {
+                $status = StudentAttendance::where('student_id', $student->id)
+                    ->where('class_session_id', $classSession->id)
+                    ->first()?->status;
+
+                if ($status === 'present') $presentCount++;
+                if ($status === 'absent') $absentCount++;
+                if ($status === 'justified_absent') $justifiedAbsentCount++;
+                if ($status === 'lateness') $lateCount++;
+            }
+            $finalStatus = $this->determineDayStatusByCount($presentCount, $totalCount, $absentCount, $justifiedAbsentCount, $lateCount);
+            $data[] = [
+                'id' => $student->id,
+                'full_name' => $student->user->first_name . ' ' . $student->user->last_name,
+                'status' => $finalStatus,
+            ];
+        }
+
+
+        return ResponseHelper::jsonResponse(
+            $data,
+            'تم عرض حضور الطلاب بنجاح'
+        );
+    }
+    public function getSessionsStudentsAttendance(ListSessionsAttendanceRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $sessions = ClassSession::where('school_day_id', $data['school_day_id'])
+            ->where('section_id', $data['section_id'])
+            ->get();
+        $students = Student::whereHas(
+            'studentEnrollments',
+            function ($query) use ($data) {
+                $query->where('section_id', $data['section_id']);
+            }
+        )->get();
+        $data = [];
+        $totalCount = $sessions->count();
+        $presentCount = 0;
+        $absentCount = 0;
+        $justifiedAbsentCount = 0;
+        $lateCount = 0;
+        foreach ($students as $student) {
+            $presentCount = 0;
+            $absentCount = 0;
+            $justifiedAbsentCount = 0;
+            $lateCount = 0;
+            $sessionsData = [];
+            foreach ($sessions as $classSession) {
+                $status = StudentAttendance::where('student_id', $student->id)
+                    ->where('class_session_id', $classSession->id)
+                    ->first()?->status;
+                if ($status === 'present') $presentCount++;
+                if ($status === 'absent') $absentCount++;
+                if ($status === 'justified_absent') $justifiedAbsentCount++;
+                if ($status === 'lateness') $lateCount++;
+                $sessionsData[] = [
+                    'id' => $classSession->id,
+                    'status' => $status,
+                ];
+            }
+            $finalStatus = $this->determineDayStatusByCount($presentCount, $totalCount, $absentCount, $justifiedAbsentCount, $lateCount);
+            $data[] = [
+                'id' => $student->id,
+                'full_name' => $student->user->first_name . ' ' . $student->user->last_name,
+                'day_status' => $finalStatus,
+                'class_sessions' => $sessionsData,
+            ];
+        }
+        return ResponseHelper::jsonResponse(
+            ['students' => $data],
+            'تم عرض حضور الطلاب بنجاح'
+        );
+    }
+    private function determineDayStatusByCount($presentCount, $totalCount, $absentCount, $justifiedAbsentCount, $lateCount): string
+    {
+
+        $sum = $presentCount + $absentCount + $justifiedAbsentCount + $lateCount;
+
+        if ($sum != $totalCount) {
+            return 'present';
+        }
+        return $presentCount == $totalCount ?
+            'present' : ($absentCount + $justifiedAbsentCount == $totalCount ?
+                ($justifiedAbsentCount > 0 ? 'justified_absent' : 'absent')
+                : 'lateness');
     }
 }
