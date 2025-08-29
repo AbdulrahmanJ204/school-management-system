@@ -27,44 +27,113 @@ class StudentMarkService
     {
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
 
-        $query = StudentMark::with([
-            'subject.mainSubject.grade',
-            'enrollment.student',
-            'enrollment.section',
-            'enrollment.semester',
-        ]);
+        // If no request or no subject_id, return existing marks as before
+        if (!$request || !$request->has('subject_id')) {
+            $query = StudentMark::with([
+                'subject.mainSubject.grade',
+                'enrollment.student',
+                'enrollment.section',
+                'enrollment.semester',
+            ]);
 
-        // Apply filters if request is provided
-        if ($request) {
-            // Filter by enrollment_id
-            if ($request->has('enrollment_id')) {
-                $query->where('enrollment_id', $request->enrollment_id);
+            // Apply filters if request is provided
+            if ($request) {
+                // Filter by enrollment_id
+                if ($request->has('enrollment_id')) {
+                    $query->where('enrollment_id', $request->enrollment_id);
+                }
+
+                // Filter by semester_id
+                if ($request->has('semester_id')) {
+                    $query->whereHas('enrollment', function ($q) use ($request) {
+                        $q->where('semester_id', $request->semester_id);
+                    });
+                }
+
+                // Filter by section_id
+                if ($request->has('section_id')) {
+                    $query->whereHas('enrollment', function ($q) use ($request) {
+                        $q->where('section_id', $request->section_id);
+                    });
+                }
             }
 
-            // Filter by subject_id
-            if ($request->has('subject_id')) {
+            $studentMarks = $query->orderBy('created_at', 'desc')->get();
+
+            return ResponseHelper::jsonResponse(
+                StudentMarkResource::collection($studentMarks)
+            );
+        }
+
+        // Get the subject
+        $subject = Subject::findOrFail($request->subject_id);
+        
+        // Build enrollment query
+        $enrollmentQuery = StudentEnrollment::with([
+            'student',
+            'section',
+            'semester',
+            'studentMarks' => function ($query) use ($request) {
                 $query->where('subject_id', $request->subject_id);
             }
+        ]);
 
-            // Filter by semester_id
-            if ($request->has('semester_id')) {
-                $query->whereHas('enrollment', function ($q) use ($request) {
-                    $q->where('semester_id', $request->semester_id);
-                });
-            }
+        // Apply filters
+        if ($request->has('semester_id')) {
+            $enrollmentQuery->where('semester_id', $request->semester_id);
+        }
 
-            // Filter by section_id
-            if ($request->has('section_id')) {
-                $query->whereHas('enrollment', function ($q) use ($request) {
-                    $q->where('section_id', $request->section_id);
-                });
+        if ($request->has('section_id')) {
+            $enrollmentQuery->where('section_id', $request->section_id);
+        }
+
+        if ($request->has('enrollment_id')) {
+            $enrollmentQuery->where('id', $request->enrollment_id);
+        }
+
+        $enrollments = $enrollmentQuery->get();
+        $allStudentMarks = collect();
+
+        foreach ($enrollments as $enrollment) {
+            // Check if student already has a mark for this subject
+            $existingMark = $enrollment->studentMarks->first();
+            
+            if ($existingMark) {
+                // Student already has a mark, add it to the collection
+                $allStudentMarks->push($existingMark);
+            } else {
+                // Student doesn't have a mark, create a default one
+                $defaultMark = StudentMark::create([
+                    'subject_id' => $request->subject_id,
+                    'enrollment_id' => $enrollment->id,
+                    'homework' => 0,
+                    'oral' => 0,
+                    'activity' => 0,
+                    'quiz' => 0,
+                    'exam' => 0,
+                    'total' => 0,
+                    'created_by' => auth()->id()
+                ]);
+
+                // Load the relationships for the new mark
+                $defaultMark->load([
+                    'subject.mainSubject.grade',
+                    'enrollment.student',
+                    'enrollment.section',
+                    'enrollment.semester',
+                ]);
+
+                $allStudentMarks->push($defaultMark);
             }
         }
 
-        $studentMarks = $query->orderBy('created_at', 'desc')->get();
+        // Sort by student name
+        $sortedMarks = $allStudentMarks->sortBy(function ($mark) {
+            return $mark->enrollment->student->user->first_name ?? '';
+        })->values();
 
         return ResponseHelper::jsonResponse(
-            StudentMarkResource::collection($studentMarks)
+            StudentMarkResource::collection($sortedMarks)
         );
     }
 

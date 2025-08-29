@@ -25,7 +25,8 @@ class SchoolDaySeeder extends Seeder
 
         while ($currentDate->lte($endDate)) {
             // Skip Fridays and Saturdays (weekend in many Arab countries)
-            if (!in_array($currentDate->dayOfWeek, [CarbonInterface::FRIDAY, CarbonInterface::SATURDAY])) {
+//            if (!in_array($currentDate->dayOfWeek, [CarbonInterface::FRIDAY, CarbonInterface::SATURDAY])) {
+            if (!in_array($currentDate->dayOfWeek, [])) {
                 // Most days are study days
                 $type = 'study';
 
