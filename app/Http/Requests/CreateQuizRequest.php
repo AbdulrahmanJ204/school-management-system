@@ -20,7 +20,7 @@ class CreateQuizRequest extends BaseRequest
     public function rules(): array
     {
         return [
-//            'is_active' => 'prohibited',
+           'is_active' => 'sometimes',
             'taken_at' => 'prohibited',
             'name' => 'required|string|max:255|unique:quizzes,name',
             'full_score'  => 'required|integer|min:1',

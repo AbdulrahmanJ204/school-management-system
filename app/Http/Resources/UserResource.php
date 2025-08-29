@@ -7,6 +7,7 @@ use App\Http\Resources\Basic\SectionBasicResource;
 use App\Http\Resources\BaseResource;
 use App\Enums\UserType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * User Resource - Complete user information
@@ -36,7 +37,7 @@ class UserResource extends BaseResource
             'gender' => $this->gender,
             'phone' => $this->phone,
             'user_type' => $this->user_type,
-            'image' => $this->image ? asset('storage/' . $this->image) : asset('storage/user_images/default.png'),
+            'image' => $this->image ? asset(Storage::url($this->image)) : asset('storage/user_images/default.png'),
         ];
 
         if ($this->user_type === 'student') {

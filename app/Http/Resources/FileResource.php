@@ -80,7 +80,7 @@ class FileResource extends JsonResource
         $targets = $this->whenLoaded('targets');
         $targets->whereNotNull('section')->pluck('section')->unique()->values();
 
-        $sections = SectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
+            $sections = FileSectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
         $grade = $sections[0]->grade ?? 'غير محدد';
 
         $deleted = $this->deleted_at?->format('Y-m-d h:i:s A');
