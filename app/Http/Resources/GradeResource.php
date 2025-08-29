@@ -2,10 +2,18 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Basic\SectionBasicResource;
+use App\Http\Resources\Basic\MainSubjectBasicResource;
+use App\Http\Resources\BaseResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class GradeResource extends JsonResource
+/**
+ * Grade Resource - Complete grade information
+ * مورد الصف - معلومات الصف الكاملة
+ * Uses basic resources to avoid circular dependencies
+ * يستخدم الموارد الأساسية لتجنب التضارب الدوري
+ */
+class GradeResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -27,16 +35,17 @@ class GradeResource extends JsonResource
                     'is_active' => $this->year->is_active,
                 ];
             }),
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'created_at' => $this->formatDate($this->created_at),
+            'updated_at' => $this->formatDate($this->updated_at),
 
             'created_by' => $this->whenLoaded('createdBy', function () {
                 return $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name;
             }),
-            'sections' => SectionResource::collection($this->whenLoaded('sections')),
-            'main_subjects' => MainSubjectResource::collection($this->whenLoaded('mainSubjects')),
-            // 'setting_grade_years' => SettingGradeYearResource::collection($this->whesnLoaded('settingGradeYears')),
-
+            
+            // Use basic resources to avoid circular dependencies
+            // استخدام الموارد الأساسية لتجنب التضارب الدوري
+            'sections' => $this->whenLoadedCollection('sections', SectionBasicResource::class),
+            'main_subjects' => $this->whenLoadedCollection('mainSubjects', MainSubjectBasicResource::class),
         ];
     }
 }

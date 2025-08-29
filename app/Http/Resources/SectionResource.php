@@ -2,11 +2,18 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Grade;
+use App\Http\Resources\Basic\GradeBasicResource;
+use App\Http\Resources\Basic\UserBasicResource;
+use App\Http\Resources\BaseResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class SectionResource extends JsonResource
+/**
+ * Section Resource - Complete section information
+ * مورد القسم - معلومات القسم الكاملة
+ * Uses basic resources to avoid circular dependencies
+ * يستخدم الموارد الأساسية لتجنب التضارب الدوري
+ */
+class SectionResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -19,16 +26,28 @@ class SectionResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'grade_id' => $this->grade_id,
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'created_at' => $this->formatDate($this->created_at),
+            'updated_at' => $this->formatDate($this->updated_at),
             'created_by' => $this->whenLoaded('createdBy', function () {
                 return $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name;
             }),
 
-            'grade' => new GradeResource($this->whenLoaded('grade')),
-            'student_enrollments' => StudentEnrollmentResource::collection($this->whenLoaded('studentEnrollments')),
-            'teacher_section_subjects' => TeacherSectionSubjectResource::collection($this->whenLoaded('teacherSectionSubjects')),
-
+            // Use basic resources to avoid circular dependencies
+            // استخدام الموارد الأساسية لتجنب التضارب الدوري
+            'grade' => $this->whenLoadedResource('grade', GradeBasicResource::class),
+            
+            // Load relationships only when explicitly requested
+            // تحميل العلاقات فقط عند الطلب الصريح
+            'student_enrollments' => $this->whenExplicitlyRequestedCollection(
+                $request, 
+                'enrollments', 
+                StudentEnrollmentResource::class
+            ),
+            'teacher_section_subjects' => $this->whenExplicitlyRequestedCollection(
+                $request, 
+                'teacher_subjects', 
+                TeacherSectionSubjectResource::class
+            ),
         ];
     }
 }

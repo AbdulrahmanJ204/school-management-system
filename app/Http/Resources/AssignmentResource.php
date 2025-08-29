@@ -2,10 +2,16 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\BaseResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class AssignmentResource extends JsonResource
+/**
+ * Assignment Resource - Complete assignment information
+ * مورد الواجب - معلومات الواجب الكاملة
+ * Uses basic data structures to avoid circular dependencies
+ * يستخدم هياكل البيانات الأساسية لتجنب التضارب الدوري
+ */
+class AssignmentResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -30,6 +36,9 @@ class AssignmentResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'photo' => $this->photo ? asset('storage/' . $this->photo) : null,
+            
+            // Use basic data structures to avoid circular dependencies
+            // استخدام هياكل البيانات الأساسية لتجنب التضارب الدوري
             'subject' => [
                 'id' => $this->subject->id,
                 'name' => $this->subject->name,
@@ -39,12 +48,13 @@ class AssignmentResource extends JsonResource
                 'title' => $this->section->title,
                 'grade' => [
                     'id' => $this->section->grade->id,
-                    'name' => $this->section->grade->name,
+                    'name' => $this->section->grade->title,
                 ],
             ],
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-            'deleted_at' => $this->deleted_at?->format('Y-m-d H:i:s'),
+            
+            'created_at' => $this->formatDate($this->created_at),
+            'updated_at' => $this->formatDate($this->updated_at),
+            'deleted_at' => $this->formatDate($this->deleted_at),
             'created_by' => [
                 'id' => $this->createdBy->id,
                 'name' => $this->createdBy->first_name . ' ' . $this->createdBy->father_name . ' ' . $this->createdBy->last_name,

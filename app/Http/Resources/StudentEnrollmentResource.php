@@ -2,10 +2,19 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Basic\SectionBasicResource;
+use App\Http\Resources\Basic\GradeBasicResource;
+use App\Http\Resources\Basic\UserBasicResource;
+use App\Http\Resources\BaseResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class StudentEnrollmentResource extends JsonResource
+/**
+ * Student Enrollment Resource - Complete enrollment information
+ * مورد تسجيل الطالب - معلومات التسجيل الكاملة
+ * Uses basic resources to avoid circular dependencies
+ * يستخدم الموارد الأساسية لتجنب التضارب الدوري
+ */
+class StudentEnrollmentResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -26,29 +35,20 @@ class StudentEnrollmentResource extends JsonResource
             'status' => $this->status,
             'created_by' => $this->created_by,
 
-            // Relationships
-            // 'student' => new StudentResource($this->whenLoaded('student')),
-            'section' => new SectionResource($this->whenLoaded('section')),
-            'semester' => new SemesterResource($this->whenLoaded('semester')),
-            'year' => new YearResource($this->whenLoaded('year')),
-            'created_by_user' => new UserResource($this->whenLoaded('createdBy')),
+            // Use basic resources to avoid circular dependencies
+            // استخدام الموارد الأساسية لتجنب التضارب الدوري
+            'section' => $this->whenLoadedResource('section', SectionBasicResource::class),
+            'semester' => $this->whenLoadedResource('semester', SemesterResource::class),
+            'year' => $this->whenLoadedResource('year', YearResource::class),
+            'created_by_user' => $this->whenLoadedResource('createdBy', UserBasicResource::class),
 
-            // Computed properties
-            'grade' => new GradeResource($this->whenLoaded('section.grade')),
-            'year' => new YearResource($this->whenLoaded('semester.year')),
-            'user' => new UserResource($this->whenLoaded('student.user')),
+            // Computed properties using basic resources
+            // الخصائص المحسوبة باستخدام الموارد الأساسية
+            'grade' => $this->whenLoadedResource('section.grade', GradeBasicResource::class),
+            'user' => $this->whenLoadedResource('student.user', UserBasicResource::class),
 
-            // Student marks summary
-//            'student_marks' => StudentMarkResource::collection($this->whenLoaded('studentMarks')),
-//            'marks_summary' => [
-//                'total_marks' => $this->getTotalMarks(),
-//                'average_marks' => $this->getAverageMarks(),
-//                'failed_subjects_count' => $this->getFailedSubjects()->count(),
-//                'is_promoted' => $this->isPromoted(),
-//            ],
-
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'created_at' => $this->formatDate($this->created_at),
+            'updated_at' => $this->formatDate($this->updated_at),
         ];
     }
 }

@@ -2,11 +2,19 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Basic\GradeBasicResource;
+use App\Http\Resources\Basic\SectionBasicResource;
+use App\Http\Resources\BaseResource;
 use App\Enums\UserType;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Request;
 
-
-class   UserResource extends JsonResource
+/**
+ * User Resource - Complete user information
+ * مورد المستخدم - معلومات المستخدم الكاملة
+ * Uses basic data structures to avoid circular dependencies
+ * يستخدم هياكل البيانات الأساسية لتجنب التضارب الدوري
+ */
+class UserResource extends BaseResource
 {
     public function toArray($request): array
     {
@@ -43,8 +51,7 @@ class   UserResource extends JsonResource
 
         if ($this->user_type !== 'student') {
             $baseData['email'] = $this->email;
-        }
-        else {
+        } else {
             $baseData['last_year_gpa'] = $this->student?->studentEnrollments()
                 ->latest('year_id')
                 ->first();
@@ -102,6 +109,8 @@ class   UserResource extends JsonResource
             return true;
         });
 
+        // Use basic data structures to avoid circular dependencies
+        // استخدام هياكل البيانات الأساسية لتجنب التضارب الدوري
         $baseData['grade_summary'] = $this->when($this->user_type == 'student', function () {
             return [
                 'id' => $this->student?->studentEnrollments->first()?->grade?->id,
@@ -137,6 +146,7 @@ class   UserResource extends JsonResource
                 'is_active' => $this->student?->studentEnrollments->first()?->semester?->is_active
             ];
         });
+        
         return $baseData;
     }
 }

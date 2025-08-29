@@ -1,25 +1,18 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Basic;
 
-use App\Http\Resources\Basic\GradeBasicResource;
-use App\Http\Resources\Basic\MainSubjectBasicResource;
 use App\Http\Resources\BaseResource;
 use Illuminate\Http\Request;
 
 /**
- * Subject Resource - Complete subject information
- * مورد المادة - معلومات المادة الكاملة
- * Uses basic resources to avoid circular dependencies
- * يستخدم الموارد الأساسية لتجنب التضارب الدوري
+ * Basic Subject Resource - Contains only essential subject data
+ * مورد المادة الأساسي - يحتوي على البيانات الأساسية فقط
+ * Used to avoid circular dependencies in other resources
+ * يُستخدم لتجنب التضارب الدوري في الموارد الأخرى
  */
-class SubjectResource extends BaseResource
+class SubjectBasicResource extends BaseResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -36,13 +29,6 @@ class SubjectResource extends BaseResource
             'exam_percentage' => $this->exam_percentage,
             'num_class_period' => $this->num_class_period,
             'is_failed' => $this->is_failed,
-            'created_by' => $this->getCreatedByName(),
-
-            // Use basic resources to avoid circular dependencies
-            // استخدام الموارد الأساسية لتجنب التضارب الدوري
-            'main_subject' => $this->whenLoadedResource('mainSubject', MainSubjectBasicResource::class),
-            'grade' => $this->whenLoadedResource('mainSubject.grade', GradeBasicResource::class),
-
             'created_at' => $this->formatDate($this->created_at),
             'updated_at' => $this->formatDate($this->updated_at),
         ];

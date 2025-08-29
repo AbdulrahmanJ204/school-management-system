@@ -23,16 +23,45 @@ class StudentMarkService
      * Get list of all student marks.
      * @throws PermissionException
      */
-    public function listStudentMarks(): JsonResponse
+    public function listStudentMarks($request = null): JsonResponse
     {
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
 
-        $studentMarks = StudentMark::with([
+        $query = StudentMark::with([
             'subject.mainSubject.grade',
             'enrollment.student',
             'enrollment.section',
             'enrollment.semester',
-        ])->orderBy('created_at', 'desc')->get();
+        ]);
+
+        // Apply filters if request is provided
+        if ($request) {
+            // Filter by enrollment_id
+            if ($request->has('enrollment_id')) {
+                $query->where('enrollment_id', $request->enrollment_id);
+            }
+
+            // Filter by subject_id
+            if ($request->has('subject_id')) {
+                $query->where('subject_id', $request->subject_id);
+            }
+
+            // Filter by semester_id
+            if ($request->has('semester_id')) {
+                $query->whereHas('enrollment', function ($q) use ($request) {
+                    $q->where('semester_id', $request->semester_id);
+                });
+            }
+
+            // Filter by section_id
+            if ($request->has('section_id')) {
+                $query->whereHas('enrollment', function ($q) use ($request) {
+                    $q->where('section_id', $request->section_id);
+                });
+            }
+        }
+
+        $studentMarks = $query->orderBy('created_at', 'desc')->get();
 
         return ResponseHelper::jsonResponse(
             StudentMarkResource::collection($studentMarks)
