@@ -30,15 +30,15 @@ class ClassSessionResource extends JsonResource
             // Relationships
             'schedule' => new ScheduleResource($this->whenLoaded('schedule')),
             'school_day' => new SchoolDayResource($this->whenLoaded('schoolDay')),
-            'teacher' => new TeacherResource($this->whenLoaded('teacher')),
+            //'teacher' => new TeacherResource($this->whenLoaded('teacher')),
             'subject' => new SubjectResource($this->whenLoaded('subject')),
             'section' => new SectionResource($this->whenLoaded('section')),
             'class_period' => new ClassPeriodResource($this->whenLoaded('classPeriod')),
             'created_by_user' => new UserResource($this->whenLoaded('createdBy')),
 
             // Related data
-            'student_attendances' => StudentAttendanceResource::collection($this->whenLoaded('studentAttendances')),
-            'assignments' => AssignmentResource::collection($this->whenLoaded('assignments')),
+            //'student_attendances' => StudentAttendanceResource::collection($this->whenLoaded('studentAttendances')),
+            //'assignments' => AssignmentResource::collection($this->whenLoaded('assignments')),
             'study_notes' => StudyNoteResource::collection($this->whenLoaded('studyNotes')),
 
             // Computed properties

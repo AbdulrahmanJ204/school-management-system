@@ -15,10 +15,12 @@ class DetailedQuizResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id'              => $this->id,
             'title'           => $this->name,
             'question_count'  => $this->questions->count(),
-            'student_count' => $this->scores()->count(),
+            'student_count'   => $this->scores()->count(),
             'date'            => $this->created_at->format('Y-m-d'),
+            'full_score'      => $this->full_score,
             'targets'         => QuizTargetResource::collection($this->targets),
             'questions'       => QuestionResource::collection($this->questions),
         ];
