@@ -33,6 +33,8 @@ class TeacherSectionSubject extends Model
         return $this->belongsTo(Teacher::class, 'teacher_id');
     }
 
+
+
     public function grade(): BelongsTo
     {
         return $this->belongsTo(Grade::class, 'grade_id');

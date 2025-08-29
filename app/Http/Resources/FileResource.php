@@ -56,8 +56,8 @@ class FileResource extends JsonResource
 
 
         $targets = $this->whenLoaded('targets');
-        $grades = GradeResource::collection($targets->whereNotNull('grade')->pluck('grade')->unique()->values());
-        $sections = SectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
+        $grades = FileGradeResource::collection($targets->whereNotNull('grade')->pluck('grade')->unique()->values());
+        $sections = FileSectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
 
         $targetsArray = [];
 
@@ -69,6 +69,7 @@ class FileResource extends JsonResource
         }
 
         return [
+            'download_count'=>$this->downloadsCount(),
             'deleted_at' => $this->deleted_at?->format('Y-m-d h:i:s A'),
             'targets' => $targetsArray
         ];
@@ -79,7 +80,7 @@ class FileResource extends JsonResource
         $targets = $this->whenLoaded('targets');
         $targets->whereNotNull('section')->pluck('section')->unique()->values();
 
-        $sections = SectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
+            $sections = FileSectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
         $grade = $sections[0]->grade ?? 'غير محدد';
 
         $deleted = $this->deleted_at?->format('Y-m-d h:i:s A');

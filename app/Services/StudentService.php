@@ -24,7 +24,7 @@ class StudentService
      */
     public function listStudents(): JsonResponse
     {
-        if (!auth()->user()->hasPermissionTo('عرض الطلاب')) {
+        if (!auth('api')->user()->hasPermissionTo('عرض الطلاب')) {
             throw new PermissionException();
         }
 

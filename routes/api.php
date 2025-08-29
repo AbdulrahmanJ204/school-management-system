@@ -16,6 +16,7 @@ use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\StudentHomeController;
 use App\Http\Controllers\StudentTimetableController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherClassSessionController;
 use App\Http\Controllers\TeacherHomeController;
 use App\Http\Controllers\TeacherTimetableController;
 use App\Http\Controllers\TimeTableController;
@@ -51,6 +52,12 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
     Route::get('admin/schedules', [ScheduleController::class, 'getSchedulesForSection'])->name('admin.schedules.index');
     Route::post('admin/schedules/bulk', [ScheduleController::class, 'createOrUpdateBulkSchedules'])->name('admin.schedules.bulk.create-or-update');
 
+    // Class Periods Management APIs
+    Route::get('admin/class-periods', [AdminController::class, 'getClassPeriodsBySection'])->name('admin.class-periods.by-section');
+
+    // Student Report Management APIs
+    Route::get('admin/student-report', [AdminController::class, 'getStudentReport'])->name('admin.student-report');
+
     Route::post('class-sessions', [ClassSessionController::class, 'create']);
     Route::put('class-sessions/{id}', [ClassSessionController::class, 'update']);
     Route::delete('class-sessions/{id}', [ClassSessionController::class, 'destroy']);
@@ -78,6 +85,10 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::get('teacher/profile', [TeacherController::class, 'getProfile'])->name('teacher.profile');
     Route::get('teacher/home', [TeacherHomeController::class, 'home'])->name('teacher.home');
     Route::get('teacher/timetable', [TeacherTimetableController::class, 'timetable'])->name('teacher.timetable');
+    
+    // Teacher Class Sessions APIs
+    Route::get('teacher/class-sessions/past-week', [TeacherClassSessionController::class, 'getPastWeekSessions'])->name('teacher.class-sessions.past-week');
+    Route::get('teacher/class-sessions/upcoming', [TeacherClassSessionController::class, 'getUpcomingSessions'])->name('teacher.class-sessions.upcoming');
 });
 
 Route::middleware(['auth:api', 'user_type:teacher', 'throttle:60,1'])->group(function () {
@@ -128,3 +139,7 @@ require __DIR__.'/teacher-attendance-tracking.php';
 require __DIR__.'/assignments.php';
 require __DIR__.'/logs.php';
 require __DIR__.'/app-updates.php';
+
+
+
+Route::post('/send-notification', [\App\Http\Controllers\NotificationController::class, 'sendToUser']);

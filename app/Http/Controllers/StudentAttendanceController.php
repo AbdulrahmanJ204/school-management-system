@@ -3,13 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
+use App\Http\Requests\ListDailyAttendanceRequest;
+use App\Http\Requests\ListSessionsAttendanceRequest;
 use App\Http\Requests\StudentAttendance\ListStudentAttendanceRequest;
 use App\Http\Requests\StudentAttendance\StoreStudentAttendanceRequest;
 use App\Http\Requests\StudentAttendance\UpdateStudentAttendanceRequest;
 use App\Http\Requests\StudentAttendance\StudentAttendanceReportRequest;
+use App\Http\Requests\UpdateDailyAttendanceRequest;
+use App\Http\Requests\UpdateSessionsAttendanceRequest;
+use App\Http\Resources\DailyStudentAttendanceResource;
+use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Services\StudentAttendanceService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class StudentAttendanceController extends Controller
 {
@@ -71,5 +78,29 @@ class StudentAttendanceController extends Controller
     public function generateReport(): JsonResponse
     {
         return $this->studentAttendanceService->generateAttendanceReport();
+    }
+
+    /**
+     * Get daily student attendance for admin users
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getDailyStudentsAttendance(ListDailyAttendanceRequest $request): JsonResponse
+    {
+        return $this->studentAttendanceService->getDailyStudentsAttendance($request);
+    }
+    public function getSessionsStudentsAttendance(ListSessionsAttendanceRequest $request): JsonResponse
+    {
+        return $this->studentAttendanceService->getSessionsStudentsAttendance($request);
+    }
+    public function updateDailyStudentsAttendance(UpdateDailyAttendanceRequest $request): JsonResponse
+    {
+        return $this->studentAttendanceService->updateDailyStudentsAttendance($request);
+    }
+
+    public function updateSessionsStudentsAttendance(UpdateSessionsAttendanceRequest $request): JsonResponse
+    {
+        return $this->studentAttendanceService->updateSessionsStudentsAttendance($request);
     }
 }

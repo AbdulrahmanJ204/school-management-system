@@ -23,6 +23,7 @@ class DetailedQuizResource extends JsonResource
             'full_score'      => $this->full_score,
             'targets'         => QuizTargetResource::collection($this->targets),
             'questions'       => QuestionResource::collection($this->questions),
+            'created_by' => auth()->user()->id,
         ];
     }
 }

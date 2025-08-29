@@ -44,6 +44,7 @@ class QuestionService
             throw new ImageUploadFailed(); // your custom exception
         }
     }
+
     private function normalizeDeltaToPlainText($delta)
     {
         if (is_string($delta)) {
@@ -79,7 +80,7 @@ class QuestionService
             throw new QuizNotFoundException();
         }
 
-        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('انشاء سؤال')) || $quiz->created_by !== $user->id) {
+        if ($user->user_type === 'student' || !$user->hasPermissionTo('انشاء سؤال')) {
             throw new PermissionException();
         }
 
@@ -94,7 +95,8 @@ class QuestionService
         if ($existingQuestion || empty($plainText)) {
             throw new QuestionAlreadyExistsException();
         }
-
+        $credentials['question_text'] = isset($credentials['question_text']) ? json_encode($credentials['question_text']) : null;
+        $credentials['hint'] = isset($credentials['hint']) ? json_encode($credentials['hint']) : null;
         $credentials['quiz_id'] = $quiz_id;
         $credentials['question_text_plain'] = $plainText;
 
@@ -102,7 +104,7 @@ class QuestionService
 
         $credentials['hint_photo'] = $this->handleImageUpload($request, 'hint_photo', 'hint_images');
 
-        if ($credentials['right_choice'] >= $credentials['choices_count']) {
+        if ($credentials['right_choice'] > $credentials['choices_count']) {
             return ResponseHelper::jsonResponse(
                 null,
                 __('messages.question.invalid_right_choice'),
@@ -128,7 +130,7 @@ class QuestionService
             throw new PermissionException();
         }
 
-        if(!$quiz) {
+        if (!$quiz) {
             throw new QuizNotFoundException();
         }
 

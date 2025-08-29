@@ -19,10 +19,16 @@ class ClassPeriodResource extends JsonResource
             'name'             => $this->name,
             'start_time'       => $this->start_time,
             'end_time'         => $this->end_time,
-            'school_shift_id'  => $this->school_shift_id,
             'period_order'     => $this->period_order,
-            'type'             => $this->type,
             'duration_minutes' => $this->duration_minutes,
+            'school_shift'     => $this->whenLoaded('schoolShift', function () {
+                return [
+                    'id'         => $this->schoolShift->id,
+                    'name'       => $this->schoolShift->name,
+                    'start_time' => $this->schoolShift->start_time,
+                    'end_time'   => $this->schoolShift->end_time,
+                ];
+            }),
         ];
     }
 }

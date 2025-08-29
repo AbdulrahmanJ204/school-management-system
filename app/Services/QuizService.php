@@ -11,6 +11,7 @@ use App\Http\Resources\DetailedQuizResource;
 use App\Http\Resources\QuizResource;
 use App\Models\Quiz;
 use App\Models\Section;
+use App\Models\Semester;
 use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -38,16 +39,16 @@ class QuizService
             }
         }
 
-        return "{$folder}/default.png";
+        return null;
     }
     public function listQuizzes($request)
     {
         $user = auth()->user();
 
         // Check if authenticated and has the correct user_type
-        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('عرض الاختبارات المؤتمتة'))) {
-            throw new PermissionException(); // or return error response
-        }
+//        if ( $user->hasPermissionTo('عرض الاختبارات المؤتمتة')) {
+//            throw new PermissionException(); // or return error response
+//        }
 
         $credentials = $request->validated();
 
@@ -131,7 +132,9 @@ class QuizService
 
         $credentials['quiz_photo'] = $this->handleImageUpload($request, 'quiz_photo', 'quiz_images');
         $credentials['created_by'] = $user->id;
-
+        if(!isset($credentials['semester_id'])){
+        $credentials['semester_id'] = Semester::active()->first()->id;
+        }
         DB::beginTransaction();
 
         try {
@@ -230,9 +233,9 @@ class QuizService
             throw new QuizNotFoundException();
         }
 
-        if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('تعطيل اختبار مؤتمت')) || $quiz->created_by !== $user->id) {
-            throw new PermissionException();
-        }
+//        if ($user->hasPermissionTo('تعطيل اختبار مؤتمت')) {
+//            throw new PermissionException();
+//        }
 
         if (!$quiz->is_active) {
             return ResponseHelper::jsonResponse(
@@ -267,22 +270,25 @@ class QuizService
 
         $credentials = $request->validated();
 
+        $array = [
+            'name'       => $credentials['name']       ?? $quiz->name,
+            'full_score' => $credentials['full_score'] ?? $quiz->full_score,
+            'is_active'  => $credentials['is_active'] ?? $quiz->is_active,
+          ];
+
         if ($request->hasFile('quiz_photo')) {
-            if ($quiz->quiz_photo && $quiz->quiz_photo !== 'quiz_images/default.png') {
+            if ($quiz->quiz_photo) {
                 Storage::disk('public')->delete($quiz->quiz_photo);
             }
 
-            $credentials['quiz_photo'] = $this->handleImageUpload($request, 'quiz_photo', 'quiz_images');
+            $array['quiz_photo'] = $this->handleImageUpload($request, 'quiz_photo', 'quiz_images');
+
         }
 
         DB::beginTransaction();
 
         try {
-            $quiz->update([
-                'name'       => $credentials['name']       ?? $quiz->name,
-                'full_score' => $credentials['full_score'] ?? $quiz->full_score,
-                'quiz_photo' => $credentials['quiz_photo']
-            ]);
+            $quiz->update($array);
 
             // Only rebuild targets if user passed grade/subject/semester/sections
             if (isset($credentials['grade_id'], $credentials['subject_id'], $credentials['semester_id'])) {

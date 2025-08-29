@@ -145,16 +145,16 @@ class StudentAttendanceSeeder extends Seeder
         if ($rand <= 70) {
             return 'present'; // 70% present
         } elseif ($rand <= 80) {
-            return 'Unexcused absence'; // 10% unexcused absence
-        } elseif ($rand <= 85) {
-            return 'Late'; // 5% late
+            return 'absent'; // 10% unexcused absent
+        } elseif ($rand <= 90) {
+            return 'lateness'; // 10% lateness
         } else {
-            return 'Excused absence'; // 15% excused absence
+            return 'justified_absent'; // 10% excused absent
         }
     }
 
     /**
-     * Get random attendance status for scheduled sessions (mostly present or late)
+     * Get random attendance status for scheduled sessions (mostly present or lateness)
      */
     private function getRandomScheduledAttendanceStatus(): string
     {
@@ -163,11 +163,11 @@ class StudentAttendanceSeeder extends Seeder
         if ($rand <= 50) {
             return 'present'; // 50% present for scheduled sessions
         } elseif ($rand <= 70) {
-            return 'Excused absence'; // 20% Excused absence
+            return 'justified_absent'; // 20% justified_absent
         } elseif ($rand <= 85) {
-            return 'Late'; // 15% late
+            return 'lateness'; // 15% lateness
         } else {
-            return 'Unexcused absence'; // 15% absence
+            return 'absent'; // 15% absent
         }
     }
 }

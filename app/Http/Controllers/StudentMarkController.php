@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\PermissionException;
-use App\Http\Requests\StudentMarkRequest;
+use App\Http\Requests\StudentMark\StoreStudentMarkRequest;
+use App\Http\Requests\StudentMark\UpdateStudentMarkRequest;
+use App\Http\Requests\StudentMark\ListStudentMarkRequest;
 use App\Models\StudentMark;
 use App\Services\StudentMarkService;
 use Illuminate\Http\JsonResponse;
@@ -22,16 +24,16 @@ class StudentMarkController extends Controller
      * Display a listing of the student marks.
      * @throws PermissionException
      */
-    public function index(): JsonResponse
+    public function index(ListStudentMarkRequest $request): JsonResponse
     {
-        return $this->studentMarkService->listStudentMarks();
+        return $this->studentMarkService->listStudentMarks($request);
     }
 
     /**
      * Store a newly created student mark in storage.
      * @throws PermissionException
      */
-    public function store(StudentMarkRequest $request): JsonResponse
+    public function store(StoreStudentMarkRequest $request): JsonResponse
     {
         return $this->studentMarkService->createStudentMark($request);
     }
@@ -49,7 +51,7 @@ class StudentMarkController extends Controller
      * Update the specified student mark in storage.
      * @throws PermissionException
      */
-    public function update(StudentMarkRequest $request, StudentMark $studentMark): JsonResponse
+    public function update(UpdateStudentMarkRequest $request, StudentMark $studentMark): JsonResponse
     {
         return $this->studentMarkService->updateStudentMark($request, $studentMark);
     }
@@ -61,24 +63,6 @@ class StudentMarkController extends Controller
     public function destroy(StudentMark $studentMark): JsonResponse
     {
         return $this->studentMarkService->destroyStudentMark($studentMark);
-    }
-
-    /**
-     * Get student marks by student enrollment.
-     * @throws PermissionException
-     */
-    public function getByEnrollment($enrollmentId): JsonResponse
-    {
-        return $this->studentMarkService->getMarksByEnrollment($enrollmentId);
-    }
-
-    /**
-     * Get student marks by subject.
-     * @throws PermissionException
-     */
-    public function getBySubject($subjectId): JsonResponse
-    {
-        return $this->studentMarkService->getMarksBySubject($subjectId);
     }
 
     /**

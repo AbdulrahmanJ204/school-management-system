@@ -2,10 +2,18 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Basic\GradeBasicResource;
+use App\Http\Resources\Basic\MainSubjectBasicResource;
+use App\Http\Resources\BaseResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class SubjectResource extends JsonResource
+/**
+ * Subject Resource - Complete subject information
+ * مورد المادة - معلومات المادة الكاملة
+ * Uses basic resources to avoid circular dependencies
+ * يستخدم الموارد الأساسية لتجنب التضارب الدوري
+ */
+class SubjectResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -28,13 +36,15 @@ class SubjectResource extends JsonResource
             'exam_percentage' => $this->exam_percentage,
             'num_class_period' => $this->num_class_period,
             'is_failed' => $this->is_failed,
-            'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
+            'created_by' => $this->getCreatedByName(),
 
-            'main_subject' => new MainSubjectResource($this->whenLoaded('mainSubject')),
-            'grade' => new GradeResource($this->whenLoaded('mainSubject.grade')),
+            // Use basic resources to avoid circular dependencies
+            // استخدام الموارد الأساسية لتجنب التضارب الدوري
+            'main_subject' => $this->whenLoadedResource('mainSubject', MainSubjectBasicResource::class),
+            'grade' => $this->whenLoadedResource('mainSubject.grade', GradeBasicResource::class),
 
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'created_at' => $this->formatDate($this->created_at),
+            'updated_at' => $this->formatDate($this->updated_at),
         ];
     }
 }

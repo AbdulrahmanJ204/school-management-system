@@ -18,6 +18,7 @@ class SemesterResource extends JsonResource
             'id' => $this->id,
             'year_id' => $this->year_id,
             'name' => $this->name,
+            'is_active' => $this->is_active,
             'start_date' => $this->start_date?->format('Y-m-d'),
             'end_date' => $this->end_date?->format('Y-m-d'),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),

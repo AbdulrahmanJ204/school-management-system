@@ -24,7 +24,7 @@ class TeacherSectionSubjectService
         $this->checkPermission(PermissionEnum::VIEW_TEACHER_SECTION_SUBJECTS);
 
         $teacherSectionSubjects = TeacherSectionSubject::with([
-            'teacher',
+            'teacher.user',
             'grade',
             'subject',
             'section',
@@ -47,7 +47,7 @@ class TeacherSectionSubjectService
 
         $teacherSectionSubjects = TeacherSectionSubject::onlyTrashed()
             ->with([
-                'teacher',
+                'teacher.user',
                 'grade',
                 'subject',
                 'section',
@@ -76,7 +76,7 @@ class TeacherSectionSubjectService
 
         return ResponseHelper::jsonResponse(
             new TeacherSectionSubjectResource($teacherSectionSubject->load([
-                'teacher',
+                'teacher.user',
                 'grade',
                 'subject',
                 'section',
@@ -94,7 +94,7 @@ class TeacherSectionSubjectService
         $this->checkPermission(PermissionEnum::VIEW_TEACHER_SECTION_SUBJECT);
 
         $teacherSectionSubject = TeacherSectionSubject::with([
-            'teacher',
+            'teacher.user',
             'grade',
             'subject',
             'section',
@@ -122,7 +122,7 @@ class TeacherSectionSubjectService
 
         return ResponseHelper::jsonResponse(
             new TeacherSectionSubjectResource($teacherSectionSubject->load([
-                'teacher',
+                'teacher.user',
                 'grade',
                 'subject',
                 'section',
@@ -159,7 +159,7 @@ class TeacherSectionSubjectService
 
         return ResponseHelper::jsonResponse(
             new TeacherSectionSubjectResource($teacherSectionSubject->load([
-                'teacher',
+                'teacher.user',
                 'grade',
                 'subject',
                 'section',
@@ -194,7 +194,7 @@ class TeacherSectionSubjectService
 
         $teacherSectionSubjects = TeacherSectionSubject::where('teacher_id', $teacherId)
             ->with([
-                'teacher',
+                'teacher.user',
                 'grade',
                 'subject',
                 'section',
@@ -217,7 +217,7 @@ class TeacherSectionSubjectService
 
         $teacherSectionSubjects = TeacherSectionSubject::where('section_id', $sectionId)
             ->with([
-                'teacher',
+                'teacher.user',
                 'grade',
                 'subject',
                 'section',
@@ -240,7 +240,7 @@ class TeacherSectionSubjectService
 
         $teacherSectionSubjects = TeacherSectionSubject::where('subject_id', $subjectId)
             ->with([
-                'teacher',
+                'teacher.user',
                 'grade',
                 'subject',
                 'section',

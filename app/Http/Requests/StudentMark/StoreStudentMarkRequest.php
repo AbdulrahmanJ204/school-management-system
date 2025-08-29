@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\StudentMark;
 
+use App\Http\Requests\BaseRequest;
 use App\Models\StudentMark;
 use App\Models\Subject;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class StudentMarkRequest extends BaseRequest
+class StoreStudentMarkRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +24,6 @@ class StudentMarkRequest extends BaseRequest
      */
     public function rules(): array
     {
-        $studentMarkId = $this->route('student_mark') ? $this->route('student_mark')->id : null;
-
         $subject = null;
         if ($this->has('subject_id')) {
             $subject = Subject::find($this->subject_id);
@@ -93,15 +92,13 @@ class StudentMarkRequest extends BaseRequest
                 $validator->errors()->add('marks', 'يجب إدخال درجة واحدة على الأقل');
             }
 
-            // Check if enrollment and subject combination is unique (for create only)
-            if (!$this->route('student_mark')) {
-                $existingMark = StudentMark::where('enrollment_id', $this->enrollment_id)
-                    ->where('subject_id', $this->subject_id)
-                    ->first();
+            // Check if enrollment and subject combination is unique
+            $existingMark = StudentMark::where('enrollment_id', $this->enrollment_id)
+                ->where('subject_id', $this->subject_id)
+                ->first();
 
-                if ($existingMark) {
-                    $validator->errors()->add('combination', 'يوجد درجة مسجلة مسبقاً لهذا الطالب في هذه المادة');
-                }
+            if ($existingMark) {
+                $validator->errors()->add('combination', 'يوجد درجة مسجلة مسبقاً لهذا الطالب في هذه المادة');
             }
         });
     }

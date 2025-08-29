@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Quiz extends Model
 {
+    protected $with = ['questions' , 'targets'] ;
     protected $fillable = ['name', 'created_by', 'is_active', 'taken_at', 'full_score', 'quiz_photo'];
     public function questions()
     {

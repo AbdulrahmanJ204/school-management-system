@@ -124,7 +124,7 @@ class AuthService
                     $firstSemester = Semester::where('year_id', $activeYear->id)
                         ->orderBy('start_date', 'asc')
                         ->first();
-                    
+
                     if ($firstSemester) {
                         StudentEnrollment::create([
                             'student_id' => $user->student->id,
@@ -235,11 +235,15 @@ class AuthService
             $refreshToken->accessToken->device_id = $device->id;
             $refreshToken->accessToken->save();
 
+            if(isset($credentials['fcm_token'])){
+//                dd($credentials['fcm_token']);
+                $user->update(['fcm_token' => $credentials['fcm_token']]);
+            }
+
             DB::commit();
 
             $user->access_token = $accessToken->plainTextToken;
             $user->refresh_token = $refreshToken->plainTextToken;
-
             return ResponseHelper::jsonResponse([
                 'user' => new UserResource($user),
             ], __('messages.auth.login'));

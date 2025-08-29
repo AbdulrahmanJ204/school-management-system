@@ -2,10 +2,19 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Basic\SubjectBasicResource;
+use App\Http\Resources\Basic\SectionBasicResource;
+use App\Http\Resources\Basic\UserBasicResource;
+use App\Http\Resources\BaseResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class ClassSessionResource extends JsonResource
+/**
+ * Class Session Resource - Complete class session information
+ * مورد جلسة الفصل - معلومات الجلسة الكاملة
+ * Uses basic resources to avoid circular dependencies
+ * يستخدم الموارد الأساسية لتجنب التضارب الدوري
+ */
+class ClassSessionResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -27,19 +36,33 @@ class ClassSessionResource extends JsonResource
             'present_students_count' => $this->present_students_count,
             'created_by' => $this->created_by,
 
-            // Relationships
-            'schedule' => new ScheduleResource($this->whenLoaded('schedule')),
-            'school_day' => new SchoolDayResource($this->whenLoaded('schoolDay')),
-            //'teacher' => new TeacherResource($this->whenLoaded('teacher')),
-            'subject' => new SubjectResource($this->whenLoaded('subject')),
-            'section' => new SectionResource($this->whenLoaded('section')),
-            'class_period' => new ClassPeriodResource($this->whenLoaded('classPeriod')),
-            'created_by_user' => new UserResource($this->whenLoaded('createdBy')),
+            // Use basic resources to avoid circular dependencies
+            // استخدام الموارد الأساسية لتجنب التضارب الدوري
+            'schedule' => $this->whenLoadedResource('schedule', ScheduleResource::class),
+            'school_day' => $this->whenLoadedResource('schoolDay', SchoolDayResource::class),
+            'teacher' => $this->whenLoadedResource('teacher.user', UserBasicResource::class),
+            'subject' => $this->whenLoadedResource('subject', SubjectBasicResource::class),
+            'section' => $this->whenLoadedResource('section', SectionBasicResource::class),
+            'class_period' => $this->whenLoadedResource('classPeriod', ClassPeriodResource::class),
+            'created_by_user' => $this->whenLoadedResource('createdBy', UserBasicResource::class),
 
-            // Related data
-            //'student_attendances' => StudentAttendanceResource::collection($this->whenLoaded('studentAttendances')),
-            //'assignments' => AssignmentResource::collection($this->whenLoaded('assignments')),
-            'study_notes' => StudyNoteResource::collection($this->whenLoaded('studyNotes')),
+            // Load relationships only when explicitly requested
+            // تحميل العلاقات فقط عند الطلب الصريح
+            'student_attendances' => $this->whenExplicitlyRequestedCollection(
+                $request, 
+                'attendances', 
+                StudentAttendanceResource::class
+            ),
+            'assignments' => $this->whenExplicitlyRequestedCollection(
+                $request, 
+                'assignments', 
+                AssignmentResource::class
+            ),
+            'study_notes' => $this->whenExplicitlyRequestedCollection(
+                $request, 
+                'study_notes', 
+                StudyNoteResource::class
+            ),
 
             // Computed properties
             'attendance_percentage' => $this->when($this->total_students_count > 0, function () {
@@ -49,8 +72,8 @@ class ClassSessionResource extends JsonResource
             'can_be_started' => $this->canBeStarted(),
             'is_today' => $this->schoolDay && $this->schoolDay->date->isToday(),
 
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'created_at' => $this->formatDate($this->created_at),
+            'updated_at' => $this->formatDate($this->updated_at),
         ];
     }
 }
