@@ -361,6 +361,7 @@ class StudyNoteService
     /**
      * Create study note by teacher
      * @throws PermissionException
+     * @throws \Exception
      */
     public function createTeacherStudyNote($request): JsonResponse
     {
