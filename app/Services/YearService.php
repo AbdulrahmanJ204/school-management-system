@@ -231,8 +231,7 @@ class YearService
         return ResponseHelper::jsonResponse(
             YearResource::collection($years),
             'Years with nested data',
-            ResponseAlias::HTTP_OK,
-            true
+            ResponseAlias::HTTP_OK
         );
     }
 }
