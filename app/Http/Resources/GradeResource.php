@@ -41,11 +41,11 @@ class GradeResource extends BaseResource
             'created_by' => $this->whenLoaded('createdBy', function () {
                 return $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name;
             }),
-            
+
             // Use basic resources to avoid circular dependencies
             // استخدام الموارد الأساسية لتجنب التضارب الدوري
             'sections' => $this->whenLoadedCollection('sections', SectionBasicResource::class),
-            'main_subjects' => $this->whenLoadedCollection('mainSubjects', MainSubjectBasicResource::class),
+            'main_subjects' => $this->whenLoadedCollection('mainSubjects', MainSubjectResource::class),
         ];
     }
 }

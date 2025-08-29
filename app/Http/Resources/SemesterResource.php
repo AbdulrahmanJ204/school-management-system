@@ -27,7 +27,6 @@ class SemesterResource extends JsonResource
             'year' => new YearResource($this->whenLoaded('year')),
 //
             'created_by' => $this->createdBy->id . '-' . $this->createdBy->first_name . ' ' . $this->createdBy->last_name,
-//            'created_by' => new UserResource($this->whenLoaded('createdBy')),
 
             'school_days' => SchoolDayResource::collection($this->whenLoaded('schoolDays')),
             'school_days_count' => $this->whenCounted('schoolDays'),
