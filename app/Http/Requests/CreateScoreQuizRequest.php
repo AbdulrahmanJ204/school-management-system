@@ -9,7 +9,7 @@ class CreateScoreQuizRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth('api')->check();
+        return auth()->check();
     }
 
     /**

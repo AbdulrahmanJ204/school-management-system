@@ -593,13 +593,13 @@ class StudentAttendanceService
                         'student_id' => $student['id'],
                         'class_session_id' => $session->id,
                         'status' => $student['status'],
-                        'created_by' => auth('api')->id(),
+                        'created_by' => auth()->id(),
                     ]);
                 }
                 $returnedData[] = $record;
             }
         }
-        
+
 
 
         return ResponseHelper::jsonResponse(
@@ -621,14 +621,14 @@ class StudentAttendanceService
                 if ($record) {
                     $record->update([
                         'status' => $class_session['status'],
-                        'created_by' => auth('api')->id(),
+                        'created_by' => auth()->id(),
                     ]);
                 } else {
                     $record = StudentAttendance::create([
                         'student_id' => $student['id'],
                         'class_session_id' => $class_session['id'],
                         'status' => $class_session['status'],
-                        'created_by' => auth('api')->id(),
+                        'created_by' => auth()->id(),
                     ]);
                 }
                 $returnedData[] = $record;
