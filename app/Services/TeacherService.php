@@ -343,7 +343,7 @@ class TeacherService
             'absencePercentage' => $absencePercentage,
             'latenessPercentage' => $latenessPercentage,
             'justifiedAbsencePercentage' => $justifiedAbsencePercentage,
-            'classesAndSections' => $gradesAndSections
+            'classesAndSections' => $gradesAndSections ?: (object)[]
         ];
 
         return ResponseHelper::jsonResponse(
