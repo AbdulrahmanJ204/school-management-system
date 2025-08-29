@@ -80,7 +80,7 @@ class TeacherAttendanceTrackingService
             return [
                 'id' => $user->student->id,
                 'name' => $user->first_name . ' ' . $user->last_name,
-                'image' => $user->image ?? null,
+                'image' => $user->image ? asset('storage/' . $user->image) : asset('storage/user_images/default.png'),
                 'status' => $status
             ];
         });
@@ -174,7 +174,7 @@ class TeacherAttendanceTrackingService
             return [
                 'id' => $user->student->id,
                 'name' => $user->first_name . ' ' . $user->last_name,
-                'image' => $user->image ?? null,
+                'image' => $user->image ? asset('storage/' . $user->image) : asset('storage/user_images/default.png'),
                 'status' => $status
             ];
         });
