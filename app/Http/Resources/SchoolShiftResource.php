@@ -28,11 +28,11 @@ class SchoolShiftResource extends JsonResource
             }),
             'grades' => $this->when($this->targets && $this->targets->isNotEmpty(), function () {
                 $grades = $this->targets->pluck('grade')->filter();
-                return GradeResource::collection($grades->unique('id'));
+                return FileGradeResource::collection($grades->unique('id'));
             }),
             'sections' => $this->when($this->targets && $this->targets->isNotEmpty(), function () {
                 $sections = $this->targets->pluck('section')->filter();
-                return SectionResource::collection($sections->unique('id'));
+                return FileSectionResource::collection($sections->unique('id'));
             }),
         ];
     }
