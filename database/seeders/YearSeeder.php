@@ -24,7 +24,7 @@ class YearSeeder extends Seeder
             ],
             [
                 'name' => '2024-2025',
-                'start_date' => now()->format('Y-m-d'),
+                'start_date' => now()->subDays(7)->format('Y-m-d'),
                 'end_date' => now()->addMonths(2)->format('Y-m-d'),
                 'is_active' => true,
                 'created_by' => 1,
