@@ -522,7 +522,7 @@ class TeacherAttendanceTrackingService
             'present' => 'present',
             'absent' => 'absent',
             'lateness' => 'lateness',
-            'justified_absent' => 'excused',
+            'justified_absent' => 'justified_absent',
             default => 'present',
         };
 
