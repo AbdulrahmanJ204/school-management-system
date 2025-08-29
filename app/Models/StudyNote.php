@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Enums\NoteTypeEnum;
+use App\Observers\StudyNoteObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[ObservedBy([StudyNoteObserver::class])]
 class StudyNote extends Model
 {
     use SoftDeletes;
