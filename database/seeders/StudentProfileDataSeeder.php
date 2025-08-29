@@ -55,7 +55,7 @@ class StudentProfileDataSeeder extends Seeder
             foreach ($classSessions as $sessionIndex => $session) {
                 // Deterministic attendance pattern:
                 // Rotate statuses: present, unexcused, late, excused
-                $statuses = ['present', 'unexcused_absence', 'late', 'excused_absence'];
+                $statuses = ['present', 'absent', 'late', 'justified_absent'];
                 $status = $statuses[($index + $sessionIndex) % count($statuses)];
 
                 StudentAttendance::updateOrCreate(
