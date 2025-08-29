@@ -600,6 +600,7 @@ class StudentAttendanceService
             }
         }
 
+
         return ResponseHelper::jsonResponse(
             $returnedData,
             'تم تحديث حضور الطلاب بنجاح'

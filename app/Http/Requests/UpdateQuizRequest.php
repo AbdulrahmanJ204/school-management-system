@@ -27,6 +27,7 @@ class UpdateQuizRequest extends FormRequest
             'name' => 'nullable|string|max:255',
             'full_score'  => 'nullable|integer|min:1',
             'quiz_photo' => 'sometimes|image|mimes:jpg,jpeg,png,webp',
+            'remove_photo'=>'sometimes|boolean',
             'grade_id'    => 'nullable|exists:grades,id',
             'subject_id'  => 'nullable|exists:subjects,id',
             'semester_id' => 'nullable|exists:semesters,id',
