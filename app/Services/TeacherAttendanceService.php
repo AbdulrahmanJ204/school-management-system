@@ -445,41 +445,45 @@ class TeacherAttendanceService
         foreach ($daySessions as $session) {
             $attendanceKey = $date . '_' . $session->classPeriod->id;
             $attendance = $teacherAttendances->get($attendanceKey);
-
+            $presentCount = 0;
+            $absentCount = 0;
+            $justifiedAbsentCount = 0;
+            $lateCount = 0;
+            $totalCount = 0;
             if ($attendance) {
-                $sessionsWithRecords++;
+                $totalCount++;
                 switch ($attendance->status) {
                     case 'present':
-                        $hasPresent = true;
+                        $presentCount++;
                         break;
                     case 'absent':
+                        $absentCount++;
+                        break;
                     case 'justified_absent':
-                        $hasAbsent = true;
+                        $justifiedAbsentCount++;
                         break;
                     case 'lateness':
-                        $hasLate = true;
+                        $lateCount++;
                         break;
                 }
             }
         }
 
-        // If no attendance records exist for any session, assume present (old system behavior)
-        if ($sessionsWithRecords === 0) {
-            return 'present';
-        }
-
-        if ($hasPresent && !$hasAbsent && !$hasLate) {
-            return 'present';
-        } elseif ($hasAbsent && !$hasPresent) {
-            return 'absent';
-        } elseif ($hasLate) {
-            return 'lateness';
-        } else {
-//            Todo after handel error
-            return 'present';
-        }
+        return $this->determineDayStatusByCount($presentCount, $totalCount, $absentCount, $justifiedAbsentCount, $lateCount);
     }
+    private function determineDayStatusByCount($presentCount, $totalCount, $absentCount, $justifiedAbsentCount, $lateCount): string
+    {
 
+        $sum = $presentCount + $absentCount + $justifiedAbsentCount + $lateCount;
+
+        if ($sum != $totalCount) {
+            return 'present';
+        }
+        return $presentCount == $totalCount ?
+            'present' : ($absentCount + $justifiedAbsentCount == $totalCount ?
+                ($justifiedAbsentCount > 0 ? 'justified_absent' : 'absent')
+                : 'lateness');
+    }
     /**
      * Map attendance status to frontend format
      */
