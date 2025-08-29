@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use function PHPUnit\Framework\isArray;
 use function PHPUnit\Framework\isString;
 
 class QuestionResource extends JsonResource
@@ -18,13 +19,17 @@ class QuestionResource extends JsonResource
         return [
             'id' => $this->id,
             'quiz_id' => $this->quiz_id,
-            'question_text' =>
-                json_decode($this->question_text)
+            'question_text' => is_array($this->question_text) ?
+                $this->question_text :
+                json_decode($this->question_text ,true)
             ,
             'question_photo' => $this->question_photo
                 ? asset('storage/' . $this->question_photo)
                 : asset('storage/question_images/default.png'),
-            'choices' => $this->choices,
+            'choices' => is_array($this->choices)
+                ? $this->choices :
+                json_decode($this->choices, true)
+            ,
             'right_choice' => $this->right_choice,
             'hint' => json_decode($this->hint),
             'hint_photo' => $this->hint_photo

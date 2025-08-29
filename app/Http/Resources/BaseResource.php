@@ -79,7 +79,20 @@ abstract class BaseResource extends JsonResource
      * Check if relationship should be included based on request
      * التحقق من وجوب تضمين العلاقة بناءً على الطلب
      */
-
+    protected function shouldIncludeRelationship(Request $request, string $relationship): bool
+    {
+        $includes = $request->query('include', '');
+        
+        if (empty($includes)) {
+            return false;
+        }
+        
+        // Split by comma to handle multiple includes
+        $includeArray = array_map('trim', explode(',', $includes));
+        
+        // Check if the relationship is in the includes
+        return in_array($relationship, $includeArray);
+    }
 
     /**
      * Conditionally include relationship based on request

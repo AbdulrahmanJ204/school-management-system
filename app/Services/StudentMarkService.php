@@ -10,6 +10,8 @@ use App\Models\StudentEnrollment;
 use App\Models\Subject;
 use App\Models\Student;
 use App\Models\User;
+use App\Http\Requests\StudentMark\BulkStoreStudentMarkRequest;
+use App\Http\Requests\StudentMark\BulkUpdateStudentMarkRequest;
 use App\Exceptions\PermissionException;
 use App\Traits\HasPermissionChecks;
 use Illuminate\Http\JsonResponse;
@@ -27,44 +29,113 @@ class StudentMarkService
     {
         $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
 
-        $query = StudentMark::with([
-            'subject.mainSubject.grade',
-            'enrollment.student',
-            'enrollment.section',
-            'enrollment.semester',
-        ]);
+        // If no request or no subject_id, return existing marks as before
+        if (!$request || !$request->has('subject_id')) {
+            $query = StudentMark::with([
+                'subject.mainSubject.grade',
+                'enrollment.student',
+                'enrollment.section',
+                'enrollment.semester',
+            ]);
 
-        // Apply filters if request is provided
-        if ($request) {
-            // Filter by enrollment_id
-            if ($request->has('enrollment_id')) {
-                $query->where('enrollment_id', $request->enrollment_id);
+            // Apply filters if request is provided
+            if ($request) {
+                // Filter by enrollment_id
+                if ($request->has('enrollment_id')) {
+                    $query->where('enrollment_id', $request->enrollment_id);
+                }
+
+                // Filter by semester_id
+                if ($request->has('semester_id')) {
+                    $query->whereHas('enrollment', function ($q) use ($request) {
+                        $q->where('semester_id', $request->semester_id);
+                    });
+                }
+
+                // Filter by section_id
+                if ($request->has('section_id')) {
+                    $query->whereHas('enrollment', function ($q) use ($request) {
+                        $q->where('section_id', $request->section_id);
+                    });
+                }
             }
 
-            // Filter by subject_id
-            if ($request->has('subject_id')) {
+            $studentMarks = $query->orderBy('created_at', 'desc')->get();
+
+            return ResponseHelper::jsonResponse(
+                StudentMarkResource::collection($studentMarks)
+            );
+        }
+
+        // Get the subject
+        $subject = Subject::findOrFail($request->subject_id);
+        
+        // Build enrollment query
+        $enrollmentQuery = StudentEnrollment::with([
+            'student',
+            'section',
+            'semester',
+            'studentMarks' => function ($query) use ($request) {
                 $query->where('subject_id', $request->subject_id);
             }
+        ]);
 
-            // Filter by semester_id
-            if ($request->has('semester_id')) {
-                $query->whereHas('enrollment', function ($q) use ($request) {
-                    $q->where('semester_id', $request->semester_id);
-                });
-            }
+        // Apply filters
+        if ($request->has('semester_id')) {
+            $enrollmentQuery->where('semester_id', $request->semester_id);
+        }
 
-            // Filter by section_id
-            if ($request->has('section_id')) {
-                $query->whereHas('enrollment', function ($q) use ($request) {
-                    $q->where('section_id', $request->section_id);
-                });
+        if ($request->has('section_id')) {
+            $enrollmentQuery->where('section_id', $request->section_id);
+        }
+
+        if ($request->has('enrollment_id')) {
+            $enrollmentQuery->where('id', $request->enrollment_id);
+        }
+
+        $enrollments = $enrollmentQuery->get();
+        $allStudentMarks = collect();
+
+        foreach ($enrollments as $enrollment) {
+            // Check if student already has a mark for this subject
+            $existingMark = $enrollment->studentMarks->first();
+            
+            if ($existingMark) {
+                // Student already has a mark, add it to the collection
+                $allStudentMarks->push($existingMark);
+            } else {
+                // Student doesn't have a mark, create a default one
+                $defaultMark = StudentMark::create([
+                    'subject_id' => $request->subject_id,
+                    'enrollment_id' => $enrollment->id,
+                    'homework' => 0,
+                    'oral' => 0,
+                    'activity' => 0,
+                    'quiz' => 0,
+                    'exam' => 0,
+                    'total' => 0,
+                    'created_by' => auth()->id()
+                ]);
+
+                // Load the relationships for the new mark
+                $defaultMark->load([
+                    'subject.mainSubject.grade',
+                    'enrollment.student',
+                    'enrollment.section',
+                    'enrollment.semester',
+                ]);
+
+                $allStudentMarks->push($defaultMark);
             }
         }
 
-        $studentMarks = $query->orderBy('created_at', 'desc')->get();
+        // Sort by student name
+        $sortedMarks = $allStudentMarks->sortBy(function ($mark) {
+            return $mark->enrollment->student->user->first_name ?? '';
+        })->values();
 
         return ResponseHelper::jsonResponse(
-            StudentMarkResource::collection($studentMarks)
+            StudentMarkResource::collection($sortedMarks)
         );
     }
 
@@ -443,6 +514,182 @@ class StudentMarkService
             return ResponseHelper::jsonResponse(
                 null,
                 'حدث خطأ في جلب علامات الطالب: ' . $e->getMessage(),
+                500,
+                false
+            );
+        }
+    }
+
+    /**
+     * Create multiple student marks in bulk.
+     * @throws PermissionException
+     */
+    public function bulkCreateStudentMarks(BulkStoreStudentMarkRequest $request): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::CREATE_STUDENT_MARK);
+
+        try {
+            $marks = $request->validated()['marks'];
+            $createdMarks = [];
+            $errors = [];
+
+            foreach ($marks as $index => $markData) {
+                try {
+                    // Check if mark already exists for this enrollment and subject
+                    $existingMark = StudentMark::where('enrollment_id', $markData['enrollment_id'])
+                        ->where('subject_id', $markData['subject_id'])
+                        ->first();
+
+                    if ($existingMark) {
+                        $errors[] = [
+                            'index' => $index,
+                            'error' => 'يوجد درجة مسجلة مسبقاً لهذا الطالب في هذه المادة'
+                        ];
+                        continue;
+                    }
+
+                    $studentMark = StudentMark::create([
+                        'subject_id' => $markData['subject_id'],
+                        'enrollment_id' => $markData['enrollment_id'],
+                        'homework' => $markData['homework'] ?? null,
+                        'oral' => $markData['oral'] ?? null,
+                        'activity' => $markData['activity'] ?? null,
+                        'quiz' => $markData['quiz'] ?? null,
+                        'exam' => $markData['exam'] ?? null,
+                        'created_by' => auth()->id(),
+                    ]);
+
+                    $createdMarks[] = new StudentMarkResource($studentMark->load([
+                        'subject',
+                        'enrollment.student.user',
+                        'enrollment.section',
+                        'createdBy'
+                    ]));
+
+                } catch (\Exception $e) {
+                    $errors[] = [
+                        'index' => $index,
+                        'error' => 'فشل في إنشاء الدرجة: ' . $e->getMessage()
+                    ];
+                }
+            }
+
+            $responseData = [
+                'created_marks' => $createdMarks,
+                'total_created' => count($createdMarks),
+                'total_requested' => count($marks),
+            ];
+
+            if (!empty($errors)) {
+                $responseData['errors'] = $errors;
+                $responseData['total_errors'] = count($errors);
+            }
+
+            $message = count($createdMarks) > 0 
+                ? 'تم إنشاء ' . count($createdMarks) . ' درجة بنجاح'
+                : 'لم يتم إنشاء أي درجات';
+
+            if (!empty($errors)) {
+                $message .= ' مع ' . count($errors) . ' خطأ';
+            }
+
+            return ResponseHelper::jsonResponse(
+                $responseData,
+                $message,
+                count($createdMarks) > 0 ? 201 : 422,
+                count($createdMarks) > 0
+            );
+
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'حدث خطأ في إنشاء الدرجات: ' . $e->getMessage(),
+                500,
+                false
+            );
+        }
+    }
+
+    /**
+     * Update multiple student marks in bulk.
+     * @throws PermissionException
+     */
+    public function bulkUpdateStudentMarks(BulkUpdateStudentMarkRequest $request): JsonResponse
+    {
+        $this->checkPermission(PermissionEnum::UPDATE_STUDENT_MARK);
+
+        try {
+            $marks = $request->validated()['marks'];
+            $updatedMarks = [];
+            $errors = [];
+
+            foreach ($marks as $index => $markData) {
+                try {
+                    $studentMark = StudentMark::find($markData['id']);
+
+                    if (!$studentMark) {
+                        $errors[] = [
+                            'index' => $index,
+                            'error' => 'الدرجة المحددة غير موجودة'
+                        ];
+                        continue;
+                    }
+
+                    $studentMark->update([
+                        'subject_id' => $markData['subject_id'],
+                        'enrollment_id' => $markData['enrollment_id'],
+                        'homework' => $markData['homework'] ?? null,
+                        'oral' => $markData['oral'] ?? null,
+                        'activity' => $markData['activity'] ?? null,
+                        'quiz' => $markData['quiz'] ?? null,
+                        'exam' => $markData['exam'] ?? null,
+                    ]);
+
+                    $updatedMarks[] = new StudentMarkResource($studentMark->load([
+                        'subject',
+                        'enrollment.student.user',
+                        'enrollment.section',
+                        'createdBy'
+                    ]));
+
+                } catch (\Exception $e) {
+                    $errors[] = [
+                        'index' => $index,
+                        'error' => 'فشل في تحديث الدرجة: ' . $e->getMessage()
+                    ];
+                }
+            }
+
+            $responseData = [
+                'updated_marks' => $updatedMarks,
+                'total_updated' => count($updatedMarks),
+                'total_requested' => count($marks),
+            ];
+
+            if (!empty($errors)) {
+                $responseData['errors'] = $errors;
+                $responseData['total_errors'] = count($errors);
+            }
+
+            $message = count($updatedMarks) > 0 
+                ? 'تم تحديث ' . count($updatedMarks) . ' درجة بنجاح'
+                : 'لم يتم تحديث أي درجات';
+
+            if (!empty($errors)) {
+                $message .= ' مع ' . count($errors) . ' خطأ';
+            }
+
+            return ResponseHelper::jsonResponse(
+                $responseData,
+                $message,
+                count($updatedMarks) > 0 ? 200 : 422,
+                count($updatedMarks) > 0
+            );
+
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'حدث خطأ في تحديث الدرجات: ' . $e->getMessage(),
                 500,
                 false
             );

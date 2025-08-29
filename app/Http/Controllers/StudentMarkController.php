@@ -6,6 +6,8 @@ use App\Exceptions\PermissionException;
 use App\Http\Requests\StudentMark\StoreStudentMarkRequest;
 use App\Http\Requests\StudentMark\UpdateStudentMarkRequest;
 use App\Http\Requests\StudentMark\ListStudentMarkRequest;
+use App\Http\Requests\StudentMark\BulkStoreStudentMarkRequest;
+use App\Http\Requests\StudentMark\BulkUpdateStudentMarkRequest;
 use App\Models\StudentMark;
 use App\Services\StudentMarkService;
 use Illuminate\Http\JsonResponse;
@@ -93,5 +95,23 @@ class StudentMarkController extends Controller
     public function getMyAllMarks(): JsonResponse
     {
         return $this->studentMarkService->getMyAllMarks();
+    }
+
+    /**
+     * Store multiple student marks in bulk.
+     * @throws PermissionException
+     */
+    public function bulkStore(BulkStoreStudentMarkRequest $request): JsonResponse
+    {
+        return $this->studentMarkService->bulkCreateStudentMarks($request);
+    }
+
+    /**
+     * Update multiple student marks in bulk.
+     * @throws PermissionException
+     */
+    public function bulkUpdate(BulkUpdateStudentMarkRequest $request): JsonResponse
+    {
+        return $this->studentMarkService->bulkUpdateStudentMarks($request);
     }
 }

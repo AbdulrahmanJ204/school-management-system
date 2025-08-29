@@ -42,6 +42,9 @@ class UserResource extends BaseResource
 
         if ($this->user_type === 'student') {
             $baseData['student_id'] = $this->student->id;
+            // Get current active enrollment
+            $currentEnrollment = $this->student->studentEnrollments()->latest()->first();
+            $baseData['enrollment_id'] = $currentEnrollment?->id;
         }
         if ($this->user_type === 'admin') {
             $baseData['admin_id'] = $this->admin->id;
@@ -147,7 +150,7 @@ class UserResource extends BaseResource
                 'is_active' => $this->student?->studentEnrollments->first()?->semester?->is_active
             ];
         });
-        
+
         return $baseData;
     }
 }

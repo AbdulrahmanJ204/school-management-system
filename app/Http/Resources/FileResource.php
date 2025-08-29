@@ -56,8 +56,8 @@ class FileResource extends JsonResource
 
 
         $targets = $this->whenLoaded('targets');
-        $grades = GradeResource::collection($targets->whereNotNull('grade')->pluck('grade')->unique()->values());
-        $sections = SectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
+        $grades = FileGradeResource::collection($targets->whereNotNull('grade')->pluck('grade')->unique()->values());
+        $sections = FileSectionResource::collection($targets->whereNotNull('section')->pluck('section')->unique()->values());
 
         $targetsArray = [];
 

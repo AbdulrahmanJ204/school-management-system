@@ -35,17 +35,17 @@ class SectionResource extends BaseResource
             // Use basic resources to avoid circular dependencies
             // استخدام الموارد الأساسية لتجنب التضارب الدوري
             'grade' => $this->whenLoadedResource('grade', GradeBasicResource::class),
-            
+
             // Load relationships only when explicitly requested
             // تحميل العلاقات فقط عند الطلب الصريح
             'student_enrollments' => $this->whenExplicitlyRequestedCollection(
-                $request, 
-                'enrollments', 
+                $request,
+                'enrollments',
                 StudentEnrollmentResource::class
             ),
             'teacher_section_subjects' => $this->whenExplicitlyRequestedCollection(
-                $request, 
-                'teacher_subjects', 
+                $request,
+                'teacher_subjects',
                 TeacherSectionSubjectResource::class
             ),
         ];

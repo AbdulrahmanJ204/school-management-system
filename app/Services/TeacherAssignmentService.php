@@ -7,23 +7,20 @@ use App\Http\Resources\TeacherAssignmentResource;
 use App\Models\Assignment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class TeacherAssignmentService
 {
-    /**
-     * Create a new assignment
-     */
     public function createAssignment(Request $request): JsonResponse
     {
         $data = $request->validated();
         $data['created_by'] = auth()->id();
 
-        // Handle photo upload if provided (base64)
-        if ($request->has('photo') && $request->photo) {
-            $data['photo'] = $this->handleBase64Image($request->photo);
+        // Handle direct file upload
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $this->handleFileUpload($request->file('photo'));
         }
 
         $assignment = Assignment::create($data);
@@ -44,24 +41,19 @@ class TeacherAssignmentService
         );
     }
 
-    /**
-     * Update an existing assignment
-     */
     public function updateAssignment(Request $request, int $id): JsonResponse
     {
         $assignment = Assignment::findOrFail($id);
-        
-        // Check if teacher owns this assignment
         $this->checkAssignmentOwnership($assignment);
-        
+
         $data = $request->validated();
 
-        if ($request->has('photo') && $request->photo) {
+        if ($request->hasFile('photo')) {
             // Delete old photo if exists
             if ($assignment->photo) {
                 Storage::disk('public')->delete($assignment->photo);
             }
-            $data['photo'] = $this->handleBase64Image($request->photo);
+            $data['photo'] = $this->handleFileUpload($request->file('photo'));
         }
 
         $assignment->update($data);
@@ -97,7 +89,7 @@ class TeacherAssignmentService
             'subject',
             'createdBy'
         ])
-        ->where('created_by', $user->id);
+            ->where('created_by', $user->id);
 
         // Apply filters
         if ($request->has('subject_id')) {
@@ -140,15 +132,15 @@ class TeacherAssignmentService
     public function deleteAssignment(int $id): JsonResponse
     {
         $assignment = Assignment::findOrFail($id);
-        
+
         // Check if teacher owns this assignment
         $this->checkAssignmentOwnership($assignment);
-        
+
         // Delete photo if exists
         if ($assignment->photo) {
             Storage::disk('public')->delete($assignment->photo);
         }
-        
+
         $assignment->delete();
 
         return ResponseHelper::jsonResponse(
@@ -158,8 +150,13 @@ class TeacherAssignmentService
     }
 
     /**
-     * Check if the authenticated teacher owns the assignment
+     * Handle direct file upload
      */
+    private function handleFileUpload(UploadedFile $file): string
+    {
+        return $file->store('assignments', 'public');
+    }
+
     private function checkAssignmentOwnership(Assignment $assignment): void
     {
         $user = auth()->user();
@@ -167,32 +164,4 @@ class TeacherAssignmentService
             abort(403, 'غير مصرح لك بالوصول لهذا التكليف');
         }
     }
-
-    /**
-     * Handle base64 image upload
-     */
-    private function handleBase64Image(string $base64String): string
-    {
-        // Remove data:image/...;base64, prefix if present
-        if (strpos($base64String, 'data:image/') === 0) {
-            $base64String = substr($base64String, strpos($base64String, ',') + 1);
-        }
-
-        // Decode base64
-        $imageData = base64_decode($base64String);
-        
-        if ($imageData === false) {
-            abort(400, 'صورة غير صالحة');
-        }
-
-        // Generate unique filename
-        $filename = 'assignment_' . time() . '_' . Str::random(10) . '.jpg';
-        $path = 'assignments/' . $filename;
-
-        // Store the image
-        Storage::disk('public')->put($path, $imageData);
-
-        return $path;
-    }
 }
-
