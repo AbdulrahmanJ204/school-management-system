@@ -31,11 +31,33 @@ class UserFactory extends Factory
         $gender = $this->faker->randomElement(['male', 'female']);
         $user_type = $this->faker->randomElement(['admin', 'teacher', 'student']);
 
+        // Arabic names arrays
+        $arabicMaleNames = [
+            'أحمد', 'محمد', 'علي', 'عمر', 'يوسف', 'إبراهيم', 'عبدالله', 'خالد', 'سعد', 'فهد',
+            'عبدالرحمن', 'عبدالعزيز', 'عبدالملك', 'عبدالوهاب', 'عبدالسلام', 'عبدالرزاق', 'عبدالغفار', 'عبداللطيف',
+            'محمود', 'مصطفى', 'حسن', 'حسين', 'جمال', 'راشد', 'نواف', 'سلطان', 'فيصل', 'طلال',
+            'بندر', 'سلمان', 'عبدالله', 'عبدالرحيم', 'عبدالستار', 'عبدالفتاح', 'عبدالقادر', 'عبدالكريم'
+        ];
+
+        $arabicFemaleNames = [
+            'فاطمة', 'عائشة', 'خديجة', 'مريم', 'زينب', 'رقية', 'أمينة', 'سارة', 'نور', 'هدى',
+            'فدوى', 'سعاد', 'نادية', 'ليلى', 'رحمة', 'صفية', 'زهرة', 'جمانة', 'رنا', 'رغد',
+            'رؤى', 'رنيم', 'ريان', 'سجى', 'سحر', 'سلمى', 'سمية', 'سندس', 'شهد', 'شيماء',
+            'عذراء', 'غادة', 'فريدة', 'قمر', 'كاملة', 'لبنى', 'لمياء', 'ماجدة', 'مريم', 'منى'
+        ];
+
+        $arabicLastNames = [
+            'الزهراني', 'القحطاني', 'العتيبي', 'الغامدي', 'القرني', 'السهلي', 'العمري', 'الخالدي',
+            'الرشيدي', 'السبيعي', 'السلمي', 'الشهري', 'الصاعدي', 'الضويحي', 'الطويرقي', 'العبدلي',
+            'العجلان', 'العقيل', 'العنزي', 'العنقري', 'العوني', 'الغامدي', 'الفهيد', 'القباني',
+            'القحطاني', 'القريشي', 'القصيري', 'الكنعاني', 'المالكي', 'المطيري', 'النفيعي', 'الهاجري'
+        ];
+
         return [
-            'first_name' => $this->faker->firstName($gender),
-            'father_name' => $this->faker->firstName('male'),
-            'last_name' => $this->faker->lastName(),
-            'mother_name' => $this->faker->firstName('female'),
+            'first_name' => $this->faker->randomElement($gender === 'male' ? $arabicMaleNames : $arabicFemaleNames),
+            'father_name' => $this->faker->randomElement($arabicMaleNames),
+            'last_name' => $this->faker->randomElement($arabicLastNames),
+            'mother_name' => $this->faker->randomElement($arabicFemaleNames),
             'gender' => $gender,
             'birth_date' => $this->faker->date(),
             'email' => $this->faker->unique()->safeEmail(),

@@ -48,45 +48,45 @@ class FileSeeder extends Seeder
         // Sample file data
         $fileTemplates = [
             [
-                'title' => 'Mathematics Assignment 1',
-                'description' => 'Basic algebra and geometry problems for practice',
+                'title' => 'واجب الرياضيات الأول',
+                'description' => 'مسائل أساسية في الجبر والهندسة للتدريب',
                 'type' => 'public',
-                'content' => "Mathematics Assignment\n\n1. Solve for x: 2x + 5 = 15\n2. Find the area of a triangle with base 10cm and height 8cm\n3. Calculate the perimeter of a rectangle with length 12cm and width 8cm",
+                'content' => "واجب الرياضيات\n\n1. حل المعادلة: 2س + 5 = 15\n2. أوجد مساحة المثلث الذي قاعدته 10 سم وارتفاعه 8 سم\n3. احسب محيط المستطيل الذي طوله 12 سم وعرضه 8 سم",
                 'extension' => 'txt'
             ],
             [
-                'title' => 'Science Lab Report Template',
-                'description' => 'Template for writing lab reports',
+                'title' => 'قالب تقرير المختبر العلمي',
+                'description' => 'قالب لكتابة تقارير المختبر',
                 'type' => 'helper',
-                'content' => "Lab Report Template\n\nObjective:\nMaterials:\nProcedure:\nResults:\nConclusion:",
+                'content' => "قالب تقرير المختبر\n\nالهدف:\nالمواد:\nالإجراءات:\nالنتائج:\nالاستنتاج:",
                 'extension' => 'txt'
             ],
             [
-                'title' => 'English Essay Guidelines',
-                'description' => 'Guidelines for writing essays',
+                'title' => 'إرشادات كتابة المقال',
+                'description' => 'إرشادات لكتابة المقالات',
                 'type' => 'helper',
-                'content' => "Essay Writing Guidelines\n\n1. Introduction with thesis statement\n2. Body paragraphs with supporting evidence\n3. Conclusion that summarizes main points\n\nRemember to cite your sources!",
+                'content' => "إرشادات كتابة المقال\n\n1. مقدمة مع بيان الأطروحة\n2. فقرات الجسم مع الأدلة الداعمة\n3. خاتمة تلخص النقاط الرئيسية\n\nتذكر أن تستشهد بمصادرك!",
                 'extension' => 'txt'
             ],
             [
-                'title' => 'History Timeline Project',
-                'description' => 'World War II timeline assignment',
+                'title' => 'مشروع الجدول الزمني التاريخي',
+                'description' => 'واجب الجدول الزمني للحرب العالمية الثانية',
                 'type' => 'public',
-                'content' => "History Timeline Project\n\nCreate a timeline of major events during World War II (1939-1945)\n\nInclude:\n- Key battles\n- Political changes\n- Major figures\n- Technological advances",
+                'content' => "مشروع الجدول الزمني التاريخي\n\nأنشئ جدولاً زمنياً للأحداث الرئيسية خلال الحرب العالمية الثانية (1939-1945)\n\nتضمن:\n- المعارك الرئيسية\n- التغييرات السياسية\n- الشخصيات الرئيسية\n- التطورات التكنولوجية",
                 'extension' => 'txt'
             ],
             [
-                'title' => 'Chemistry Formula Sheet',
-                'description' => 'Important chemistry formulas and constants',
+                'title' => 'ورقة الصيغ الكيميائية',
+                'description' => 'الصيغ الكيميائية المهمة والثوابت',
                 'type' => 'helper',
-                'content' => "Chemistry Reference Sheet\n\nCommon Formulas:\n- PV = nRT (Ideal Gas Law)\n- C = n/V (Concentration)\n- pH = -log[H+]\n\nConstants:\n- Avogadro's Number: 6.022 × 10²³\n- Gas Constant R: 8.314 J/(mol·K)",
+                'content' => "ورقة مرجعية في الكيمياء\n\nالصيغ الشائعة:\n- PV = nRT (قانون الغاز المثالي)\n- C = n/V (التركيز)\n- pH = -log[H+]\n\nالثوابت:\n- عدد أفوجادرو: 6.022 × 10²³\n- ثابت الغاز R: 8.314 J/(mol·K)",
                 'extension' => 'txt'
             ],
             [
-                'title' => 'Physics Problem Set 3',
-                'description' => 'Motion and forces problems',
+                'title' => 'مجموعة مسائل الفيزياء 3',
+                'description' => 'مسائل الحركة والقوى',
                 'type' => 'public',
-                'content' => "Physics Problems - Motion and Forces\n\n1. A car accelerates from rest at 3 m/s² for 10 seconds. What is its final velocity?\n2. Calculate the force required to accelerate a 50kg object at 2 m/s²\n3. A ball is thrown upward with initial velocity 20 m/s. How high does it go?",
+                'content' => "مسائل الفيزياء - الحركة والقوى\n\n1. تسارع سيارة من السكون بمعدل 3 م/ث² لمدة 10 ثوانٍ. ما سرعتها النهائية؟\n2. احسب القوة المطلوبة لتسريع جسم كتلته 50 كجم بمعدل 2 م/ث²\n3. أُلقيت كرة لأعلى بسرعة ابتدائية 20 م/ث. إلى أي ارتفاع تصل؟",
                 'extension' => 'txt'
             ],
         ];

@@ -9,5 +9,11 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
         Route::patch('/{id}/restore', [GradeController::class, 'restore']);
         Route::delete('/{id}/force-delete', [GradeController::class, 'forceDelete']);
     });
-    Route::apiResource('grades', GradeController::class);
+    
+    // CRUD routes for grades
+    Route::get('grades', [GradeController::class, 'index']);
+    Route::post('grades', [GradeController::class, 'store']);
+    Route::get('grades/{grade}', [GradeController::class, 'show']);
+    Route::put('grades/{grade}', [GradeController::class, 'update']);
+    Route::delete('grades/{grade}', [GradeController::class, 'destroy']);
 });

@@ -29,79 +29,79 @@ class AssignmentSeeder extends Seeder
         // Sample assignment data for different subjects
         $assignmentData = [
             'homework' => [
-                'Mathematics' => [
-                    'Solve quadratic equations problems 1-10',
-                    'Complete the geometry worksheet',
-                    'Practice algebraic expressions',
-                    'Review chapter 5 exercises',
-                    'Solve word problems from textbook'
+                'الرياضيات' => [
+                    'حل مسائل المعادلات التربيعية من 1 إلى 10',
+                    'إكمال ورقة العمل الهندسية',
+                    'تدريب على التعبيرات الجبرية',
+                    'مراجعة تمارين الفصل الخامس',
+                    'حل المسائل اللفظية من الكتاب المدرسي'
                 ],
-                'Science' => [
-                    'Read chapter 3 and answer questions',
-                    'Complete the lab report',
-                    'Research on photosynthesis',
-                    'Write a summary of the experiment',
-                    'Prepare for next lab session'
+                'العلوم' => [
+                    'قراءة الفصل الثالث والإجابة على الأسئلة',
+                    'إكمال تقرير المختبر',
+                    'البحث في عملية التمثيل الضوئي',
+                    'كتابة ملخص للتجربة',
+                    'التحضير لجلسة المختبر القادمة'
                 ],
-                'English' => [
-                    'Write a 500-word essay on your favorite book',
-                    'Complete grammar exercises',
-                    'Read the assigned novel chapter',
-                    'Practice vocabulary words',
-                    'Write a creative story'
+                'اللغة العربية' => [
+                    'كتابة مقال من 500 كلمة عن كتابك المفضل',
+                    'إكمال تمارين القواعد',
+                    'قراءة الفصل المخصص من الرواية',
+                    'تدريب على الكلمات المفردة',
+                    'كتابة قصة إبداعية'
                 ],
-                'History' => [
-                    'Research on ancient civilizations',
-                    'Write a report on historical events',
-                    'Complete timeline assignment',
-                    'Study for upcoming test',
-                    'Read primary source documents'
+                'التاريخ' => [
+                    'البحث في الحضارات القديمة',
+                    'كتابة تقرير عن الأحداث التاريخية',
+                    'إكمال مهمة الجدول الزمني',
+                    'الدراسة للاختبار القادم',
+                    'قراءة الوثائق المصدرية'
                 ]
             ],
             'oral' => [
-                'English' => [
-                    'Present your book report',
-                    'Practice pronunciation exercises',
-                    'Give a speech on current events',
-                    'Participate in group discussion',
-                    'Present your research findings'
+                'اللغة العربية' => [
+                    'تقديم تقرير كتابك',
+                    'تدريب على تمارين النطق',
+                    'إلقاء خطاب عن الأحداث الحالية',
+                    'المشاركة في المناقشة الجماعية',
+                    'تقديم نتائج بحثك'
                 ],
-                'Science' => [
-                    'Present your experiment results',
-                    'Explain scientific concepts',
-                    'Discuss environmental issues',
-                    'Present your research project',
-                    'Explain lab procedures'
+                'العلوم' => [
+                    'تقديم نتائج تجربتك',
+                    'شرح المفاهيم العلمية',
+                    'مناقشة القضايا البيئية',
+                    'تقديم مشروع بحثك',
+                    'شرح إجراءات المختبر'
                 ],
-                'History' => [
-                    'Present historical figure biography',
-                    'Discuss historical events',
-                    'Present your research findings',
-                    'Explain historical significance',
-                    'Participate in debate'
+                'التاريخ' => [
+                    'تقديم سيرة شخصية تاريخية',
+                    'مناقشة الأحداث التاريخية',
+                    'تقديم نتائج بحثك',
+                    'شرح الأهمية التاريخية',
+                    'المشاركة في المناظرة'
                 ]
             ],
             'quiz' => [
-                'Mathematics' => [
-                    'Algebra Quiz - Chapter 3',
-                    'Geometry Quiz - Triangles',
-                    'Calculus Quiz - Derivatives',
-                    'Statistics Quiz - Probability',
-                    'Trigonometry Quiz - Unit Circle'
+                'الرياضيات' => [
+                    'اختبار الجبر - الفصل الثالث',
+                    'اختبار الهندسة - المثلثات',
+                    'اختبار التفاضل والتكامل - المشتقات',
+                    'اختبار الإحصاء - الاحتمالية',
+                    'اختبار علم المثلثات - دائرة الوحدة'
                 ],
-                'Science' => [
-                    'Biology Quiz - Cell Structure',
-                    'Chemistry Quiz - Chemical Reactions',
-                    'Physics Quiz - Forces and Motion',
-                    'Earth Science Quiz - Plate Tectonics',
-                    'Environmental Science Quiz - Ecosystems'
+                'العلوم' => [
+                    'اختبار الأحياء - بنية الخلية',
+                    'اختبار الكيمياء - التفاعلات الكيميائية',
+                    'اختبار الفيزياء - القوى والحركة',
+                    'اختبار علوم الأرض - الصفائح التكتونية',
+                    'اختبار علوم البيئة - النظم البيئية'
                 ],
-                'English' => [
-                    'Grammar Quiz - Parts of Speech',
-                    'Vocabulary Quiz - Unit 5',
-                    'Literature Quiz - Shakespeare',
-                    'Writing Quiz - Essay Structure',
-                    'Reading Comprehension Quiz'
+                'اللغة العربية' => [
+                    'اختبار القواعد - أجزاء الكلام',
+                    'اختبار المفردات - الوحدة الخامسة',
+                    'اختبار الأدب - شيله',
+                    'اختبار الكتابة - بنية المقال',
+                    'اختبار القراءة - الفهم'
                 ]
             ]
         ];
@@ -115,7 +115,7 @@ class AssignmentSeeder extends Seeder
                 $subjectName = $subject->name ?? 'General';
 
                 // Get assignment titles for this subject and type
-                $titles = $assignmentData[$type][$subjectName] ?? $assignmentData[$type]['Mathematics'] ?? ['General Assignment'];
+                $titles = $assignmentData[$type][$subjectName] ?? $assignmentData[$type]['الرياضيات'] ?? ['واجب عام'];
 
                 $title = $titles[array_rand($titles)];
                 $description = $this->generateDescription($type, $title);
@@ -152,25 +152,25 @@ class AssignmentSeeder extends Seeder
     {
         $descriptions = [
             'homework' => [
-                'Complete this assignment thoroughly and submit it on time. Make sure to show all your work and follow the instructions carefully.',
-                'This homework will help reinforce the concepts we learned in class. Take your time and do your best work.',
-                'Please complete this assignment independently. If you have questions, feel free to ask during office hours.',
-                'This homework is designed to practice the skills we covered today. Submit your work neatly and on time.',
-                'Complete all problems and show your work clearly. This assignment will be graded for accuracy and completeness.'
+                'أكمل هذا الواجب بدقة وقدمه في الوقت المحدد. تأكد من إظهار جميع عملك واتباع التعليمات بعناية.',
+                'سيساعدك هذا الواجب المنزلي في تعزيز المفاهيم التي تعلمناها في الفصل. خذ وقتك وقدم أفضل عمل.',
+                'يرجى إكمال هذا الواجب بشكل مستقل. إذا كان لديك أسئلة، لا تتردد في السؤال خلال ساعات العمل.',
+                'تم تصميم هذا الواجب المنزلي لممارسة المهارات التي غطيناها اليوم. قدم عملك بشكل منظم وفي الوقت المحدد.',
+                'أكمل جميع المسائل وأظهر عملك بوضوح. سيتم تقييم هذا الواجب من حيث الدقة والاكتمال.'
             ],
             'oral' => [
-                'Prepare a 3-5 minute presentation on the given topic. Practice your delivery and be ready to answer questions.',
-                'This oral presentation will test your understanding and communication skills. Prepare thoroughly and speak clearly.',
-                'You will present your findings to the class. Make sure to organize your thoughts and practice your delivery.',
-                'This oral assignment will help develop your public speaking skills. Prepare your material and practice your presentation.',
-                'Be ready to present your work orally. Focus on clear communication and confident delivery.'
+                'أعد عرضاً تقديمياً لمدة 3-5 دقائق حول الموضوع المحدد. تدرب على العرض وكن مستعداً للإجابة على الأسئلة.',
+                'سيختبر هذا العرض الشفهي فهمك ومهاراتك في التواصل. أعد جيداً وتحدث بوضوح.',
+                'ستقدم نتائجك للفصل. تأكد من تنظيم أفكارك والتدرب على العرض.',
+                'سيساعدك هذا الواجب الشفهي في تطوير مهاراتك في الخطابة العامة. أعد موادك وتدرب على العرض.',
+                'كن مستعداً لتقديم عملك شفهياً. ركز على التواصل الواضح والعرض الواثق.'
             ],
             'quiz' => [
-                'This quiz will test your understanding of the material we have covered. Review your notes and be prepared.',
-                'The quiz will include multiple choice, short answer, and problem-solving questions. Study the relevant chapters.',
-                'This assessment will evaluate your knowledge of the subject matter. Make sure to review all covered material.',
-                'The quiz will be comprehensive and will test both theoretical and practical knowledge.',
-                'Prepare for this quiz by reviewing your notes and completing the practice problems.'
+                'سيختبر هذا الاختبار فهمك للمادة التي غطيناها. راجع ملاحظاتك وكن مستعداً.',
+                'سيشمل الاختبار أسئلة متعددة الخيارات وإجابات قصيرة وحل مسائل. ادرس الفصول ذات الصلة.',
+                'سيقيم هذا الاختبار معرفتك بالموضوع. تأكد من مراجعة جميع المواد المغطاة.',
+                'سيكون الاختبار شاملاً ويختبر المعرفة النظرية والعملية.',
+                'أعد لهذا الاختبار من خلال مراجعة ملاحظاتك وإكمال المسائل التدريبية.'
             ]
         ];
 

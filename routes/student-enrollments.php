@@ -9,5 +9,11 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
         Route::patch('/{id}/restore', [StudentEnrollmentController::class, 'restore']);
         Route::delete('/{id}/force-delete', [StudentEnrollmentController::class, 'forceDelete']);
     });
-    Route::apiResource('student-enrollments', StudentEnrollmentController::class);
+    
+    // CRUD routes for student-enrollments
+    Route::get('student-enrollments', [StudentEnrollmentController::class, 'index']);
+    Route::post('student-enrollments', [StudentEnrollmentController::class, 'store']);
+    Route::get('student-enrollments/{student_enrollment}', [StudentEnrollmentController::class, 'show']);
+    Route::put('student-enrollments/{student_enrollment}', [StudentEnrollmentController::class, 'update']);
+    Route::delete('student-enrollments/{student_enrollment}', [StudentEnrollmentController::class, 'destroy']);
 });

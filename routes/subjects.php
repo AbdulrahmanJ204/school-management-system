@@ -11,7 +11,13 @@ Route::prefix('main-subjects')->group(function () {
         Route::patch('/{id}/restore', [MainSubjectController::class, 'restore']);
         Route::delete('/{id}/force-delete', [MainSubjectController::class, 'forceDelete']);
     });
-    Route::apiResource('main-subjects', MainSubjectController::class);
+    
+    // CRUD routes for main-subjects
+    Route::get('main-subjects', [MainSubjectController::class, 'index']);
+    Route::post('main-subjects', [MainSubjectController::class, 'store']);
+    Route::get('main-subjects/{main_subject}', [MainSubjectController::class, 'show']);
+    Route::put('main-subjects/{main_subject}', [MainSubjectController::class, 'update']);
+    Route::delete('main-subjects/{main_subject}', [MainSubjectController::class, 'destroy']);
 });
 
 Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(function () {
@@ -20,5 +26,11 @@ Route::prefix('subjects')->group(function () {
         Route::patch('/{id}/restore', [SubjectController::class, 'restore']);
         Route::delete('/{id}/force-delete', [SubjectController::class, 'forceDelete']);
     });
-    Route::apiResource('subjects', SubjectController::class);
+    
+    // CRUD routes for subjects
+    Route::get('subjects', [SubjectController::class, 'index']);
+    Route::post('subjects', [SubjectController::class, 'store']);
+    Route::get('subjects/{subject}', [SubjectController::class, 'show']);
+    Route::put('subjects/{subject}', [SubjectController::class, 'update']);
+    Route::delete('subjects/{subject}', [SubjectController::class, 'destroy']);
 });

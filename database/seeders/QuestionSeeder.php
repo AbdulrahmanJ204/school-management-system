@@ -17,7 +17,7 @@ class QuestionSeeder extends Seeder
             'quiz_id' => 1,
             'question_text' => json_encode([
                 "ops" => [
-                    ["insert" => "What is 2 + 2?"]
+                    ["insert" => "ما هو ناتج 2 + 2؟"]
                 ]
             ]),
             'choices'            => json_encode([
@@ -32,7 +32,7 @@ class QuestionSeeder extends Seeder
             'right_choice' => 3, // index of "4"
             'hint' => json_encode([
                 "ops" => [
-                    ["insert" => "basic"]
+                    ["insert" => "أساسي"]
                 ]
             ]),
             'order' => 1,
@@ -42,7 +42,7 @@ class QuestionSeeder extends Seeder
             'quiz_id' => 1,
             'question_text' => json_encode([
                 "ops" => [
-                    ["insert" => "Which planet is known as the Red Planet?"]
+                    ["insert" => "أي كوكب يعرف باسم الكوكب الأحمر؟"]
                 ]
             ]),
             'choices'            => json_encode([
@@ -57,7 +57,7 @@ class QuestionSeeder extends Seeder
             'right_choice' => 2, // "Mars"
             'hint' => json_encode([
                 "ops" => [
-                    ["insert" => "basic"]
+                    ["insert" => "أساسي"]
                 ]
             ]),
             'order' => 2,
@@ -67,7 +67,7 @@ class QuestionSeeder extends Seeder
             'quiz_id' => 1,
             'question_text' => json_encode([
                 "ops" => [
-                    ["insert" => "Who wrote 'Romeo and Juliet'?"]
+                    ["insert" => "من كتب 'روميو وجولييت'؟"]
                 ]
             ]),
             'choices'            => json_encode([
@@ -82,7 +82,7 @@ class QuestionSeeder extends Seeder
             'right_choice' => 1, // "Shakespeare"
             'hint' => json_encode([
                 "ops" => [
-                    ["insert" => "basic"]
+                    ["insert" => "أساسي"]
                 ]
             ]),
             'order' => 3,

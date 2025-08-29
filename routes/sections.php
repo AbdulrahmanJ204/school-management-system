@@ -9,5 +9,11 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
         Route::patch('/{id}/restore', [SectionController::class, 'restore']);
         Route::delete('/{id}/force-delete', [SectionController::class, 'forceDelete']);
     });
-    Route::apiResource('sections', SectionController::class);
+    
+    // CRUD routes for sections
+    Route::get('sections', [SectionController::class, 'index']);
+    Route::post('sections', [SectionController::class, 'store']);
+    Route::get('sections/{section}', [SectionController::class, 'show']);
+    Route::put('sections/{section}', [SectionController::class, 'update']);
+    Route::delete('sections/{section}', [SectionController::class, 'destroy']);
 });

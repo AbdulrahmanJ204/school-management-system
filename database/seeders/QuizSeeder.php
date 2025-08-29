@@ -22,7 +22,7 @@ class QuizSeeder extends Seeder
 
         // Create a quiz
         $quiz = Quiz::create([
-            'name'        => 'Math Midterm',
+            'name'        => 'اختبار الرياضيات النصفي',
             'full_score'  => 100,
             'is_active'   => false,
             'created_by'  => $teacherId,

@@ -17,10 +17,10 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         $superAdminUser = User::create([
-            'first_name' => 'admin',
-            'father_name' => 'super',
-            'mother_name' => 'sofia',
-            'last_name' => 'ruler',
+            'first_name' => 'أحمد',
+            'father_name' => 'محمد',
+            'mother_name' => 'فاطمة',
+            'last_name' => 'الزهراني',
             'gender' => 'male',
             'birth_date' => '2003-01-01',
             'email' => 'magholm302@gmail.com',

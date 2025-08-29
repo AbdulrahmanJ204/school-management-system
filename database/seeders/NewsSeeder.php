@@ -35,31 +35,31 @@ class NewsSeeder extends Seeder
 
         $news = [
             [
-                'title' => 'Welcome Back to School!',
+                'title' => 'مرحباً بعودتك إلى المدرسة!',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Welcome Back Students!'
+                            'insert' => 'مرحباً بعودة الطلاب!'
                         ],
                         [
                             'attributes' => ['header' => 1],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'We are excited to welcome all students back for the new academic year. Please check your schedules and report to your assigned classrooms.'
+                            'insert' => 'نحن متحمسون لترحيب جميع الطلاب بالعام الدراسي الجديد. يرجى التحقق من جداولك الدراسية والتوجه إلى الفصول الدراسية المخصصة لك.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Important reminders:'
+                            'insert' => 'تذكيرات مهمة:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '• Check your class schedule\n• Bring required materials\n• Report to homeroom by 8:00 AM'
+                            'insert' => '• تحقق من جدولك الدراسي\n• أحضر المواد المطلوبة\n• توجه إلى الفصل الدراسي بحلول الساعة 8:00 صباحاً'
                         ],
                         [
                             'insert' => "\n"
@@ -71,31 +71,31 @@ class NewsSeeder extends Seeder
                 'created_by' => 1,
             ],
             [
-                'title' => 'Parent-Teacher Conference',
+                'title' => 'مؤتمر الآباء والمعلمين',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Parent-Teacher Conference Announcement'
+                            'insert' => 'إعلان مؤتمر الآباء والمعلمين'
                         ],
                         [
                             'attributes' => ['header' => 2],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'Parent-teacher conferences will be held next week. Please schedule your appointment through the school portal.'
+                            'insert' => 'سيتم عقد مؤتمرات الآباء والمعلمين الأسبوع القادم. يرجى تحديد موعدك من خلال بوابة المدرسة.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Conference Details:'
+                            'insert' => 'تفاصيل المؤتمر:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '• Date: March 15-16, 2024\n• Time: 2:00 PM - 6:00 PM\n• Location: Individual classrooms\n• Duration: 15 minutes per appointment'
+                            'insert' => '• التاريخ: 15-16 مارس 2024\n• الوقت: 2:00 مساءً - 6:00 مساءً\n• المكان: الفصول الدراسية الفردية\n• المدة: 15 دقيقة لكل موعد'
                         ],
                         [
                             'insert' => "\n"
@@ -107,41 +107,41 @@ class NewsSeeder extends Seeder
                 'created_by' => 1,
             ],
             [
-                'title' => 'Science Fair Announcement',
+                'title' => 'إعلان معرض العلوم',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Annual Science Fair 2024'
+                            'insert' => 'معرض العلوم السنوي 2024'
                         ],
                         [
                             'attributes' => ['header' => 1],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'The annual science fair will take place in two weeks. Students are encouraged to start preparing their projects.'
+                            'insert' => 'سيتم عقد معرض العلوم في أسبوعين. يرجى إطلاع الطلاب على المشاريع التي يجب أن يبدأوا في تحضيرها.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Project Categories:'
+                            'insert' => 'فئات المشاريع:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '1. Biology & Life Sciences\n2. Chemistry & Physical Sciences\n3. Engineering & Technology\n4. Environmental Science'
+                            'insert' => '1. الأحياء والعلوم الحية\n2. الكيمياء والعلوم الفيزيائية\n3. الهندسة والتكنولوجيا\n4. علوم البيئة'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Submission deadline: '
+                            'insert' => 'موعد التسليم: '
                         ],
                         [
                             'attributes' => ['bold' => true, 'underline' => true],
-                            'insert' => 'March 30, 2024'
+                            'insert' => '30 مارس 2024'
                         ],
                         [
                             'insert' => "\n"
@@ -153,37 +153,37 @@ class NewsSeeder extends Seeder
                 'created_by' => 1,
             ],
             [
-                'title' => 'Sports Day Event',
+                'title' => 'حدث الرياضة',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Annual Sports Day 2024'
+                            'insert' => 'حدث الرياضة السنوي 2024'
                         ],
                         [
                             'attributes' => ['header' => 1],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'Our annual sports day will be held next month. Registration forms are available at the main office.'
+                            'insert' => 'سيتم عقد حدث الرياضة السنوي في الشهر القادم. إشعارات التسجيل متوفرة في المكتب الرئيسي.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Event Schedule:'
+                            'insert' => 'جدول الحدث:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '• Track Events: 9:00 AM - 12:00 PM\n• Field Events: 1:00 PM - 4:00 PM\n• Team Sports: 10:00 AM - 3:00 PM'
+                            'insert' => '• الأحداث الرياضية: 9:00 صباحاً - 12:00 ظهراً\n• الأحداث الميدانية: 1:00 ظهراً - 4:00 عصراً\n• الرياضات الفردية: 10:00 صباحاً - 3:00 عصراً'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'All students are encouraged to participate!'
+                            'insert' => 'يرجى تشجيع جميع الطلاب على المشاركة!'
                         ],
                         [
                             'attributes' => ['italic' => true],
@@ -196,41 +196,41 @@ class NewsSeeder extends Seeder
                 'created_by' => 1,
             ],
             [
-                'title' => 'Mid-Term Exam Schedule',
+                'title' => 'جدول امتحان النصف الأول',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Mid-Term Examination Schedule'
+                            'insert' => 'جدول امتحان النصف الأول'
                         ],
                         [
                             'attributes' => ['header' => 2],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'Mid-term examinations will begin next week. Please review the exam schedule posted on the notice board.'
+                            'insert' => 'سيبدأ امتحانات النصف الأول في الأسبوع القادم. يرجى مراجعة جدول الامتحانات المعلق على اللوحة الإعلانية.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Important Exam Information:'
+                            'insert' => 'معلومات حول الامتحان:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '• Exam Period: April 1-5, 2024\n• Duration: 2 hours per subject\n• Start Time: 9:00 AM\n• Location: Main Examination Hall'
+                            'insert' => '• فترة الامتحان: 1-5 أبريل 2024\n• المدة: 2 ساعة لكل مادة\n• الوقت البدء: 9:00 صباحاً\n• المكان: صالة الامتحانات الرئيسية'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Note: '
+                            'insert' => 'ملاحظة: '
                         ],
                         [
                             'attributes' => ['bold' => true],
-                            'insert' => 'Students must arrive 30 minutes before exam time'
+                            'insert' => 'يجب أن يصل الطلاب 30 دقيقة قبل وقت الامتحان'
                         ],
                         [
                             'insert' => "\n"
@@ -242,31 +242,31 @@ class NewsSeeder extends Seeder
                 'created_by' => 1,
             ],
             [
-                'title' => 'Welcome Back to School!',
+                'title' => 'مرحباً بعودتك إلى المدرسة!',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Welcome Back Students!'
+                            'insert' => 'مرحباً بعودة الطلاب!'
                         ],
                         [
                             'attributes' => ['header' => 1],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'We are excited to welcome all students back for the new academic year. Please check your schedules and report to your assigned classrooms.'
+                            'insert' => 'نحن متحمسون لترحيب جميع الطلاب بالعام الدراسي الجديد. يرجى التحقق من جداولك الدراسية والتوجه إلى الفصول الدراسية المخصصة لك.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Important reminders:'
+                            'insert' => 'تذكيرات مهمة:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '• Check your class schedule\n• Bring required materials\n• Report to homeroom by 8:00 AM'
+                            'insert' => '• تحقق من جدولك الدراسي\n• أحضر المواد المطلوبة\n• توجه إلى الفصل الدراسي بحلول الساعة 8:00 صباحاً'
                         ],
                         [
                             'insert' => "\n"
@@ -278,31 +278,31 @@ class NewsSeeder extends Seeder
                 'created_by' => 1,
             ],
             [
-                'title' => 'Parent-Teacher Conference',
+                'title' => 'مؤتمر الآباء والمعلمين',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Parent-Teacher Conference Announcement'
+                            'insert' => 'إعلان مؤتمر الآباء والمعلمين'
                         ],
                         [
                             'attributes' => ['header' => 2],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'Parent-teacher conferences will be held next week. Please schedule your appointment through the school portal.'
+                            'insert' => 'سيتم عقد مؤتمرات الآباء والمعلمين الأسبوع القادم. يرجى تحديد موعدك من خلال بوابة المدرسة.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Conference Details:'
+                            'insert' => 'تفاصيل المؤتمر:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '• Date: March 15-16, 2024\n• Time: 2:00 PM - 6:00 PM\n• Location: Individual classrooms\n• Duration: 15 minutes per appointment'
+                            'insert' => '• التاريخ: 15-16 مارس 2024\n• الوقت: 2:00 مساءً - 6:00 مساءً\n• المكان: الفصول الدراسية الفردية\n• المدة: 15 دقيقة لكل موعد'
                         ],
                         [
                             'insert' => "\n"
@@ -314,41 +314,41 @@ class NewsSeeder extends Seeder
                 'created_by' => 1,
             ],
             [
-                'title' => 'Science Fair Announcement',
+                'title' => 'إعلان معرض العلوم',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Annual Science Fair 2024'
+                            'insert' => 'معرض العلوم السنوي 2024'
                         ],
                         [
                             'attributes' => ['header' => 1],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'The annual science fair will take place in two weeks. Students are encouraged to start preparing their projects.'
+                            'insert' => 'سيتم عقد معرض العلوم في أسبوعين. يرجى إطلاع الطلاب على المشاريع التي يجب أن يبدأوا في تحضيرها.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Project Categories:'
+                            'insert' => 'فئات المشاريع:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '1. Biology & Life Sciences\n2. Chemistry & Physical Sciences\n3. Engineering & Technology\n4. Environmental Science'
+                            'insert' => '1. الأحياء والعلوم الحية\n2. الكيمياء والعلوم الفيزيائية\n3. الهندسة والتكنولوجيا\n4. علوم البيئة'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Submission deadline: '
+                            'insert' => 'موعد التسليم: '
                         ],
                         [
                             'attributes' => ['bold' => true, 'underline' => true],
-                            'insert' => 'March 30, 2024'
+                            'insert' => '30 مارس 2024'
                         ],
                         [
                             'insert' => "\n"
@@ -360,37 +360,37 @@ class NewsSeeder extends Seeder
                 'created_by' => 1,
             ],
             [
-                'title' => 'Sports Day Event',
+                'title' => 'حدث الرياضة',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Annual Sports Day 2024'
+                            'insert' => 'حدث الرياضة السنوي 2024'
                         ],
                         [
                             'attributes' => ['header' => 1],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'Our annual sports day will be held next month. Registration forms are available at the main office.'
+                            'insert' => 'سيتم عقد حدث الرياضة السنوي في الشهر القادم. إشعارات التسجيل متوفرة في المكتب الرئيسي.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Event Schedule:'
+                            'insert' => 'جدول الحدث:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '• Track Events: 9:00 AM - 12:00 PM\n• Field Events: 1:00 PM - 4:00 PM\n• Team Sports: 10:00 AM - 3:00 PM'
+                            'insert' => '• الأحداث الرياضية: 9:00 صباحاً - 12:00 ظهراً\n• الأحداث الميدانية: 1:00 ظهراً - 4:00 عصراً\n• الرياضات الفردية: 10:00 صباحاً - 3:00 عصراً'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'All students are encouraged to participate!'
+                            'insert' => 'يرجى تشجيع جميع الطلاب على المشاركة!'
                         ],
                         [
                             'attributes' => ['italic' => true],
@@ -403,41 +403,41 @@ class NewsSeeder extends Seeder
                 'created_by' => 1,
             ],
             [
-                'title' => 'Mid-Term Exam Schedule',
+                'title' => 'جدول امتحان النصف الأول',
                 'content' => json_encode([
                     'ops' => [
                         [
-                            'insert' => 'Mid-Term Examination Schedule'
+                            'insert' => 'جدول امتحان النصف الأول'
                         ],
                         [
                             'attributes' => ['header' => 2],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => 'Mid-term examinations will begin next week. Please review the exam schedule posted on the notice board.'
+                            'insert' => 'سيبدأ امتحانات النصف الأول في الأسبوع القادم. يرجى مراجعة جدول الامتحانات المعلق على اللوحة الإعلانية.'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Important Exam Information:'
+                            'insert' => 'معلومات حول الامتحان:'
                         ],
                         [
                             'attributes' => ['bold' => true],
                             'insert' => "\n"
                         ],
                         [
-                            'insert' => '• Exam Period: April 1-5, 2024\n• Duration: 2 hours per subject\n• Start Time: 9:00 AM\n• Location: Main Examination Hall'
+                            'insert' => '• فترة الامتحان: 1-5 أبريل 2024\n• المدة: 2 ساعة لكل مادة\n• الوقت البدء: 9:00 صباحاً\n• المكان: صالة الامتحانات الرئيسية'
                         ],
                         [
                             'insert' => "\n\n"
                         ],
                         [
-                            'insert' => 'Note: '
+                            'insert' => 'ملاحظة: '
                         ],
                         [
                             'attributes' => ['bold' => true],
-                            'insert' => 'Students must arrive 30 minutes before exam time'
+                            'insert' => 'يجب أن يصل الطلاب 30 دقيقة قبل وقت الامتحان'
                         ],
                         [
                             'insert' => "\n"

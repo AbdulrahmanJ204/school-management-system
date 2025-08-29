@@ -4,7 +4,12 @@ use App\Http\Controllers\ClassSessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function () {
-    Route::apiResource('class-sessions', ClassSessionController::class);
+    // CRUD routes for class-sessions
+    Route::get('class-sessions', [ClassSessionController::class, 'index']);
+    Route::post('class-sessions', [ClassSessionController::class, 'store']);
+    Route::get('class-sessions/{class_session}', [ClassSessionController::class, 'show']);
+    Route::put('class-sessions/{class_session}', [ClassSessionController::class, 'update']);
+    Route::delete('class-sessions/{class_session}', [ClassSessionController::class, 'destroy']);
 
     Route::patch('class-sessions/{class_session}/cancel', [ClassSessionController::class, 'cancel']);
 

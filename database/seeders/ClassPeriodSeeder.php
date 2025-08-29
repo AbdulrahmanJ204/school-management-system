@@ -19,7 +19,7 @@ class ClassPeriodSeeder extends Seeder
         if ($schoolShifts->isEmpty()) {
             // Create a default school shift if none exists
             $schoolShift = SchoolShift::create([
-                'name' => 'Morning Shift',
+                'name' => 'الفترة الصباحية',
                 'start_time' => '07:00:00',
                 'end_time' => '14:00:00',
                 'is_active' => true,
@@ -32,7 +32,7 @@ class ClassPeriodSeeder extends Seeder
         // Create class periods for the school shift
         $periods = [
             [
-                'name' => 'First Period',
+                'name' => 'الحصة الأولى',
                 'start_time' => '07:00:00',
                 'end_time' => '07:45:00',
                 'period_order' => 1,
@@ -40,7 +40,7 @@ class ClassPeriodSeeder extends Seeder
                 'duration_minutes' => 45,
             ],
             [
-                'name' => 'Second Period',
+                'name' => 'الحصة الثانية',
                 'start_time' => '07:50:00',
                 'end_time' => '08:35:00',
                 'period_order' => 2,
@@ -48,7 +48,7 @@ class ClassPeriodSeeder extends Seeder
                 'duration_minutes' => 45,
             ],
 //            [
-//                'name' => 'Third Period',
+//                'name' => 'الحصة الثالثة',
 //                'start_time' => '08:40:00',
 //                'end_time' => '09:25:00',
 //                'period_order' => 3,
@@ -56,7 +56,7 @@ class ClassPeriodSeeder extends Seeder
 //                'duration_minutes' => 45,
 //            ],
             [
-                'name' => 'Break',
+                'name' => 'فسحة',
                 'start_time' => '09:25:00',
                 'end_time' => '09:45:00',
                 'period_order' => 4,
@@ -64,7 +64,7 @@ class ClassPeriodSeeder extends Seeder
                 'duration_minutes' => 20,
             ],
 //            [
-//                'name' => 'Fourth Period',
+//                'name' => 'الحصة الرابعة',
 //                'start_time' => '09:45:00',
 //                'end_time' => '10:30:00',
 //                'period_order' => 5,
@@ -72,7 +72,7 @@ class ClassPeriodSeeder extends Seeder
 //                'duration_minutes' => 45,
 //            ],
 //            [
-//                'name' => 'Fifth Period',
+//                'name' => 'الحصة الخامسة',
 //                'start_time' => '10:35:00',
 //                'end_time' => '11:20:00',
 //                'period_order' => 6,
@@ -80,7 +80,7 @@ class ClassPeriodSeeder extends Seeder
 //                'duration_minutes' => 45,
 //            ],
 //            [
-//                'name' => 'Sixth Period',
+//                'name' => 'الحصة السادسة',
 //                'start_time' => '11:25:00',
 //                'end_time' => '12:10:00',
 //                'period_order' => 7,
@@ -88,7 +88,7 @@ class ClassPeriodSeeder extends Seeder
 //                'duration_minutes' => 45,
 //            ],
 //            [
-//                'name' => 'Lunch Break',
+//                'name' => 'فسحة الغداء',
 //                'start_time' => '12:10:00',
 //                'end_time' => '12:40:00',
 //                'period_order' => 8,
@@ -96,7 +96,7 @@ class ClassPeriodSeeder extends Seeder
 //                'duration_minutes' => 30,
 //            ],
 //            [
-//                'name' => 'Seventh Period',
+//                'name' => 'الحصة السابعة',
 //                'start_time' => '12:40:00',
 //                'end_time' => '13:25:00',
 //                'period_order' => 9,
@@ -104,7 +104,7 @@ class ClassPeriodSeeder extends Seeder
 //                'duration_minutes' => 45,
 //            ],
 //            [
-//                'name' => 'Eighth Period',
+//                'name' => 'الحصة الثامنة',
 //                'start_time' => '13:30:00',
 //                'end_time' => '14:00:00',
 //                'period_order' => 10,

@@ -109,10 +109,10 @@ class LoggingSystemSeeder extends Seeder
     private function getSampleChanges(): array
     {
         $changes = [
-            'name' => ['old' => 'John Doe', 'new' => 'John Smith'],
-            'email' => ['old' => 'john@example.com', 'new' => 'john.smith@example.com'],
-            'status' => ['old' => 'active', 'new' => 'inactive'],
-            'grade' => ['old' => 'A', 'new' => 'B'],
+            'name' => ['old' => 'أحمد محمد', 'new' => 'أحمد علي'],
+            'email' => ['old' => 'ahmed@example.com', 'new' => 'ahmed.ali@example.com'],
+            'status' => ['old' => 'نشط', 'new' => 'غير نشط'],
+            'grade' => ['old' => 'أ', 'new' => 'ب'],
         ];
 
         return array_rand($changes);
@@ -124,12 +124,12 @@ class LoggingSystemSeeder extends Seeder
     private function getSampleErrorMessage(): string
     {
         $messages = [
-            'User not found',
-            'Invalid credentials',
-            'Database connection failed',
-            'File upload failed',
-            'Permission denied',
-            'Validation failed',
+            'المستخدم غير موجود',
+            'بيانات الاعتماد غير صحيحة',
+            'فشل الاتصال بقاعدة البيانات',
+            'فشل رفع الملف',
+            'تم رفض الإذن',
+            'فشل التحقق من صحة البيانات',
         ];
 
         return $messages[array_rand($messages)];
@@ -167,8 +167,8 @@ class LoggingSystemSeeder extends Seeder
     private function getSampleInput(): array
     {
         return [
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
+            'name' => 'أحمد محمد',
+            'email' => 'ahmed@example.com',
             'password' => '********',
             'role' => 'student',
         ];

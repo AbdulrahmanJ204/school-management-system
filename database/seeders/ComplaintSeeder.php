@@ -19,21 +19,30 @@ class ComplaintSeeder extends Seeder
             $admin = User::first();
         }
 
-        $users = User::all();
+        // Get all students (users with user_type = 'student')
+        $students = User::where('user_type', 'student')->get();
 
-        if ($users->isEmpty()) {
+        if ($students->isEmpty()) {
             return;
         }
 
-        // Create some sample complaints
-        for ($i = 0; $i < 10; $i++) {
-            $user = $users->random();
-            
+        // Create 2 complaints for each student
+        foreach ($students as $student) {
+            // First complaint with answer
             Complaint::create([
-                'user_id' => $user->id,
-                'title' => 'شكوى ' . ($i + 1),
-                'content' => 'محتوى الشكوى رقم ' . ($i + 1) . ' - هذا نص تجريبي للشكوى.',
-                'answer' => $i % 2 == 0 ? 'رد على الشكوى رقم ' . ($i + 1) . ' - تم معالجة الشكوى بنجاح.' : null,
+                'user_id' => $student->id,
+                'title' => 'شكوى ' . $student->first_name . ' - ' . 1,
+                'content' => 'محتوى الشكوى الأولى للطالب ' . $student->first_name . ' - هذا نص تجريبي للشكوى.',
+                'answer' => 'رد على شكوى الطالب ' . $student->first_name . ' - تم معالجة الشكوى بنجاح.',
+                'created_by' => $admin->id,
+            ]);
+
+            // Second complaint without answer
+            Complaint::create([
+                'user_id' => $student->id,
+                'title' => 'شكوى ' . $student->first_name . ' - ' . 2,
+                'content' => 'محتوى الشكوى الثانية للطالب ' . $student->first_name . ' - هذا نص تجريبي للشكوى.',
+                'answer' => null,
                 'created_by' => $admin->id,
             ]);
         }
