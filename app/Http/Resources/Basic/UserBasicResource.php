@@ -4,6 +4,7 @@ namespace App\Http\Resources\Basic;
 
 use App\Http\Resources\BaseResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Basic User Resource - Contains only essential user data
@@ -23,7 +24,7 @@ class UserBasicResource extends BaseResource
             'last_name' => $this->last_name,
             'email' => $this->email,
             'user_type' => $this->user_type,
-            'image' => $this->image ? asset('storage/' . $this->image) : asset('storage/user_images/default.png'),
+            'image' => $this->image ? asset(Storage::url($this->image)) : asset('storage/user_images/default.png'),
         ];
     }
 }
