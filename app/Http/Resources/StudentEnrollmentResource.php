@@ -45,6 +45,12 @@ class StudentEnrollmentResource extends BaseResource
             // Computed properties using basic resources
             // الخصائص المحسوبة باستخدام الموارد الأساسية
             'grade' => $this->whenLoadedResource('section.grade', GradeBasicResource::class),
+            'student' => $this->when($this->relationLoaded('student') && $this->student, [
+                'id' => $this->student->id,
+                'student_name' => $this->student->user->first_name . ' ' . $this->student->user->last_name,
+                'grandfather' => $this->student->grandfather,
+                'mother' => $this->student->mother,
+            ]),
             'user' => $this->whenLoadedResource('student.user', UserBasicResource::class),
 
             'created_at' => $this->formatDate($this->created_at),

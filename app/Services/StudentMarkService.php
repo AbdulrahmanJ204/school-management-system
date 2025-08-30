@@ -33,9 +33,12 @@ class StudentMarkService
         if (!$request || !$request->has('subject_id')) {
             $query = StudentMark::with([
                 'subject.mainSubject.grade',
+                'enrollment',
                 'enrollment.student',
+                'enrollment.student.user',
                 'enrollment.section',
                 'enrollment.semester',
+                'createdBy',
             ]);
 
             // Apply filters if request is provided
@@ -72,7 +75,7 @@ class StudentMarkService
         
         // Build enrollment query
         $enrollmentQuery = StudentEnrollment::with([
-            'student',
+            'student.user',
             'section',
             'semester',
             'studentMarks' => function ($query) use ($request) {
@@ -120,7 +123,7 @@ class StudentMarkService
                 // Load the relationships for the new mark
                 $defaultMark->load([
                     'subject.mainSubject.grade',
-                    'enrollment.student',
+                    'enrollment.student.user',
                     'enrollment.section',
                     'enrollment.semester',
                 ]);
@@ -169,7 +172,7 @@ class StudentMarkService
         $studentMark = StudentMark::create($credentials);
         $studentMark->load([
             'subject.mainSubject.grade',
-            'enrollment.student',
+            'enrollment.student.user',
             'enrollment.section',
             'enrollment.semester',
         ]);
@@ -192,7 +195,7 @@ class StudentMarkService
 
         $studentMark->load([
             'subject.mainSubject.grade',
-            'enrollment.student',
+            'enrollment.student.user',
             'enrollment.section',
             'enrollment.semester',
         ]);
@@ -217,7 +220,7 @@ class StudentMarkService
         $studentMark->update($credentials);
         $studentMark->load([
             'subject.mainSubject.grade',
-            'enrollment.student',
+            'enrollment.student.user',
             'enrollment.section',
             'enrollment.semester',
         ]);
@@ -255,7 +258,7 @@ class StudentMarkService
         $enrollment = StudentEnrollment::findOrFail($enrollmentId);
         $studentMarks = StudentMark::where('enrollment_id', $enrollmentId)->with([
             'subject.mainSubject.grade',
-            'enrollment.student',
+            'enrollment.student.user',
             'enrollment.section',
             'enrollment.semester',
         ])->orderBy('created_at', 'desc')->get();
@@ -275,7 +278,7 @@ class StudentMarkService
 
         $studentMarks = StudentMark::where('subject_id', $subjectId)->with([
             'subject.mainSubject.grade',
-            'enrollment.student',
+            'enrollment.student.user',
             'enrollment.section',
             'enrollment.semester',
         ])->orderBy('created_at', 'desc')->get();
@@ -300,7 +303,7 @@ class StudentMarkService
             })
             ->with([
                 'subject.mainSubject.grade',
-                'enrollment.student',
+                'enrollment.student.user',
                 'enrollment.section',
                 'enrollment.semester',
             ])

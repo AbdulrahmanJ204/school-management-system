@@ -32,6 +32,9 @@ class StudentMarkResource extends BaseResource
             'quiz' => $this->quiz,
             'exam' => $this->exam,
             'total' => $this->total,
+            'student_name' => $this->when($this->relationLoaded('enrollment') && $this->enrollment?->student?->user, 
+                $this->enrollment->student->user->first_name . ' ' . $this->enrollment->student->user->last_name
+            ),
             'created_by' => $this->getCreatedByName(),
 
             // Use basic resources to avoid circular dependencies
