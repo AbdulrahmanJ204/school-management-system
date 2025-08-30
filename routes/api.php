@@ -74,10 +74,10 @@ Route::middleware(['auth:api', 'user_type:admin|teacher|student', 'throttle:60,1
 
 Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->group(function () {
     // CRUD routes for quizzes (except update)
-    Route::get('quizzes', [QuizController::class, 'index']);
+    Route::post('quizzes/generate', [QuizController::class, 'generateQuiz']);
     Route::post('quizzes', [QuizController::class, 'store']);
     Route::get('quizzes/{quiz}', [QuizController::class, 'show']);
-    Route::delete('quizzes/{quiz}', [QuizController::class, 'destroy', 'index']);
+    Route::delete('quizzes/{quiz}', [QuizController::class, 'destroy']);
     
     Route::post('quizzes/{id}/update', [QuizController::class, 'update']);
     Route::put('quizzes/{id}/activate', [QuizController::class, 'activate']);
@@ -86,7 +86,6 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::post('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'update']);
     Route::delete('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'destroy']);
     Route::get('quiz/{id}', [QuizController::class, 'show']);
-    Route::post('quizzes/generate', [QuizController::class, 'generateQuiz']);
 });
 
 Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->group(function () {

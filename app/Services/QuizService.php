@@ -65,35 +65,35 @@ class QuizService
             $query->whereHas('targets', function ($q) use ($studentSections) {
                 $q->whereIn('section_id', $studentSections);
             });
-            // $studentEnrollment = $user->student->studentEnrollments()->first();
+            $studentEnrollment = $user->student->studentEnrollments()->first();
 
-            // if ($studentEnrollment) {
-            //     $query->where('is_active', true)
-            //         ->whereHas('targets', function ($q) use ($studentEnrollment) {
-            //             $q->where('grade_id', $studentEnrollment->grade_id)
-            //                 ->where(function ($sub) use ($studentEnrollment) {
-            //                     $sub->where('section_id', $studentEnrollment->section_id)
-            //                         ->orWhereNull('section_id');
-            //                 });
-            //         });
-            // }
+            if ($studentEnrollment) {
+                $query->where('is_active', true)
+                    ->whereHas('targets', function ($q) use ($studentEnrollment) {
+                        $q->where('grade_id', $studentEnrollment->grade_id)
+                            ->where(function ($sub) use ($studentEnrollment) {
+                                $sub->where('section_id', $studentEnrollment->section_id)
+                                    ->orWhereNull('section_id');
+                            });
+                    });
+            }
         }
 
-        // if (isset($credentials['grade_id'])) {
-        //     $query->whereHas('targets.section.grade', fn($q) => $q->where('id', $credentials['grade_id']));
-        // }
+        if (isset($credentials['grade_id'])) {
+            $query->whereHas('targets.section.grade', fn($q) => $q->where('id', $credentials['grade_id']));
+        }
 
-        // if (isset($credentials['section_id'])) {
-        //     $query->whereHas('targets', fn($q) => $q->where('section_id', $credentials['section_id']));
-        // }
+        if (isset($credentials['section_id'])) {
+            $query->whereHas('targets', fn($q) => $q->where('section_id', $credentials['section_id']));
+        }
 
-        // if (!empty($credentials['subject_id'])) {
-        //     $query->whereHas('targets.subject', function ($q) use ($credentials) {$q->where('id', $credentials['subject_id']);});
-        // }
+        if (!empty($credentials['subject_id'])) {
+            $query->whereHas('targets.subject', function ($q) use ($credentials) {$q->where('id', $credentials['subject_id']);});
+        }
 
-        // if (isset($credentials['year_id'])) {
-        //     $query->whereHas('targets.semester', function ($q) use ($credentials) {$q->where('year_id', $credentials['year_id']);});
-        // }
+        if (isset($credentials['year_id'])) {
+            $query->whereHas('targets.semester', function ($q) use ($credentials) {$q->where('year_id', $credentials['year_id']);});
+        }
 
         $quizzes = $query->get();
 
@@ -521,7 +521,7 @@ class QuizService
             throw new \Exception('Google Gemini API key not configured');
         }
 
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={$apiKey}";
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";
         
         $data = [
             'contents' => [
@@ -553,7 +553,7 @@ class QuizService
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-
+        
         if ($httpCode !== 200) {
             throw new \Exception("Gemini API request failed with HTTP code: {$httpCode}");
         }
