@@ -67,12 +67,17 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::post('change-password', [AuthController::class, 'changePassword'])->name('change-password');
 });
 
+
+Route::middleware(['auth:api', 'user_type:admin|teacher|student', 'throttle:60,1'])->group(function () {
+    Route::get('quizzes', [QuizController::class, 'index']);
+});
+
 Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->group(function () {
     // CRUD routes for quizzes (except update)
     Route::get('quizzes', [QuizController::class, 'index']);
     Route::post('quizzes', [QuizController::class, 'store']);
     Route::get('quizzes/{quiz}', [QuizController::class, 'show']);
-    Route::delete('quizzes/{quiz}', [QuizController::class, 'destroy']);
+    Route::delete('quizzes/{quiz}', [QuizController::class, 'destroy', 'index']);
     
     Route::post('quizzes/{id}/update', [QuizController::class, 'update']);
     Route::put('quizzes/{id}/activate', [QuizController::class, 'activate']);
@@ -81,6 +86,7 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::post('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'update']);
     Route::delete('quizzes/{quiz_id}/questions/{question_id}', [QuestionController::class, 'destroy']);
     Route::get('quiz/{id}', [QuizController::class, 'show']);
+    Route::post('quizzes/generate', [QuizController::class, 'generateQuiz']);
 });
 
 Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->group(function () {
@@ -89,7 +95,7 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::get('teacher/profile', [TeacherController::class, 'getProfile'])->name('teacher.profile');
     Route::get('teacher/home', [TeacherHomeController::class, 'home'])->name('teacher.home');
     Route::get('teacher/timetable', [TeacherTimetableController::class, 'timetable'])->name('teacher.timetable');
-    
+
     // Teacher Class Sessions APIs
     Route::get('teacher/class-sessions/past-week', [TeacherClassSessionController::class, 'getPastWeekSessions'])->name('teacher.class-sessions.past-week');
     Route::get('teacher/class-sessions/upcoming', [TeacherClassSessionController::class, 'getUpcomingSessions'])->name('teacher.class-sessions.upcoming');
@@ -114,35 +120,35 @@ Route::middleware(['auth:api', 'user_type:student', 'throttle:60,1'])->group(fun
     });
 });
 
-require __DIR__.'/news.php';
-require __DIR__.'/files.php';
-require __DIR__.'/years.php';
-require __DIR__.'/semesters.php';
-require __DIR__.'/school-days.php';
-require __DIR__.'/grades.php';
-require __DIR__.'/sections.php';
-require __DIR__.'/subjects.php';
-require __DIR__.'/students.php';
-require __DIR__.'/student-enrollments.php';
-require __DIR__.'/grade-year-settings.php';
-require __DIR__.'/student-marks.php';
+require __DIR__ . '/news.php';
+require __DIR__ . '/files.php';
+require __DIR__ . '/years.php';
+require __DIR__ . '/semesters.php';
+require __DIR__ . '/school-days.php';
+require __DIR__ . '/grades.php';
+require __DIR__ . '/sections.php';
+require __DIR__ . '/subjects.php';
+require __DIR__ . '/students.php';
+require __DIR__ . '/student-enrollments.php';
+require __DIR__ . '/grade-year-settings.php';
+require __DIR__ . '/student-marks.php';
 
 // Todo: Add User_type middleware to next Api's
-require __DIR__.'/teacher-section-subjects.php';
-require __DIR__.'/study-notes.php';
-require __DIR__.'/study-notes-api.php';
-require __DIR__.'/behavior-notes.php';
-require __DIR__.'/behavior-notes-api.php';
-require __DIR__.'/exams.php';
-require __DIR__.'/complaints.php';
-require __DIR__.'/messages.php';
-require __DIR__.'/class-sessions.php';
-require __DIR__.'/student-attendances.php';
-require __DIR__.'/teacher-attendances.php';
-require __DIR__.'/teacher-attendance-tracking.php';
-require __DIR__.'/assignments.php';
-require __DIR__.'/logs.php';
-require __DIR__.'/app-updates.php';
+require __DIR__ . '/teacher-section-subjects.php';
+require __DIR__ . '/study-notes.php';
+require __DIR__ . '/study-notes-api.php';
+require __DIR__ . '/behavior-notes.php';
+require __DIR__ . '/behavior-notes-api.php';
+require __DIR__ . '/exams.php';
+require __DIR__ . '/complaints.php';
+require __DIR__ . '/messages.php';
+require __DIR__ . '/class-sessions.php';
+require __DIR__ . '/student-attendances.php';
+require __DIR__ . '/teacher-attendances.php';
+require __DIR__ . '/teacher-attendance-tracking.php';
+require __DIR__ . '/assignments.php';
+require __DIR__ . '/logs.php';
+require __DIR__ . '/app-updates.php';
 
 
 

@@ -15,11 +15,14 @@ class StudyNoteObserver
 
         $title = 'ملاحظة دراسية .';
         $body = $studyNote->note;
-        (new FcmService())->
-        sendNotification($studyNote->student->user->fcm_token,
-            $title,
-            $body
-        );
+        $token = $studyNote->student->user->fcm_token;
+        if ($token) {
+            (new FcmService())->sendNotification(
+                    $token,
+                    $title,
+                    $body
+                );
+        }
     }
 
     /**

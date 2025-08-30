@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateQuizRequest;
 use App\Http\Requests\UpdateQuizRequest;
 use App\Http\Requests\ListQuizzesRequest;
+use App\Http\Requests\GenerateQuizRequest;
 use App\Services\QuizService;
 
 class QuizController extends Controller
@@ -28,6 +29,14 @@ class QuizController extends Controller
     public function store(CreateQuizRequest $request)
     {
         return $this->quizService->create($request);
+    }
+
+    /**
+     * Generate a quiz using AI.
+     */
+    public function generateQuiz(GenerateQuizRequest $request)
+    {
+        return $this->quizService->generateQuiz($request);
     }
 
     public function activate(int $id)

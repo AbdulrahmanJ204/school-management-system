@@ -17,11 +17,14 @@ class BehaviorNoteObserver
         $type = $behaviorNote->behavior_type == 'positive' ? 'ايجابية' : 'سلبية';
         $title = 'ملاحظة سلوكية ' . $type . '.';
         $body = $behaviorNote->note;
-        (new FcmService())->
-        sendNotification($behaviorNote->student->user->fcm_token,
-            $title,
-            $body
-        );
+        $token = $behaviorNote->student->user->fcm_token;
+        if ($token) {
+            (new FcmService())->sendNotification(
+                    $token,
+                    $title,
+                    $body
+                );
+        }
     }
 
     /**
