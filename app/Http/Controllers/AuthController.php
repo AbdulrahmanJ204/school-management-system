@@ -46,9 +46,7 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        $user_type = strtolower(request()->query('user_type'));
-
-        return $this->authService->login($request, $user_type);
+        return $this->authService->login($request);
     }
     public function refresh(Request $request): JsonResponse
     {

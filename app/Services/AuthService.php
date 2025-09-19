@@ -3,6 +3,7 @@
 namespace App\Services;
 
 
+use App\Enums\UserType;
 use App\Exceptions\ImageUploadFailed;
 use App\Exceptions\InvalidPasswordException;
 use App\Exceptions\InvalidUserTypeException;
@@ -156,10 +157,10 @@ class AuthService
      * @throws InvalidUserException
      * @throws UserNotFoundException
      */
-    public function login($request, $user_type): JsonResponse
+    public function login($request): JsonResponse
     {
         $credentials = $request->validated();
-
+        $user_type = strtolower($request->query('user_type'));
         $username = $credentials['user_name'];
         $expectedUserType = strtolower($user_type);
 
@@ -167,39 +168,22 @@ class AuthService
             throw new MustPassUserTypeException();
         }
 
-        if (!in_array($expectedUserType, ['admin', 'teacher', 'student'])) {
+        if (!in_array($expectedUserType, UserType::values())) {
             throw new InvalidUserTypeException();
         }
 
-        $prefixMap = [
-            'admin' => 'Adm_',
-            'teacher' => 'Tch_',
-            'student' => 'Std_',
-        ];
 
-        $expectedPrefix = $prefixMap[$expectedUserType];
 
-        if (!str_starts_with($username, $expectedPrefix)) {
-            throw new InvalidUserException(__('messages.auth.invalid_username_prefix'));
-        }
+        $id = substr($username, 4);
 
-        $idPart = str_replace($expectedPrefix, '', $username);
+        $user = User::findOrFail($id)->where('user_type', $user_type);
 
-        if (!is_numeric($idPart)) {
-            throw new InvalidUserException(__('messages.auth.invalid_user_id'));
-        }
 
-        $userId = (int) $idPart;
-
-        $user = User::with(['roles.permissions', 'devices'])->find($userId);
 
         if (!$user) {
             throw new UserNotFoundException();
         }
 
-        if ($user->user_type !== $expectedUserType) {
-            throw new InvalidUserTypeException();
-        }
 
         if (!Hash::check($credentials['password'], $user->password)) {
             throw new InvalidPasswordException();
@@ -210,7 +194,7 @@ class AuthService
         DB::beginTransaction();
 
         try {
-            // Find or create device for this user based on device data
+
             $deviceData = [
                 'brand' => $credentials['brand'] ?? null,
                 'device' => $credentials['device'] ?? null,
@@ -237,7 +221,6 @@ class AuthService
             $refreshToken->accessToken->save();
 
             if(isset($credentials['fcm_token'])){
-//                dd($credentials['fcm_token']);
                 $user->update(['fcm_token' => $credentials['fcm_token']]);
             }
 

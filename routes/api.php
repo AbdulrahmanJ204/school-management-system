@@ -23,15 +23,6 @@ use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('auth')->name('auth.')->group(function () {
-    Route::post('login', [AuthController::class, 'login'])->name('login')->middleware('throttle:60,1');
-    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password')->middleware('throttle:60,1');
-    Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password')->middleware('throttle:60,1');
-    Route::middleware(['auth:api'])->group(function () {
-        Route::post('refresh', [AuthController::class, 'refresh'])->name('refresh');
-        Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-    });
-});
 
 Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(function () {
     Route::post('register', [AuthController::class, 'register']);
@@ -58,7 +49,7 @@ Route::middleware(['auth:api', 'user_type:admin', 'throttle:60,1'])->group(funct
     // Student Report Management APIs
     Route::get('admin/student-report', [AdminController::class, 'getStudentReport'])->name('admin.student-report');
 
-    Route::post('class-sessions', [ClassSessionController::class, 'create']);
+    Route::post('class-sessions', [ClassSessionController::class, 'store']);
     Route::put('class-sessions/{id}', [ClassSessionController::class, 'update']);
     Route::delete('class-sessions/{id}', [ClassSessionController::class, 'destroy']);
 });
@@ -78,7 +69,7 @@ Route::middleware(['auth:api', 'user_type:admin|teacher', 'throttle:60,1'])->gro
     Route::post('quizzes', [QuizController::class, 'store']);
     Route::get('quizzes/{quiz}', [QuizController::class, 'show']);
     Route::delete('quizzes/{quiz}', [QuizController::class, 'destroy']);
-    
+
     Route::post('quizzes/{id}/update', [QuizController::class, 'update']);
     Route::put('quizzes/{id}/activate', [QuizController::class, 'activate']);
     Route::put('quizzes/{id}/deactivate', [QuizController::class, 'deactivate']);
