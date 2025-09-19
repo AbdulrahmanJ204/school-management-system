@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\StudentAttendancePermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\ListDailyAttendanceRequest;
@@ -16,22 +16,23 @@ use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\Year;
-use App\Traits\HasPermissionChecks;
+
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class StudentAttendanceService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listStudentAttendances(Request $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_ATTENDANCES);
+        AuthHelper::authorize(StudentAttendancePermission::VIEW_STUDENT_ATTENDANCES);
 
         $query = StudentAttendance::with(['student.user', 'classSession', 'createdBy']);
 
@@ -73,10 +74,10 @@ class StudentAttendanceService
      */
     public function createStudentAttendance(Request $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_STUDENT_ATTENDANCE);
+        AuthHelper::authorize(StudentAttendancePermission::CREATE_STUDENT_ATTENDANCE);
 
         $data = $request->validated();
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::user()->id;
 
         $studentAttendance = StudentAttendance::create($data);
 
@@ -92,7 +93,7 @@ class StudentAttendanceService
      */
     public function showStudentAttendance($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_ATTENDANCE);
+        AuthHelper::authorize(StudentAttendancePermission::VIEW_STUDENT_ATTENDANCE);
 
         $studentAttendance = StudentAttendance::with(['student.user', 'classSession', 'createdBy'])
             ->findOrFail($id);
@@ -108,7 +109,7 @@ class StudentAttendanceService
      */
     public function updateStudentAttendance(Request $request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_STUDENT_ATTENDANCE);
+        AuthHelper::authorize(StudentAttendancePermission::UPDATE_STUDENT_ATTENDANCE);
 
         $studentAttendance = StudentAttendance::findOrFail($id);
         $data = $request->validated();
@@ -126,7 +127,7 @@ class StudentAttendanceService
      */
     public function deleteStudentAttendance($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_STUDENT_ATTENDANCE);
+        AuthHelper::authorize(StudentAttendancePermission::DELETE_STUDENT_ATTENDANCE);
 
         $studentAttendance = StudentAttendance::findOrFail($id);
         $studentAttendance->delete();
@@ -142,7 +143,7 @@ class StudentAttendanceService
      */
     public function getByStudent($studentId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_ATTENDANCES);
+        AuthHelper::authorize(StudentAttendancePermission::VIEW_STUDENT_ATTENDANCES);
 
         $studentAttendances = StudentAttendance::where('student_id', $studentId)
             ->with(['student.user', 'classSession', 'createdBy'])
@@ -160,7 +161,7 @@ class StudentAttendanceService
      */
     public function getByClassSession($classSessionId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_ATTENDANCES);
+        AuthHelper::authorize(StudentAttendancePermission::VIEW_STUDENT_ATTENDANCES);
 
         $studentAttendances = StudentAttendance::where('class_session_id', $classSessionId)
             ->with(['student.user', 'classSession', 'createdBy'])
@@ -179,7 +180,7 @@ class StudentAttendanceService
     public function generateAttendanceReport(): JsonResponse
     {
         // Get student_id from authenticated user
-        $user = auth()->user();
+        $user = Auth::user();
         $student = Student::where('user_id', $user->id)->first();
 
         if (!$student) {
@@ -593,7 +594,7 @@ class StudentAttendanceService
                         'student_id' => $student['id'],
                         'class_session_id' => $session->id,
                         'status' => $student['status'],
-                        'created_by' => auth()->id(),
+                        'created_by' => Auth::user()->id,
                     ]);
                 }
                 $returnedData[] = $record;
@@ -621,14 +622,14 @@ class StudentAttendanceService
                 if ($record) {
                     $record->update([
                         'status' => $class_session['status'],
-                        'created_by' => auth()->id(),
+                        'created_by' => Auth::user()->id,
                     ]);
                 } else {
                     $record = StudentAttendance::create([
                         'student_id' => $student['id'],
                         'class_session_id' => $class_session['id'],
                         'status' => $class_session['status'],
-                        'created_by' => auth()->id(),
+                        'created_by' => Auth::user()->id,
                     ]);
                 }
                 $returnedData[] = $record;

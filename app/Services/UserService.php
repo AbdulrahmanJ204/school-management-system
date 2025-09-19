@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class UserService
 {
@@ -57,7 +58,7 @@ class UserService
      */
     public function updateUser($request, $id): JsonResponse
     {
-        $admin = auth()->user();
+        $admin = Auth::user();
 
         if (!$admin->hasPermissionTo('تعديل مستخدم')) {
             throw new PermissionException();
@@ -168,7 +169,7 @@ class UserService
      */
     public function deleteUser(int $id): JsonResponse
     {
-        $admin = auth()->user();
+        $admin = Auth::user();
 
         if (!$admin->hasPermissionTo('حذف مستخدم')) {
             throw new PermissionException();
@@ -206,7 +207,7 @@ class UserService
      */
     public function listAdminsAndTeachers(): JsonResponse
     {
-        if (!auth()->user()->hasPermissionTo('عرض المشرفين و الاساتذة')) {
+        if (!Auth::user()->hasPermissionTo('عرض المشرفين و الاساتذة')) {
             throw new PermissionException();
         }
 

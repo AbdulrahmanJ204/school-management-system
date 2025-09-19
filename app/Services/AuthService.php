@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\PersonalAccessToken;
 use Spatie\Permission\Models\Role;
 use Throwable;
+use Illuminate\Support\Facades\Auth;
 
 class AuthService
 {
@@ -47,7 +48,7 @@ class AuthService
      */
     public function register($request): JsonResponse
     {
-        $admin = auth()->user();
+        $admin = Auth::user();
 
         if (!$admin->hasPermissionTo('انشاء مستخدم')) {
             throw new PermissionException();
@@ -315,7 +316,7 @@ class AuthService
      */
     public function changePassword($request): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if (!$user->hasPermissionTo('change_password')) {
             throw new PermissionException();

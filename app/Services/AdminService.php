@@ -12,6 +12,7 @@ use App\Models\ClassPeriod;
 use App\Models\Section;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class AdminService
 {
@@ -20,7 +21,7 @@ class AdminService
      */
     public function listAdmins(): JsonResponse
     {
-        if (!auth()->user()->hasPermissionTo('عرض المشرفين')) {
+        if (!Auth::user()->hasPermissionTo('عرض المشرفين')) {
             throw new PermissionException();
         }
 
@@ -49,7 +50,7 @@ class AdminService
     public function getClassPeriodsBySection(GetClassPeriodsBySectionRequest $request): JsonResponse
     {
         // Check admin permissions
-        if (!auth()->user()->hasPermissionTo('عرض فترات دراسية')) {
+        if (!Auth::user()->hasPermissionTo('عرض فترات دراسية')) {
             throw new PermissionException();
         }
 

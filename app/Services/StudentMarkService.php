@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\StudentMarkPermission;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\StudentMarkResource;
 use App\Models\StudentMark;
@@ -13,13 +13,14 @@ use App\Models\User;
 use App\Http\Requests\StudentMark\BulkStoreStudentMarkRequest;
 use App\Http\Requests\StudentMark\BulkUpdateStudentMarkRequest;
 use App\Exceptions\PermissionException;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class StudentMarkService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * Get list of all student marks.
@@ -27,7 +28,7 @@ class StudentMarkService
      */
     public function listStudentMarks($request = null): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
+        AuthHelper::authorize(StudentMarkPermission::VIEW_STUDENT_MARKS);
 
         // If no request or no subject_id, return existing marks as before
         if (!$request || !$request->has('subject_id')) {
@@ -117,7 +118,7 @@ class StudentMarkService
                     'quiz' => 0,
                     'exam' => 0,
                     'total' => 0,
-                    'created_by' => auth()->id()
+                    'created_by' => Auth::user()->id
                 ]);
 
                 // Load the relationships for the new mark
@@ -148,10 +149,10 @@ class StudentMarkService
      */
     public function createStudentMark($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_STUDENT_MARK);
+        AuthHelper::authorize(StudentMarkPermission::CREATE_STUDENT_MARK);
 
         $credentials = $request->validated();
-        $credentials['created_by'] = auth()->id();
+        $credentials['created_by'] = Auth::user()->id;
 
         // Check if mark already exists for this enrollment and subject
         $existingMark = StudentMark::where('enrollment_id', $credentials['enrollment_id'])
@@ -191,7 +192,7 @@ class StudentMarkService
      */
     public function showStudentMark(StudentMark $studentMark): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARK);
+        AuthHelper::authorize(StudentMarkPermission::VIEW_STUDENT_MARK);
 
         $studentMark->load([
             'subject.mainSubject.grade',
@@ -211,7 +212,7 @@ class StudentMarkService
      */
     public function updateStudentMark($request, StudentMark $studentMark): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_STUDENT_MARK);
+        AuthHelper::authorize(StudentMarkPermission::UPDATE_STUDENT_MARK);
 
         $credentials = $request->validated();
 
@@ -237,7 +238,7 @@ class StudentMarkService
      */
     public function destroyStudentMark(StudentMark $studentMark): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_STUDENT_MARK);
+        AuthHelper::authorize(StudentMarkPermission::DELETE_STUDENT_MARK);
 
         $studentMark->delete();
 
@@ -253,7 +254,7 @@ class StudentMarkService
      */
     public function getMarksByEnrollment($enrollmentId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
+        AuthHelper::authorize(StudentMarkPermission::VIEW_STUDENT_MARKS);
 
         $enrollment = StudentEnrollment::findOrFail($enrollmentId);
         $studentMarks = StudentMark::where('enrollment_id', $enrollmentId)->with([
@@ -274,7 +275,7 @@ class StudentMarkService
      */
     public function getMarksBySubject($subjectId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
+        AuthHelper::authorize(StudentMarkPermission::VIEW_STUDENT_MARKS);
 
         $studentMarks = StudentMark::where('subject_id', $subjectId)->with([
             'subject.mainSubject.grade',
@@ -294,7 +295,7 @@ class StudentMarkService
      */
     public function getMarksBySubjectAndSection($subjectId, $sectionId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_MARKS);
+        AuthHelper::authorize(StudentMarkPermission::VIEW_STUDENT_MARKS);
 
         $subject = Subject::findOrFail($subjectId);
         $studentMarks = StudentMark::where('subject_id', $subjectId)
@@ -355,7 +356,7 @@ class StudentMarkService
     public function getMyMarks(int $semesterId): JsonResponse
     {
         try {
-            $user = auth()->user();
+            $user = Auth::user();
 
             $student = $user->student;
             if (!$student) {
@@ -440,7 +441,7 @@ class StudentMarkService
     public function getMyAllMarks(): JsonResponse
     {
         try {
-            $user = auth()->user();
+            $user = Auth::user();
 
             $student = $user->student;
             if (!$student) {
@@ -529,7 +530,7 @@ class StudentMarkService
      */
     public function bulkCreateStudentMarks(BulkStoreStudentMarkRequest $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_STUDENT_MARK);
+        AuthHelper::authorize(StudentMarkPermission::CREATE_STUDENT_MARK);
 
         try {
             $marks = $request->validated()['marks'];
@@ -559,7 +560,7 @@ class StudentMarkService
                         'activity' => $markData['activity'] ?? null,
                         'quiz' => $markData['quiz'] ?? null,
                         'exam' => $markData['exam'] ?? null,
-                        'created_by' => auth()->id(),
+                        'created_by' => Auth::user()->id,
                     ]);
 
                     $createdMarks[] = new StudentMarkResource($studentMark->load([
@@ -619,7 +620,7 @@ class StudentMarkService
      */
     public function bulkUpdateStudentMarks(BulkUpdateStudentMarkRequest $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_STUDENT_MARK);
+        AuthHelper::authorize(StudentMarkPermission::UPDATE_STUDENT_MARK);
 
         try {
             $marks = $request->validated()['marks'];

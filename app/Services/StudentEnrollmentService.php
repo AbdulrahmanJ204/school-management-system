@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\StudentEnrollmentPermission;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\StudentEnrollment\ListStudentEnrollmentRequest;
 use App\Http\Requests\StudentEnrollment\StoreStudentEnrollmentRequest;
@@ -12,20 +12,20 @@ use App\Models\StudentEnrollment;
 use App\Models\Section;
 use App\Models\Semester;
 use App\Exceptions\PermissionException;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class StudentEnrollmentService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listStudentEnrollments(ListStudentEnrollmentRequest $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_ENROLLMENTS);
+        AuthHelper::authorize(StudentEnrollmentPermission::VIEW_STUDENT_ENROLLMENTS);
 
         $query = StudentEnrollment::with([
             'year',
@@ -69,7 +69,7 @@ class StudentEnrollmentService
      */
     public function createStudentEnrollment(StoreStudentEnrollmentRequest $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_STUDENT_ENROLLMENT);
+        AuthHelper::authorize(StudentEnrollmentPermission::CREATE_STUDENT_ENROLLMENT);
 
         $credentials = $request->validated();
         
@@ -82,7 +82,7 @@ class StudentEnrollmentService
         $semester = Semester::findOrFail($credentials['semester_id']);
 
         $credentials['year_id'] = $semester->year_id;
-        $credentials['created_by'] = auth()->id();
+        $credentials['created_by'] = Auth::user()->id;
 
         // Check if enrollment already exists for this student and semester
         $existingEnrollment = StudentEnrollment::where('student_id', $credentials['student_id'])
@@ -118,7 +118,7 @@ class StudentEnrollmentService
      */
     public function showStudentEnrollment(StudentEnrollment $studentEnrollment): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDENT_ENROLLMENT);
+        AuthHelper::authorize(StudentEnrollmentPermission::VIEW_STUDENT_ENROLLMENT);
 
         $studentEnrollment->load([
             'year',
@@ -138,7 +138,7 @@ class StudentEnrollmentService
      */
     public function updateStudentEnrollment(UpdateStudentEnrollmentRequest $request, StudentEnrollment $studentEnrollment): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_STUDENT_ENROLLMENT);
+        AuthHelper::authorize(StudentEnrollmentPermission::UPDATE_STUDENT_ENROLLMENT);
 
         $credentials = $request->validated();
 
@@ -186,7 +186,7 @@ class StudentEnrollmentService
      */
     public function destroyStudentEnrollment(StudentEnrollment $studentEnrollment): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_STUDENT_ENROLLMENT);
+        AuthHelper::authorize(StudentEnrollmentPermission::DELETE_STUDENT_ENROLLMENT);
 
         if ($studentEnrollment->studentMarks()->exists()) {
             return ResponseHelper::jsonResponse(
@@ -210,7 +210,7 @@ class StudentEnrollmentService
      */
     public function listTrashedStudentEnrollments(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_STUDENT_ENROLLMENTS);
+        AuthHelper::authorize(StudentEnrollmentPermission::MANAGE_DELETED_STUDENT_ENROLLMENTS);
 
         $enrollments = StudentEnrollment::with([
             'year',
@@ -229,7 +229,7 @@ class StudentEnrollmentService
      */
     public function restoreStudentEnrollment($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_STUDENT_ENROLLMENTS);
+        AuthHelper::authorize(StudentEnrollmentPermission::MANAGE_DELETED_STUDENT_ENROLLMENTS);
 
 //        $enrollment = StudentEnrollment::withTrashed()->findOrFail($id);
         $enrollment = StudentEnrollment::findOrFail($id);
@@ -262,7 +262,7 @@ class StudentEnrollmentService
      */
     public function forceDeleteStudentEnrollment($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_STUDENT_ENROLLMENTS);
+        AuthHelper::authorize(StudentEnrollmentPermission::MANAGE_DELETED_STUDENT_ENROLLMENTS);
 
         $enrollment = StudentEnrollment::withTrashed()->findOrFail($id);
 

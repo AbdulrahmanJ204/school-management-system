@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Assignment;
 
 use App\Http\Requests\BaseRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreAssignmentRequest extends BaseRequest
 {
@@ -11,7 +12,7 @@ class StoreAssignmentRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo('انشاء واجب');
+        return Auth::user()->hasPermissionTo('انشاء واجب');
     }
 
     /**

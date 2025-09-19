@@ -22,9 +22,9 @@ trait StoreNews
         $data = $request->validated();
         $photoPath = $this->handlePhoto($request);
         $publishDate = Carbon::now();
-        $content = $this->handleContent($data[$this->apiContent]);
+        $content = $this->handleContent($data['content']);
         $news = News::create([
-            'title' => $data[$this->apiTitle],
+            'title' => $data['title'],
             'content' => $content,
             'photo' => $photoPath,
             'publish_date' => $publishDate,

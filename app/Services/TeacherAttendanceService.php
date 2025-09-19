@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\TeacherAttendancePermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\TeacherAttendanceResource;
@@ -12,21 +12,22 @@ use App\Models\Semester;
 use App\Models\Teacher;
 use App\Models\TeacherAttendance;
 use App\Models\Year;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherAttendanceService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listTeacherAttendances(Request $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_ATTENDANCES);
+        AuthHelper::authorize(TeacherAttendancePermission::VIEW_TEACHER_ATTENDANCES);
 
         $query = TeacherAttendance::with([
             'teacher.user',
@@ -72,10 +73,10 @@ class TeacherAttendanceService
      */
     public function createTeacherAttendance(Request $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_TEACHER_ATTENDANCE);
+        AuthHelper::authorize(TeacherAttendancePermission::CREATE_TEACHER_ATTENDANCE);
 
         $data = $request->validated();
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::user()->id;
 
         $teacherAttendance = TeacherAttendance::create($data);
 
@@ -95,7 +96,7 @@ class TeacherAttendanceService
      */
     public function showTeacherAttendance($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_ATTENDANCE);
+        AuthHelper::authorize(TeacherAttendancePermission::VIEW_TEACHER_ATTENDANCE);
 
         $teacherAttendance = TeacherAttendance::with([
             'teacher.user',
@@ -115,7 +116,7 @@ class TeacherAttendanceService
      */
     public function updateTeacherAttendance(Request $request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_TEACHER_ATTENDANCE);
+        AuthHelper::authorize(TeacherAttendancePermission::UPDATE_TEACHER_ATTENDANCE);
 
         $teacherAttendance = TeacherAttendance::findOrFail($id);
         $data = $request->validated();
@@ -137,7 +138,7 @@ class TeacherAttendanceService
      */
     public function deleteTeacherAttendance($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_TEACHER_ATTENDANCE);
+        AuthHelper::authorize(TeacherAttendancePermission::DELETE_TEACHER_ATTENDANCE);
 
         $teacherAttendance = TeacherAttendance::findOrFail($id);
         $teacherAttendance->delete();
@@ -153,7 +154,7 @@ class TeacherAttendanceService
      */
     public function getByTeacher($teacherId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_ATTENDANCES);
+        AuthHelper::authorize(TeacherAttendancePermission::VIEW_TEACHER_ATTENDANCES);
 
         $teacherAttendances = TeacherAttendance::where('teacher_id', $teacherId)
             ->with([
@@ -175,7 +176,7 @@ class TeacherAttendanceService
      */
     public function getByClassSession($classSessionId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_ATTENDANCES);
+        AuthHelper::authorize(TeacherAttendancePermission::VIEW_TEACHER_ATTENDANCES);
 
         $teacherAttendances = TeacherAttendance::where('class_session_id', $classSessionId)
             ->with([
@@ -198,10 +199,10 @@ class TeacherAttendanceService
      */
     public function generateAttendanceReport($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_ATTENDANCES);
+        AuthHelper::authorize(TeacherAttendancePermission::VIEW_TEACHER_ATTENDANCES);
 
         // Get teacher_id from authenticated user
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = Teacher::where('user_id', $user->id)->first();
 
         if (!$teacher) {

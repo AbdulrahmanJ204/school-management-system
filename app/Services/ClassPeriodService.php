@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use Illuminate\Support\Facades\Auth;
 
 class ClassPeriodService
 {
@@ -21,7 +22,7 @@ class ClassPeriodService
      */
     public function create($request): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         AuthHelper::authorize(TimetablePermission::create_class_period->value);
 

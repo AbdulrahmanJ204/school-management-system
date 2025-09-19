@@ -21,7 +21,7 @@ trait StoreAppUpdate
                 $this->apiUrl => $request->input($this->apiUrl),
                 $this->apiChangeLog => $request->input($this->apiChangeLog),
                 $this->apiIsForceUpdate => $request->input($this->apiIsForceUpdate) == 'true' ? true : false,
-                'created_by' => auth()->id(),
+                'created_by' => Auth::user()->id,
             ]);
 
             return response()->json([

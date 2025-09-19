@@ -2,27 +2,29 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\StudyNotePermission;
 use App\Exceptions\PermissionException;
+use App\Helpers\AuthHelper;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\StudyNoteResource;
 use App\Models\StudyNote;
 use App\Models\SchoolDay;
 use App\Models\StudentEnrollment;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class StudyNoteService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listStudyNotes($request = null): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTES);
+        AuthHelper::authorize(StudyNotePermission::VIEW_STUDY_NOTES);
 
         $query = StudyNote::with([
             'student',
@@ -84,7 +86,7 @@ class StudyNoteService
      */
     public function listTrashedStudyNotes(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_STUDY_NOTES);
+        AuthHelper::authorize(StudyNotePermission::MANAGE_DELETED_STUDY_NOTES);
 
         $studyNotes = StudyNote::onlyTrashed()
             ->with([
@@ -109,10 +111,10 @@ class StudyNoteService
      */
     public function createStudyNote($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_STUDY_NOTE);
+        AuthHelper::authorize(StudyNotePermission::CREATE_STUDY_NOTE);
 
         $data = $request->validated();
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::user()->id;
 
         $studyNote = StudyNote::create($data);
 
@@ -132,7 +134,7 @@ class StudyNoteService
      */
     public function showStudyNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTE);
+        AuthHelper::authorize(StudyNotePermission::VIEW_STUDY_NOTE);
 
         $studyNote = StudyNote::with([
             'student',
@@ -152,7 +154,7 @@ class StudyNoteService
      */
     public function updateStudyNote($request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_STUDY_NOTE);
+        AuthHelper::authorize(StudyNotePermission::UPDATE_STUDY_NOTE);
 
         $studyNote = StudyNote::findOrFail($id);
         $data = $request->validated();
@@ -174,7 +176,7 @@ class StudyNoteService
      */
     public function deleteStudyNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_STUDY_NOTE);
+        AuthHelper::authorize(StudyNotePermission::DELETE_STUDY_NOTE);
 
         $studyNote = StudyNote::findOrFail($id);
         $studyNote->delete();
@@ -190,7 +192,7 @@ class StudyNoteService
      */
     public function restoreStudyNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_STUDY_NOTES);
+        AuthHelper::authorize(StudyNotePermission::MANAGE_DELETED_STUDY_NOTES);
 
         $studyNote = StudyNote::onlyTrashed()->findOrFail($id);
         $studyNote->restore();
@@ -210,7 +212,7 @@ class StudyNoteService
      */
     public function forceDeleteStudyNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_STUDY_NOTES);
+        AuthHelper::authorize(StudyNotePermission::MANAGE_DELETED_STUDY_NOTES);
 
 //        $studyNote = StudyNote::onlyTrashed()->findOrFail($id);
         $studyNote = StudyNote::findOrFail($id);
@@ -230,9 +232,9 @@ class StudyNoteService
      */
     public function getStudentStudyNotes($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTES);
+        AuthHelper::authorize(StudyNotePermission::VIEW_STUDY_NOTES);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $student = $user->student;
 
         if (!$student) {
@@ -281,9 +283,9 @@ class StudyNoteService
      */
     public function getTeacherStudyNotes($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTES);
+        AuthHelper::authorize(StudyNotePermission::VIEW_STUDY_NOTES);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = $user->teacher;
 
         if (!$teacher) {
@@ -365,9 +367,9 @@ class StudyNoteService
      */
     public function createTeacherStudyNote($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_STUDY_NOTE);
+        AuthHelper::authorize(StudyNotePermission::CREATE_STUDY_NOTE);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = $user->teacher;
 
         if (!$teacher) {
@@ -426,9 +428,9 @@ class StudyNoteService
      */
     public function updateTeacherStudyNote($request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_STUDY_NOTE);
+        AuthHelper::authorize(StudyNotePermission::UPDATE_STUDY_NOTE);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = $user->teacher;
 
         if (!$teacher) {
@@ -475,9 +477,9 @@ class StudyNoteService
      */
     public function deleteTeacherStudyNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_STUDY_NOTE);
+        AuthHelper::authorize(StudyNotePermission::DELETE_STUDY_NOTE);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = $user->teacher;
 
         if (!$teacher) {

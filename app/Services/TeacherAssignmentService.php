@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherAssignmentService
 {
     public function createAssignment(Request $request): JsonResponse
     {
         $data = $request->validated();
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::user()->id;
 
         // Handle direct file upload
         if ($request->hasFile('photo')) {
@@ -78,7 +79,7 @@ class TeacherAssignmentService
      */
     public function listAssignments(Request $request): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = $user->teacher;
 
         $query = Assignment::with([
@@ -159,7 +160,7 @@ class TeacherAssignmentService
 
     private function checkAssignmentOwnership(Assignment $assignment): void
     {
-        $user = auth()->user();
+        $user = Auth::user();
         if ($assignment->created_by !== $user->id) {
             abort(403, 'غير مصرح لك بالوصول لهذا التكليف');
         }

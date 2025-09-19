@@ -10,21 +10,7 @@ trait InitNews
     /**
      * @return void
      */
-    private function apiKeys(): void
-    {
-        $this->apiTitle = NewsStr::apiTitle->value;
-        $this->apiContent = NewsStr::apiContent->value;
-        $this->apiIsGeneral = NewsStr::apiIsGeneral->value;
-        $this->apiPhoto = NewsStr::apiPhoto->value;
-        $this->apiRemovePhoto = NewsStr::apiRemovePhoto->value;
-        $this->queryYear = QueryParams::Year->value;
-        $this->apiSectionIds = NewsStr::apiSectionIds->value;
-        $this->apiGradeIds = NewsStr::apiGradeIds->value;
-        $this->queryGrade = QueryParams::Grade->value;
-        $this->querySection = QueryParams::Section->value;
-        $this->queryGeneral = QueryParams::General->value;
-
-    }
+    
 
 
     /**

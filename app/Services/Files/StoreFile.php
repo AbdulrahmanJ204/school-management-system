@@ -30,20 +30,20 @@ trait StoreFile
         if($user_type===UserType::Teacher->value)
             $this->authorizeTeacherForCreate(data: $data , user: $user);
         $publish_date = now();
-        $subjectCode = Subject::find($data[$this->apiSubjectId])?->code ?? $this->generalPath;
+        $subjectCode = Subject::find($data['subject_id'])?->code ?? $this->generalPath;
         $file = $this->handleFile($request, $subjectCode);
         $size = Storage::disk($this->storageDisk)->size($file);
         $array = [
-            'subject_id' => $data[$this->apiSubjectId],
-            'title' => $data[$this->apiTitle],
-            'description' => $data[$this->apiDescription],
+            'subject_id' => $data['subject_id'],
+            'title' => $data['title'],
+            'description' => $data['description'],
             'publish_date' => $publish_date,
             'file' => $file,
             'size' => $size,
             'created_by' => $request->user()->id,
         ];
-        if ($request->filled($this->apiType)) {
-            $array['type'] = $data[$this->apiType];
+        if ($request->filled('type')) {
+            $array['type'] = $data['type'];
         }
         $result = File::create($array);
         $this->handleTargetsOnCreate(
@@ -63,8 +63,8 @@ trait StoreFile
         $teacher = $user->teacher;
         $teacherTeachesAllTargets =
             TeacherSectionSubject::where('teacher_id', $teacher->id)
-                ->where('subject_id', $data[$this->apiSubjectId])
-                ->whereIn('section_id', $data[$this->apiSectionIds])
+                ->where('subject_id', $data['subject_id'])
+                ->whereIn('section_id', $data['section_ids'])
                 ->where('is_active', true)
                 ->exists();
         if (!$teacherTeachesAllTargets) {

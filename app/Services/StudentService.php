@@ -16,6 +16,7 @@ use App\Models\Semester;
 use App\Models\Year;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class StudentService
 {
@@ -24,7 +25,7 @@ class StudentService
      */
     public function listStudents(): JsonResponse
     {
-        if (!auth()->user()->hasPermissionTo('عرض الطلاب')) {
+        if (!Auth::user()->hasPermissionTo('عرض الطلاب')) {
             throw new PermissionException();
         }
 
@@ -49,7 +50,7 @@ class StudentService
      */
     public function getStudentsBySection($sectionId): JsonResponse
     {
-        if (!auth()->user()->hasPermissionTo('عرض الطلاب')) {
+        if (!Auth::user()->hasPermissionTo('عرض الطلاب')) {
             throw new PermissionException();
         }
 
@@ -89,7 +90,7 @@ class StudentService
      */
     public function getStudentsBySectionAndSemester($sectionId, $semesterId): JsonResponse
     {
-        if (!auth()->user()->hasPermissionTo('عرض الطلاب')) {
+        if (!Auth::user()->hasPermissionTo('عرض الطلاب')) {
             throw new PermissionException();
         }
 
@@ -117,7 +118,7 @@ class StudentService
      */
     public function getMyProfile(): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Ensure the authenticated user is a student
         if ($user->user_type !== 'student') {

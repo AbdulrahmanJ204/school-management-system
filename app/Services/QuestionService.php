@@ -13,6 +13,7 @@ use App\Http\Resources\QuestionResource;
 use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class QuestionService
 {
@@ -71,7 +72,7 @@ class QuestionService
 
     public function create($request, $quiz_id)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         $quiz = Quiz::find($quiz_id);
 
@@ -122,7 +123,7 @@ class QuestionService
 
     public function update($request, $quiz_id, $question_id)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $quiz = Quiz::find($quiz_id);
 
         if ($user->user_type !== 'teacher' && !($user->user_type === 'admin' && $user->hasPermissionTo('تعديل سؤال')) || $quiz->created_by !== $user->id) {
@@ -186,7 +187,7 @@ class QuestionService
 
     public function delete(int $quiz_id, int $question_id)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         $quiz = Quiz::find($quiz_id);
 

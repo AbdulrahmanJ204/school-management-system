@@ -4,6 +4,7 @@ namespace App\Http\Requests\BehaviorNote;
 
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 
 class IndexBehaviorNoteRequest extends BaseRequest
 {
@@ -12,7 +13,7 @@ class IndexBehaviorNoteRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo('عرض ملاحظات السلوك');
+        return Auth::user()->hasPermissionTo('عرض ملاحظات السلوك');
     }
 
     /**

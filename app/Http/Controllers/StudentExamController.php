@@ -21,7 +21,7 @@ class StudentExamController extends Controller
      */
     public function index(): JsonResponse
     {
-        $userId = auth()->id();
+        $userId = Auth::user()->id;
         
         return $this->studentExamService->getStudentExams($userId);
     }

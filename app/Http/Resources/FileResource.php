@@ -7,6 +7,7 @@ use App\Enums\StringsManager\Files\FileApi;
 use App\Enums\UserType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class FileResource extends JsonResource
 {
@@ -17,7 +18,7 @@ class FileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $user_type = auth()->user()->user_type;
+        $user_type = Auth::user()->user_type;
         $array = $this->studentArray();
 
         if ($user_type === UserType::Admin->value) {
@@ -84,7 +85,7 @@ class FileResource extends JsonResource
         $grade = $sections[0]->grade ?? 'غير محدد';
 
         $deleted = $this->deleted_at?->format('Y-m-d h:i:s A');
-        $canDel = auth()->user()->hasPermissionTo(FilesPermission::softDelete->value)
+        $canDel = Auth::user()->hasPermissionTo(FilesPermission::softDelete->value)
             && $this->belongsToOneTeacher()
             && !$deleted;
         return [

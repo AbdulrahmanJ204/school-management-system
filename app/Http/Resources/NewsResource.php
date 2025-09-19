@@ -24,7 +24,7 @@ class NewsResource extends BaseResource
      */
     public function toArray(Request $request): array
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if ($user->user_type === UserType::Admin->value) {
             $targets = $this->whenLoaded('targets');

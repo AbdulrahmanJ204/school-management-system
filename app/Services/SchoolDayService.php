@@ -2,28 +2,29 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\SchoolDayPermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\SchoolDayRequest;
 use App\Http\Resources\SchoolDayResource;
 use App\Models\SchoolDay;
 use App\Models\Semester;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class SchoolDayService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listSchoolDays(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_SCHOOL_DAYS);
+        AuthHelper::authorize(SchoolDayPermission::VIEW_SCHOOL_DAYS);
 
         $schoolDays = SchoolDay::with([
             'semester'
@@ -41,7 +42,7 @@ class SchoolDayService
      */
     public function listTrashedSchoolDays(Semester $semester): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SCHOOL_DAYS);
+        AuthHelper::authorize(SchoolDayPermission::MANAGE_DELETED_SCHOOL_DAYS);
 
         $schoolDays = SchoolDay::with([
             'semester'
@@ -61,7 +62,7 @@ class SchoolDayService
      */
     public function listSchoolDay(Semester $semester): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_SCHOOL_DAYS);
+        AuthHelper::authorize(SchoolDayPermission::VIEW_SCHOOL_DAYS);
 
         $schoolDays = $semester->schoolDays;
 
@@ -75,9 +76,9 @@ class SchoolDayService
      */
     public function createSchoolDay(SchoolDayRequest $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_SCHOOL_DAY);
+        AuthHelper::authorize(SchoolDayPermission::CREATE_SCHOOL_DAY);
 
-        $admin = auth()->user();
+        $admin = Auth::user();
         $credentials = $request->validated();
         $credentials['created_by'] = $admin->id;
         $schoolDay = SchoolDay::create($credentials);
@@ -94,7 +95,7 @@ class SchoolDayService
      */
     public function updateSchoolDay($request, SchoolDay $schoolDay): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_SCHOOL_DAY);
+        AuthHelper::authorize(SchoolDayPermission::UPDATE_SCHOOL_DAY);
 
         $schoolDay->update([
 //            'date' => $request->date,
@@ -117,7 +118,7 @@ class SchoolDayService
      */
     public function destroySchoolDay(SchoolDay $schoolDay): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_SCHOOL_DAY);
+        AuthHelper::authorize(SchoolDayPermission::DELETE_SCHOOL_DAY);
 
         // Check if school day has related data
         if ($schoolDay->behaviorNotes()->exists() ||
@@ -140,7 +141,7 @@ class SchoolDayService
      */
     public function restoreSchoolDay($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SCHOOL_DAYS);
+        AuthHelper::authorize(SchoolDayPermission::MANAGE_DELETED_SCHOOL_DAYS);
 
         $schoolDay = SchoolDay::withTrashed()->findOrFail($id);
 
@@ -166,7 +167,7 @@ class SchoolDayService
      */
     public function forceDeleteSchoolDay($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SCHOOL_DAYS);
+        AuthHelper::authorize(SchoolDayPermission::MANAGE_DELETED_SCHOOL_DAYS);
 
 //        $schoolDay = SchoolDay::withTrashed()->findOrFail($id);
         $schoolDay = SchoolDay::findOrFail($id);

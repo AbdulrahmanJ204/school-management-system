@@ -2,25 +2,25 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\ComplaintPermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\ComplaintResource;
 use App\Models\Complaint;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class ComplaintService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listComplaints(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_COMPLAINTS);
+        AuthHelper::authorize(ComplaintPermission::VIEW_COMPLAINTS);
 
         $complaints = Complaint::with([
              'user',
@@ -39,7 +39,7 @@ class ComplaintService
      */
     public function listTrashedComplaints(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_COMPLAINTS);
+        AuthHelper::authorize(ComplaintPermission::MANAGE_DELETED_COMPLAINTS);
 
         $complaints = Complaint::onlyTrashed()
             ->with([
@@ -59,14 +59,14 @@ class ComplaintService
      */
     public function createComplaint($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_COMPLAINT);
+        AuthHelper::authorize(ComplaintPermission::CREATE_COMPLAINT);
 
         $complaint = Complaint::create([
             'user_id' => $request->user_id,
             'title' => $request->title,
             'content' => $request->content,
             'answer' => $request->answer,
-            'created_by' => auth()->id(),
+            'created_by' => Auth::user()->id,
         ]);
 
         $complaint->load(['user']);
@@ -83,7 +83,7 @@ class ComplaintService
      */
     public function showComplaint($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_COMPLAINT);
+        AuthHelper::authorize(ComplaintPermission::VIEW_COMPLAINT);
 
         $complaint = Complaint::with([
                 'user',
@@ -100,7 +100,7 @@ class ComplaintService
      */
     public function updateComplaint($request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_COMPLAINT);
+        AuthHelper::authorize(ComplaintPermission::UPDATE_COMPLAINT);
 
         $complaint = Complaint::findOrFail($id);
 
@@ -124,7 +124,7 @@ class ComplaintService
      */
     public function deleteComplaint($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_COMPLAINT);
+        AuthHelper::authorize(ComplaintPermission::DELETE_COMPLAINT);
 
         $complaint = Complaint::findOrFail($id);
         $complaint->delete();
@@ -140,7 +140,7 @@ class ComplaintService
      */
     public function restoreComplaint($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_COMPLAINTS);
+        AuthHelper::authorize(ComplaintPermission::MANAGE_DELETED_COMPLAINTS);
 
         $complaint = Complaint::onlyTrashed()->findOrFail($id);
         $complaint->restore();
@@ -156,7 +156,7 @@ class ComplaintService
      */
     public function forceDeleteComplaint($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_COMPLAINTS);
+        AuthHelper::authorize(ComplaintPermission::MANAGE_DELETED_COMPLAINTS);
 
         // $complaint = Complaint::onlyTrashed()->findOrFail($id);
         $complaint = Complaint::findOrFail($id);
@@ -173,7 +173,7 @@ class ComplaintService
      */
     public function getByUser($userId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_COMPLAINTS);
+        AuthHelper::authorize(ComplaintPermission::VIEW_COMPLAINTS);
 
         $complaints = Complaint::with(['user'])
             ->where('user_id', $userId)
@@ -191,7 +191,7 @@ class ComplaintService
      */
     public function answerComplaint($request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_COMPLAINT);
+        AuthHelper::authorize(ComplaintPermission::UPDATE_COMPLAINT);
 
         $complaint = Complaint::findOrFail($id);
 

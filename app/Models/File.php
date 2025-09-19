@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class File extends Model
 {
@@ -113,7 +114,7 @@ class File extends Model
 
 
         $fileSections = $this->targets()->pluck('section_id')->toArray();
-        $teacherSectionsIds = TeacherSectionSubject::where('teacher_id', auth()->user()->teacher->id)
+        $teacherSectionsIds = TeacherSectionSubject::where('teacher_id', Auth::user()->teacher->id)
             ->where('is_active', true)
             ->where('subject_id', $this->subject_id)
             ->pluck('section_id')->toArray();

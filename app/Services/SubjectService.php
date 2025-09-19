@@ -2,18 +2,19 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\SubjectPermission;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\SubjectResource;
 use App\Models\Subject;
 use App\Exceptions\PermissionException;
-use App\Traits\HasPermissionChecks;
+use App\Helpers\AuthHelper;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class SubjectService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * Get list of all subjects.
@@ -21,7 +22,7 @@ class SubjectService
      */
     public function listSubjects(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_SUBJECTS);
+        AuthHelper::authorize(SubjectPermission::VIEW_SUBJECTS);
 
         $subjects = Subject::with([
             'mainSubject.grade',
@@ -38,10 +39,10 @@ class SubjectService
      */
     public function createSubject($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_SUBJECTS);
+        AuthHelper::authorize(SubjectPermission::CREATE_SUBJECTS);
 
         $credentials = $request->validated();
-        $credentials['created_by'] = auth()->id();
+        $credentials['created_by'] = Auth::user()->id;
 
         // Validate that percentages sum to 100
         $totalPercentage = $credentials['homework_percentage'] +
@@ -77,7 +78,7 @@ class SubjectService
      */
     public function showSubject(Subject $subject): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_SUBJECTS);
+        AuthHelper::authorize(SubjectPermission::VIEW_SUBJECTS);
 
         $subject->load([
             'mainSubject.grade',
@@ -94,7 +95,7 @@ class SubjectService
      */
     public function updateSubject($request, Subject $subject): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_SUBJECTS);
+        AuthHelper::authorize(SubjectPermission::UPDATE_SUBJECTS);
 
         $credentials = $request->validated();
 
@@ -131,7 +132,7 @@ class SubjectService
      */
     public function destroySubject(Subject $subject): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_SUBJECTS);
+        AuthHelper::authorize(SubjectPermission::DELETE_SUBJECTS);
 
         // Check if subject has related data
         if ($subject->teacherSectionSubjects()->exists()) {
@@ -175,7 +176,7 @@ class SubjectService
      */
     public function listTrashedSubjects(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SUBJECTS);
+        AuthHelper::authorize(SubjectPermission::MANAGE_DELETED_SUBJECTS);
 
         $subjects = Subject::with([
             'mainSubject.grade',
@@ -193,7 +194,7 @@ class SubjectService
      */
     public function restoreSubject($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SUBJECTS);
+        AuthHelper::authorize(SubjectPermission::MANAGE_DELETED_SUBJECTS);
 
         $subject = Subject::withTrashed()->findOrFail($id);
 
@@ -221,7 +222,7 @@ class SubjectService
      */
     public function forceDeleteSubject($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SUBJECTS);
+        AuthHelper::authorize(SubjectPermission::MANAGE_DELETED_SUBJECTS);
 
 //        $subject = Subject::withTrashed()->findOrFail($id);
         $subject = Subject::findOrFail($id);

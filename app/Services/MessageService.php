@@ -2,25 +2,25 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\MessagePermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class MessageService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listMessages(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_MESSAGES);
+        AuthHelper::authorize(MessagePermission::VIEW_MESSAGES);
 
         $messages = Message::with([
             'user',
@@ -39,7 +39,7 @@ class MessageService
      */
     public function listTrashedMessages(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_MESSAGES);
+        AuthHelper::authorize(MessagePermission::MANAGE_DELETED_MESSAGES);
 
         $messages = Message::onlyTrashed()
             ->with([
@@ -59,10 +59,10 @@ class MessageService
      */
     public function createMessage($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_MESSAGE);
+        AuthHelper::authorize(MessagePermission::CREATE_MESSAGE);
 
         $data = $request->validated();
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::user()->id;
 
         $message = Message::create($data);
 
@@ -80,7 +80,7 @@ class MessageService
      */
     public function showMessage($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_MESSAGE);
+        AuthHelper::authorize(MessagePermission::VIEW_MESSAGE);
 
         $message = Message::with([
             'user',
@@ -98,7 +98,7 @@ class MessageService
      */
     public function updateMessage($request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_MESSAGE);
+        AuthHelper::authorize(MessagePermission::UPDATE_MESSAGE);
 
         $message = Message::findOrFail($id);
         $data = $request->validated();
@@ -118,7 +118,7 @@ class MessageService
      */
     public function deleteMessage($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_MESSAGE);
+        AuthHelper::authorize(MessagePermission::DELETE_MESSAGE);
 
         $message = Message::findOrFail($id);
         $message->delete();
@@ -134,7 +134,7 @@ class MessageService
      */
     public function restoreMessage($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_MESSAGES);
+        AuthHelper::authorize(MessagePermission::MANAGE_DELETED_MESSAGES);
 
         $message = Message::onlyTrashed()->findOrFail($id);
         $message->restore();
@@ -152,7 +152,7 @@ class MessageService
      */
     public function forceDeleteMessage($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_MESSAGES);
+        AuthHelper::authorize(MessagePermission::MANAGE_DELETED_MESSAGES);
 
 //        $message = Message::onlyTrashed()->findOrFail($id);
         $message = Message::findOrFail($id);
@@ -169,7 +169,7 @@ class MessageService
      */
     public function getByUser($userId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_MESSAGES);
+        AuthHelper::authorize(MessagePermission::VIEW_MESSAGES);
 
         $messages = Message::where('user_id', $userId)
             ->with([

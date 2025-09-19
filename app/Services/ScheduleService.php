@@ -11,12 +11,13 @@ use App\Models\Schedule;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\ScheduleResource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ScheduleService
 {
     public function create($request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         AuthHelper::authorize(TimetablePermission::create_schedule->value);
 

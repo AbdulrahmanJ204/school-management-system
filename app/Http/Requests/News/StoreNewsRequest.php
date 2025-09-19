@@ -6,6 +6,7 @@ use App\Enums\Permissions\NewsPermission;
 use App\Enums\StringsManager\NewsStr;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 
 class StoreNewsRequest extends BaseRequest
 {
@@ -14,7 +15,7 @@ class StoreNewsRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(NewsPermission::create->value);
+        return Auth::user()->hasPermissionTo(NewsPermission::create->value);
     }
 
     /**

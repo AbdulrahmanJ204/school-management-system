@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherClassSessionRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class TeacherClassSessionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->user_type === 'teacher';
+        return auth()->check() && Auth::user()->user_type === 'teacher';
     }
 
     /**

@@ -9,12 +9,13 @@ use App\Http\Resources\RoleResource;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class RoleService
 {
     public function create($request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if(!$user->hasPermissionTo('انشاء دور')) {
             throw new PermissionException();
@@ -56,7 +57,7 @@ class RoleService
 
     public function update($request, $id) {
 
-        $admin = auth()->user();
+        $admin = Auth::user();
 
         if (!$admin->hasPermissionTo('تعديل دور')) {
             throw new PermissionException();
@@ -85,7 +86,7 @@ class RoleService
     }
     public function list() {
 
-        $admin = auth()->user();
+        $admin = Auth::user();
 
         if (!$admin->hasPermissionTo('عرض ادوار')) {
             throw new PermissionException();
@@ -102,7 +103,7 @@ class RoleService
     }
     public function getRole($id)
     {
-        $admin = auth()->user();
+        $admin = Auth::user();
 
         if (!$admin->hasPermissionTo('عرض دور')) {
             throw new PermissionException();
@@ -123,7 +124,7 @@ class RoleService
     }
     public function delete($id)
     {
-        $admin = auth()->user();
+        $admin = Auth::user();
 
         if (!$admin->hasPermissionTo('حذف دور')) {
             throw new PermissionException();

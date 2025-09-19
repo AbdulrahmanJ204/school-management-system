@@ -24,7 +24,7 @@ class StudentComplaintController extends Controller
      */
     public function store(StudentComplaintRequest $request): JsonResponse
     {
-        $userId = auth()->id();
+        $userId = Auth::user()->id;
         
         return $this->studentComplaintService->createStudentComplaint($userId, [
             'title' => $request->title,
@@ -40,7 +40,7 @@ class StudentComplaintController extends Controller
      */
     public function update(StudentComplaintRequest $request): JsonResponse
     {
-        $userId = auth()->id();
+        $userId = Auth::user()->id;
         
         return $this->studentComplaintService->updateStudentComplaint($userId, $request->id, [
             'title' => $request->title,
@@ -56,7 +56,7 @@ class StudentComplaintController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $userId = auth()->id();
+        $userId = Auth::user()->id;
         
         return $this->studentComplaintService->deleteStudentComplaint($userId, $id);
     }
@@ -68,7 +68,7 @@ class StudentComplaintController extends Controller
      */
     public function index(): JsonResponse
     {
-        $userId = auth()->id();
+        $userId = Auth::user()->id;
         
         return $this->studentComplaintService->getStudentComplaints($userId);
     }

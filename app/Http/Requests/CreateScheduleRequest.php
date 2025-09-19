@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\Permissions\TimetablePermission;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CreateScheduleRequest extends FormRequest
 {
@@ -12,7 +13,7 @@ class CreateScheduleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(TimetablePermission::create_schedule->value);
+        return Auth::user()->hasPermissionTo(TimetablePermission::create_schedule->value);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\Permissions\TimetablePermission;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateClassSessionRequest extends FormRequest
 {
@@ -12,7 +13,7 @@ class UpdateClassSessionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(TimetablePermission::update_class_session->value);
+        return Auth::user()->hasPermissionTo(TimetablePermission::update_class_session->value);
     }
 
     /**

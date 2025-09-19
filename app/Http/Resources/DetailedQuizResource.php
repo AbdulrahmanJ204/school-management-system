@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class DetailedQuizResource extends JsonResource
 {
@@ -23,7 +24,7 @@ class DetailedQuizResource extends JsonResource
             'full_score'      => $this->full_score,
             'targets'         => QuizTargetResource::collection($this->targets),
             'questions'       => QuestionResource::collection($this->questions),
-            'created_by' => auth()->user()->id,
+            'created_by' => Auth::user()->id,
         ];
     }
 }

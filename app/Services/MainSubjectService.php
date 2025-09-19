@@ -2,20 +2,24 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\SubjectPermission;
+use App\Enums\Permissions\MainSubjectPermission;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\MainSubjectResource;
 use App\Models\MainSubject;
 use App\Exceptions\PermissionException;
+use App\Helpers\AuthHelper;
 use App\Models\Subject;
-use App\Traits\HasPermissionChecks;
+
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class MainSubjectService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * Get list of all main subjects.
@@ -23,7 +27,7 @@ class MainSubjectService
      */
     public function listMainSubjects(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_MAIN_SUBJECTS);
+        AuthHelper::authorize(MainSubjectPermission::VIEW_MAIN_SUBJECTS);
 
         $mainSubjects = MainSubject::with([
             'grade',
@@ -41,10 +45,10 @@ class MainSubjectService
      */
     public function createMainSubject($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_MAIN_SUBJECT);
+        AuthHelper::authorize(MainSubjectPermission::CREATE_MAIN_SUBJECT);
 
         $credentials = $request->validated();
-        $credentials['created_by'] = auth()->id();
+        $credentials['created_by'] = Auth::user()->id;
 
         $mainSubject = MainSubject::create($credentials);
         $mainSubject->load([
@@ -65,7 +69,7 @@ class MainSubjectService
      */
     public function showMainSubject(MainSubject $mainSubject): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_MAIN_SUBJECT);
+        AuthHelper::authorize(MainSubjectPermission::VIEW_MAIN_SUBJECT);
 
         $mainSubject->load([
             'grade',
@@ -83,7 +87,7 @@ class MainSubjectService
      */
     public function updateMainSubject($request, MainSubject $mainSubject): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_MAIN_SUBJECT);
+        AuthHelper::authorize(MainSubjectPermission::UPDATE_MAIN_SUBJECT);
 
         $credentials = $request->validated();
         $mainSubject->update($credentials);
@@ -104,7 +108,7 @@ class MainSubjectService
      */
     public function destroyMainSubject(MainSubject $mainSubject): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_MAIN_SUBJECT);
+        AuthHelper::authorize(MainSubjectPermission::DELETE_MAIN_SUBJECT);
 
         // Check if there are related subjects
         if ($mainSubject->subjects()->exists()) {
@@ -130,7 +134,7 @@ class MainSubjectService
      */
     public function listTrashedMainSubjects(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_MAIN_SUBJECTS);
+        AuthHelper::authorize(MainSubjectPermission::MANAGE_DELETED_MAIN_SUBJECTS);
 
         $mainSubjects = MainSubject::with([
             'grade',
@@ -150,7 +154,7 @@ class MainSubjectService
      */
     public function restoreMainSubject($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_MAIN_SUBJECTS);
+        AuthHelper::authorize(MainSubjectPermission::MANAGE_DELETED_MAIN_SUBJECTS);
 
         $mainSubject = MainSubject::withTrashed()->findOrFail($id);
 
@@ -180,7 +184,7 @@ class MainSubjectService
      */
     public function forceDeleteMainSubject($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_MAIN_SUBJECTS);
+        AuthHelper::authorize(MainSubjectPermission::MANAGE_DELETED_MAIN_SUBJECTS);
 
         $mainSubject = MainSubject::withTrashed()->findOrFail($id);
 
@@ -209,12 +213,13 @@ class MainSubjectService
      */
     public function createMainSubjectWithSubject($request): JsonResponse
     {
-        $this->checkAllPermissions([PermissionEnum::CREATE_SUBJECTS,PermissionEnum::CREATE_MAIN_SUBJECT]);
 
+        AuthHelper::authorize(SubjectPermission::CREATE_SUBJECTS);
+        AuthHelper::authorize(MainSubjectPermission::CREATE_MAIN_SUBJECT);
         $data = $request->validated();
 
         // Start database transaction
-        \DB::beginTransaction();
+        DB::beginTransaction();
 
         try {
             // Create main subject
@@ -223,7 +228,7 @@ class MainSubjectService
                 'name' => $data['name'],
                 'code' => $data['code'],
                 'success_rate' => $data['success_rate'],
-                'created_by' => auth()->id()
+                'created_by' => Auth::user()->id
             ];
 
             $mainSubject = MainSubject::create($mainSubjectData);
@@ -241,7 +246,7 @@ class MainSubjectService
                 'exam_percentage' => $data['exam_percentage'],
                 'num_class_period' => $data['num_class_period'],
                 'is_failed' => $data['is_failed'] ?? false,
-                'created_by' => auth()->id()
+                'created_by' => Auth::user()->id
             ];
 
             Subject::create($subjectData);
@@ -252,20 +257,19 @@ class MainSubjectService
                 'subjects'
             ]);
 
-            \DB::commit();
+            DB::commit();
 
             return ResponseHelper::jsonResponse(
                 [
                     'main_subject' => new MainSubjectResource($mainSubject),
-//                    'subject' => new SubjectResource($subject)
+                    //                    'subject' => new SubjectResource($subject)
                 ],
                 __('messages.subject.create_main_subject_with_subject'),
                 ResponseAlias::HTTP_CREATED,
                 true
             );
-
         } catch (Exception $e) {
-            \DB::rollBack();
+            DB::rollBack();
             throw $e;
         }
     }

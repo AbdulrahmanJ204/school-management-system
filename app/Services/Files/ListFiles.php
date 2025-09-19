@@ -10,12 +10,13 @@ use App\Models\File;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use LaravelIdea\Helper\App\Models\_IH_File_QB;
+use Illuminate\Support\Facades\Auth;
 
 trait ListFiles
 {
     public function list($request, $trashed = false): JsonResponse
     {
-        return match (auth()->user()->user_type) {
+        return match (Auth::user()->user_type) {
             UserType::Admin->value =>
             $trashed ?
                 $this->listTrashed($request) :
@@ -59,14 +60,14 @@ trait ListFiles
     {
         $data = $request->validated();
         // Teacher Can Access Only Current Assignments Files
-        $teacher = auth()->user()->teacher;
+        $teacher = Auth::user()->teacher;
         $subjectId = null;
         $sectionId = null;
-//        if ($request->has($this->querySubject)) {
-//            $subjectId = $data[$this->querySubject];
+//        if ($request->has('subject')) {
+//            $subjectId = $data['subject'];
 //        }
-//        if ($request->has($this->querySection)) {
-//            $sectionId = $data[$this->querySection];
+//        if ($request->has('section')) {
+//            $sectionId = $data['section'];
 //        }
         $files = File::belongsToTeacher($teacher->id, $subjectId, $sectionId)
             ->orderByPublishDate()->get();
@@ -77,9 +78,9 @@ trait ListFiles
     {
         $data = $request->validated();
         $yearId = $this->getYearId($request);
-//        $subjectId = $request->filled($this->querySubject) ? $data[$this->querySubject] : null;
+//        $subjectId = $request->filled('subject') ? $data['subject'] : null;
 
-        $enrollments = auth()->user()->student->yearEnrollments($yearId);
+        $enrollments = Auth::user()->student->yearEnrollments($yearId);
         if ($enrollments->isEmpty()) {
             return ResponseHelper::jsonResponse([], __(FileStr::messageNoEnrollments->value), 400);
 
@@ -126,20 +127,20 @@ trait ListFiles
     {
 
         // Subject
-        if ($request->has($this->querySubject)) {
-            $query->forSubject($data[$this->querySubject]);
+        if ($request->has('subject')) {
+            $query->forSubject($data['subject']);
         }
         // Type
-        if ($request->has($this->queryType)) {
-            $query->forType($data[$this->queryType]);
+        if ($request->has('type')) {
+            $query->forType($data['type']);
         }
 
         // Target Filtering
-        if ($request->has($this->querySection)) {
-            $query->forSection($data[$this->querySection]);
-        } else if ($request->has($this->queryGrade)) {
-            $query->forGrade($data[$this->queryGrade]);
-        } else if (request()->has($this->queryGeneral)) {
+        if ($request->has('section')) {
+            $query->forSection($data['section']);
+        } else if ($request->has('grade')) {
+            $query->forGrade($data['grade']);
+        } else if (request()->has('general')) {
             $query->forPublic();
         }
     }
@@ -161,12 +162,12 @@ trait ListFiles
     public function studentFilter($request, $query, $data): void
     {
         // Subject
-        if ($request->has($this->querySubject)) {
-            $query->forSubject($data[$this->querySubject]);
+        if ($request->has('subject')) {
+            $query->forSubject($data['subject']);
         }
         // Type
-        if ($request->has($this->queryType)) {
-            $query->forType($data[$this->queryType]);
+        if ($request->has('type')) {
+            $query->forType($data['type']);
         }
     }
 

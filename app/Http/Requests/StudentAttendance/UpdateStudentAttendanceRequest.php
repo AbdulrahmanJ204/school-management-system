@@ -4,6 +4,7 @@ namespace App\Http\Requests\StudentAttendance;
 
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateStudentAttendanceRequest extends BaseRequest
 {
@@ -12,7 +13,7 @@ class UpdateStudentAttendanceRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo('تعديل حضور الطلاب');
+        return Auth::user()->hasPermissionTo('تعديل حضور الطلاب');
     }
 
     /**

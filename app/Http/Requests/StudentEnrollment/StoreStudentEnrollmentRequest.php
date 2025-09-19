@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\StudentEnrollment;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\StudentEnrollmentPermission;
+use App\Enums\Permissions\StudentEnrollmentPermission;
 use App\Http\Requests\BaseRequest;
 use App\Models\StudentEnrollment;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 
 class StoreStudentEnrollmentRequest extends BaseRequest
 {
@@ -14,7 +16,7 @@ class StoreStudentEnrollmentRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(PermissionEnum::CREATE_STUDENT_ENROLLMENT->value);
+        return Auth::user()->hasPermissionTo(StudentEnrollmentPermission::CREATE_STUDENT_ENROLLMENT->value);
     }
 
     /**

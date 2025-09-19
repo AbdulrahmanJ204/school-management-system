@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\StudentMarkPermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\StudentReportResource;
@@ -13,6 +13,7 @@ use App\Models\StudentMark;
 use App\Models\MainSubject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class StudentReportService
 {
@@ -26,7 +27,7 @@ class StudentReportService
     public function generateStudentReport(GetStudentReportRequest $request): JsonResponse
     {
         // Check admin permissions
-        if (!auth()->user()->hasPermissionTo(PermissionEnum::VIEW_STUDENT_REPORT->value)) {
+        if (!Auth::user()->hasPermissionTo(StudentMarkPermission::VIEW_STUDENT_REPORT->value)) {
             throw new PermissionException();
         }
 

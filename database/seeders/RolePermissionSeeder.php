@@ -2,10 +2,33 @@
 
 namespace Database\Seeders;
 
-use App\Enums\PermissionEnum;
+use App\Enums\AllPermissions;
+use App\Enums\Permissions\AssignmentPermission;
+use App\Enums\Permissions\BehaviorNotePermission;
+use App\Enums\Permissions\ClassSessionPermission;
+use App\Enums\Permissions\ComplaintPermission;
+use App\Enums\Permissions\ExamPermission;
 use App\Enums\Permissions\FilesPermission;
+use App\Enums\Permissions\GradePermission;
+use App\Enums\Permissions\GradeYearSettingPermission;
+use App\Enums\Permissions\MainSubjectPermission;
+use App\Enums\Permissions\MessagePermission;
 use App\Enums\Permissions\NewsPermission;
+use App\Enums\Permissions\QuizPermission;
+use App\Enums\Permissions\RolePermission;
+use App\Enums\Permissions\SchoolDayPermission;
+use App\Enums\Permissions\SectionPermission;
+use App\Enums\Permissions\SemesterPermission;
+use App\Enums\Permissions\StudentAttendancePermission;
+use App\Enums\Permissions\StudentEnrollmentPermission;
+use App\Enums\Permissions\StudentMarkPermission;
+use App\Enums\Permissions\StudyNotePermission;
+use App\Enums\Permissions\SubjectPermission;
+use App\Enums\Permissions\TeacherAttendancePermission;
+use App\Enums\Permissions\TeacherSectionSubjectPermission;
 use App\Enums\Permissions\TimetablePermission;
+use App\Enums\Permissions\UserPermission;
+use App\Enums\Permissions\YearPermission;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -23,14 +46,8 @@ class RolePermissionSeeder extends Seeder
         $TeacherRole = Role::Create(['name' => 'Teacher', 'guard_name' => $guard]);
         $StudentRole = Role::Create(['name' => 'Student', 'guard_name' => $guard]);
 
-        // Use the enum to get all permissions
-        $permissions = PermissionEnum::getAllPermissions();
-        $permissions = [
-            ...$permissions,
-            ...NewsPermission::values(),
-            ...FilesPermission::values(),
-            ...TimetablePermission::values(),
-        ];
+        // Use the AllPermissions class to get all permissions
+        $permissions = AllPermissions::getAllPermissions();
 
         foreach ($permissions as $permission) {
             Permission::create(["name" => $permission, 'guard_name' => $guard,]);
@@ -39,68 +56,68 @@ class RolePermissionSeeder extends Seeder
         // Assign student-specific permissions
         $studentPermissions = [
             // User Management - Students can view their own profile and change password
-            PermissionEnum::VIEW_USER->value,
-            PermissionEnum::CHANGE_PASSWORD->value,
+            UserPermission::VIEW_USER->value,
+            UserPermission::CHANGE_PASSWORD->value,
 
             // Quiz Management - Students can take quizzes and view results
-            PermissionEnum::VIEW_AUTOMATED_QUIZZES->value,
-            PermissionEnum::VIEW_AUTOMATED_QUIZ->value,
-            PermissionEnum::CREATE_QUIZ_RESULT->value,
+            QuizPermission::VIEW_AUTOMATED_QUIZZES->value,
+            QuizPermission::VIEW_AUTOMATED_QUIZ->value,
+            QuizPermission::CREATE_QUIZ_RESULT->value,
 
             // Student Marks - Students can view their own marks
-            PermissionEnum::VIEW_STUDENT_MARKS->value,
-            PermissionEnum::VIEW_STUDENT_MARK->value,
+            StudentMarkPermission::VIEW_STUDENT_MARKS->value,
+            StudentMarkPermission::VIEW_STUDENT_MARK->value,
 
             // Student Enrollments - Students can view their own enrollment
-            PermissionEnum::VIEW_STUDENT_ENROLLMENT->value,
+            StudentEnrollmentPermission::VIEW_STUDENT_ENROLLMENT->value,
 
             // Subjects - Students can view subjects they're enrolled in
-            PermissionEnum::VIEW_SUBJECTS->value,
-            PermissionEnum::VIEW_MAIN_SUBJECTS->value,
-            PermissionEnum::VIEW_MAIN_SUBJECT->value,
+            SubjectPermission::VIEW_SUBJECTS->value,
+            MainSubjectPermission::VIEW_MAIN_SUBJECTS->value,
+            MainSubjectPermission::VIEW_MAIN_SUBJECT->value,
 
             // Teacher Section Subject - Students can view their teachers
-            PermissionEnum::VIEW_TEACHER_SECTION_SUBJECTS->value,
-            PermissionEnum::VIEW_TEACHER_SECTION_SUBJECT->value,
+            TeacherSectionSubjectPermission::VIEW_TEACHER_SECTION_SUBJECTS->value,
+            TeacherSectionSubjectPermission::VIEW_TEACHER_SECTION_SUBJECT->value,
 
             // Study Notes - Students can view study notes
-            PermissionEnum::VIEW_STUDY_NOTES->value,
-            PermissionEnum::VIEW_STUDY_NOTE->value,
+            StudyNotePermission::VIEW_STUDY_NOTES->value,
+            StudyNotePermission::VIEW_STUDY_NOTE->value,
 
             // Behavior Notes - Students can view their own behavior notes
-            PermissionEnum::VIEW_BEHAVIOR_NOTES->value,
-            PermissionEnum::VIEW_BEHAVIOR_NOTE->value,
+            BehaviorNotePermission::VIEW_BEHAVIOR_NOTES->value,
+            BehaviorNotePermission::VIEW_BEHAVIOR_NOTE->value,
 
             // Exams - Students can view exams
-            PermissionEnum::VIEW_EXAMS->value,
-            PermissionEnum::VIEW_EXAM->value,
+            ExamPermission::VIEW_EXAMS->value,
+            ExamPermission::VIEW_EXAM->value,
 
             // Complaints - Students can create and view their own complaints
-            PermissionEnum::VIEW_COMPLAINTS->value,
-            PermissionEnum::CREATE_COMPLAINT->value,
-            PermissionEnum::VIEW_COMPLAINT->value,
-            PermissionEnum::UPDATE_COMPLAINT->value,
+            ComplaintPermission::VIEW_COMPLAINTS->value,
+            ComplaintPermission::CREATE_COMPLAINT->value,
+            ComplaintPermission::VIEW_COMPLAINT->value,
+            ComplaintPermission::UPDATE_COMPLAINT->value,
 
             // Messages - Students can send and receive messages
-            PermissionEnum::VIEW_MESSAGES->value,
-            PermissionEnum::CREATE_MESSAGE->value,
-            PermissionEnum::VIEW_MESSAGE->value,
-            PermissionEnum::UPDATE_MESSAGE->value,
-            PermissionEnum::DELETE_MESSAGE->value,
+            MessagePermission::VIEW_MESSAGES->value,
+            MessagePermission::CREATE_MESSAGE->value,
+            MessagePermission::VIEW_MESSAGE->value,
+            MessagePermission::UPDATE_MESSAGE->value,
+            MessagePermission::DELETE_MESSAGE->value,
 
             // Class Sessions - Students can view class sessions
-            PermissionEnum::VIEW_CLASS_SESSIONS->value,
-            PermissionEnum::VIEW_CLASS_SESSION->value,
+            ClassSessionPermission::VIEW_CLASS_SESSIONS->value,
+            ClassSessionPermission::VIEW_CLASS_SESSION->value,
 
             // Student Attendance - Students can view their own attendance
-            PermissionEnum::VIEW_STUDENT_ATTENDANCE->value,
+            StudentAttendancePermission::VIEW_STUDENT_ATTENDANCE->value,
 
             // Assignments - Students can view assignments
-            PermissionEnum::VIEW_ASSIGNMENTS->value,
-            PermissionEnum::VIEW_ASSIGNMENT->value,
+            AssignmentPermission::VIEW_ASSIGNMENTS->value,
+            AssignmentPermission::VIEW_ASSIGNMENT->value,
 
             // News - Students can view news/announcements
-            NewsPermission::create->value, // Students can view news (assuming this is the view permission)
+            NewsPermission::ListNews->value,
 
             // Files - Students can download educational files
             FilesPermission::download->value,

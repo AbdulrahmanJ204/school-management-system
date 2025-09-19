@@ -2,20 +2,21 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\BehaviorNotePermission;
+use App\Enums\Permissions\StudyNotePermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\BehaviorNoteResource;
 use App\Http\Resources\StudyNoteResource;
 use App\Models\BehaviorNote;
 use App\Models\StudyNote;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CombinedNotesService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
@@ -23,8 +24,8 @@ class CombinedNotesService
     public function getCombinedNotes(Request $request): JsonResponse
     {
         // Check permissions for both study notes and behavior notes
-        $this->checkPermission(PermissionEnum::VIEW_STUDY_NOTES);
-        $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTES);
+        AuthHelper::authorize(StudyNotePermission::VIEW_STUDY_NOTES);
+        AuthHelper::authorize(StudyNotePermission::VIEW_BEHAVIOR_NOTES);
 
         $filters = $request->only(['section_id', 'grade_id', 'subject_id', 'student_id']);
         $perPage = $request->get('per_page', 50); // Changed to 50 like StudentService

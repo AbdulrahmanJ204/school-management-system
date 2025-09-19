@@ -15,27 +15,23 @@ use App\Traits\TargetsHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SchoolShiftService
 {
     use TargetsHandler;
 
-    // API keys for TargetsHandler trait
-    private string $apiGradeIds;
-    private string $apiSectionIds;
+   
 
-    public function __construct()
-    {
-        $this->apiGradeIds = 'grade_ids';
-        $this->apiSectionIds = 'section_ids';
-    }
+   
 
     /**
      * @throws PermissionException
      */
     public function create($request): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         AuthHelper::authorize(TimetablePermission::create->value);
 
@@ -169,7 +165,7 @@ class SchoolShiftService
             DB::rollBack();
             
             // Log the actual error for debugging
-            \Log::error('School shift deletion failed: ' . $e->getMessage(), [
+            Log::error('School shift deletion failed: ' . $e->getMessage(), [
                 'school_shift_id' => $id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()

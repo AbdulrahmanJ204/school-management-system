@@ -19,6 +19,7 @@ use App\Models\ClassSession;
 use App\Enums\WeekDay;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherService
 {
@@ -27,7 +28,7 @@ class TeacherService
      */
     public function listTeachers(): JsonResponse
     {
-        if (!auth()->user()->hasPermissionTo('عرض الاساتذة')) {
+        if (!Auth::user()->hasPermissionTo('عرض الاساتذة')) {
             throw new PermissionException();
         }
 
@@ -52,12 +53,12 @@ class TeacherService
      */
     public function getTeacherGradesSectionsSubjects(): JsonResponse
     {
-        if (!auth()->user()->hasPermissionTo('عرض مواد الأساتذة')) {
+        if (!Auth::user()->hasPermissionTo('عرض مواد الأساتذة')) {
             throw new PermissionException();
         }
 
         // Check if the authenticated user is a teacher
-        if (!auth()->user()->teacher) {
+        if (!Auth::user()->teacher) {
             return ResponseHelper::jsonResponse(
                 null,
                 'المستخدم الحالي ليس أستاذاً',
@@ -66,7 +67,7 @@ class TeacherService
             );
         }
 
-        $teacherId = auth()->user()->teacher->id;
+        $teacherId = Auth::user()->teacher->id;
 
         $teacherData = TeacherSectionSubject::where('teacher_id', $teacherId)
             ->where('is_active', true)
@@ -148,7 +149,7 @@ class TeacherService
     public function getStudentsInSectionWithMarks(int $sectionId, int $subjectId): JsonResponse
     {
         // Check if the authenticated user is a teacher
-        if (!auth()->user()->teacher) {
+        if (!Auth::user()->teacher) {
             return ResponseHelper::jsonResponse(
                 null,
                 'المستخدم الحالي ليس أستاذاً',
@@ -157,7 +158,7 @@ class TeacherService
             );
         }
 
-        $teacherId = auth()->user()->teacher->id;
+        $teacherId = Auth::user()->teacher->id;
 
         // Verify that the teacher is assigned to this section and subject
         $teacherAssignment = TeacherSectionSubject::where('teacher_id', $teacherId)
@@ -237,7 +238,7 @@ class TeacherService
     public function getTeacherProfile(): JsonResponse
     {
         // Check if the authenticated user is a teacher
-        if (!auth()->user()->teacher) {
+        if (!Auth::user()->teacher) {
             return ResponseHelper::jsonResponse(
                 null,
                 'المستخدم الحالي ليس أستاذاً',
@@ -246,8 +247,8 @@ class TeacherService
             );
         }
 
-        $teacher = auth()->user()->teacher;
-        $user = auth()->user();
+        $teacher = Auth::user()->teacher;
+        $user = Auth::user();
 
         // Calculate age
         $birthDate = Carbon::parse($user->birth_date);
@@ -392,7 +393,7 @@ class TeacherService
      */
     public function addOrUpdateStudentMarks(int $studentId, array $markData): JsonResponse
     {
-        $teacherId = auth()->user()->teacher->id;
+        $teacherId = Auth::user()->teacher->id;
         $subjectId = $markData['subject_id'];
 
         // Get the student
@@ -495,7 +496,7 @@ class TeacherService
         // Prepare data for creation/update
         $markData['enrollment_id'] = $enrollment->id;
         $markData['total'] = round($total);
-        $markData['created_by'] = auth()->id();
+        $markData['created_by'] = Auth::user()->id();
 
         if ($existingMark) {
             // Update existing marks

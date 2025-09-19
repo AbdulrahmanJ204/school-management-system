@@ -6,12 +6,13 @@ use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\PermissionResource;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Auth;
 
 class PermissionService
 {
     public function listPermissions()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if(!$user->hasPermissionTo('عرض الصلاحيات')) {
             throw new PermissionException();

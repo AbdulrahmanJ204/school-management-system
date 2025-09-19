@@ -12,6 +12,7 @@ use App\Http\Resources\FileResource;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
 use Throwable;
+use Illuminate\Support\Facades\Auth;
 
 trait SoftDeleteFile
 {
@@ -25,7 +26,7 @@ trait SoftDeleteFile
 
         AuthHelper::authorize(FilesPermission::softDelete->value);
 
-        $userType = auth()->user()->user_type;
+        $userType = Auth::user()->user_type;
 
         return match ($userType) {
             UserType::Admin->value => $this->adminSoftDelete($file),

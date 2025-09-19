@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Enums\UserType;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
+use Illuminate\Support\Facades\Auth;
 
 class UserTypeMiddleware
 {
@@ -22,7 +23,7 @@ class UserTypeMiddleware
      */
     public function handle(Request $request, Closure $next, string $allowedTypes): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $userType = $user->user_type;
 
         $allowedTypesArray = array_map('trim', explode('|', $allowedTypes));

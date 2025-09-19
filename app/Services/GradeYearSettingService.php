@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\GradeYearSettingPermission;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\GradeYearSettingRequest;
 use App\Http\Resources\GradeYearSettingResource;
@@ -10,14 +10,14 @@ use App\Models\GradeYearSetting;
 use App\Models\Grade;
 use App\Models\Year;
 use App\Exceptions\PermissionException;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class GradeYearSettingService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * Get list of all grade year settings.
@@ -25,7 +25,7 @@ class GradeYearSettingService
      */
     public function listGradeYearSettings(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_GRADE_YEAR_SETTINGS);
+        AuthHelper::authorize(GradeYearSettingPermission::VIEW_GRADE_YEAR_SETTINGS);
 
         $settings = GradeYearSetting::with([
             'year',
@@ -43,10 +43,10 @@ class GradeYearSettingService
      */
     public function createGradeYearSetting(GradeYearSettingRequest $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_GRADE_YEAR_SETTING);
+        AuthHelper::authorize(GradeYearSettingPermission::CREATE_GRADE_YEAR_SETTING);
 
         $credentials = $request->validated();
-        $credentials['created_by'] = auth()->id();
+        $credentials['created_by'] = Auth::user()->id;
 
         // Check if setting already exists for this year and grade combination
         $existingSetting = GradeYearSetting::where('year_id', $credentials['year_id'])
@@ -82,7 +82,7 @@ class GradeYearSettingService
      */
     public function showGradeYearSetting(GradeYearSetting $gradeYearSetting): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_GRADE_YEAR_SETTING);
+        AuthHelper::authorize(GradeYearSettingPermission::VIEW_GRADE_YEAR_SETTING);
 
         $gradeYearSetting->load([
             'year',
@@ -100,7 +100,7 @@ class GradeYearSettingService
      */
     public function updateGradeYearSetting(GradeYearSettingRequest $request, GradeYearSetting $gradeYearSetting): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_GRADE_YEAR_SETTING);
+        AuthHelper::authorize(GradeYearSettingPermission::UPDATE_GRADE_YEAR_SETTING);
 
         $credentials = $request->validated();
 
@@ -137,7 +137,7 @@ class GradeYearSettingService
      */
     public function destroyGradeYearSetting(GradeYearSetting $gradeYearSetting): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_GRADE_YEAR_SETTING);
+        AuthHelper::authorize(GradeYearSettingPermission::DELETE_GRADE_YEAR_SETTING);
 
         $gradeYearSetting->delete();
 
@@ -153,7 +153,7 @@ class GradeYearSettingService
      */
     public function listTrashedGradeYearSettings(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADE_YEAR_SETTINGS);
+        AuthHelper::authorize(GradeYearSettingPermission::MANAGE_DELETED_GRADE_YEAR_SETTINGS);
 
         $settings = GradeYearSetting::with([
             'year',
@@ -171,7 +171,7 @@ class GradeYearSettingService
      */
     public function restoreGradeYearSetting($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADE_YEAR_SETTINGS);
+        AuthHelper::authorize(GradeYearSettingPermission::MANAGE_DELETED_GRADE_YEAR_SETTINGS);
 
         $setting = GradeYearSetting::withTrashed()->findOrFail($id);
 
@@ -202,7 +202,7 @@ class GradeYearSettingService
      */
     public function forceDeleteGradeYearSetting($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADE_YEAR_SETTINGS);
+        AuthHelper::authorize(GradeYearSettingPermission::MANAGE_DELETED_GRADE_YEAR_SETTINGS);
 
         $setting = GradeYearSetting::withTrashed()->findOrFail($id);
 
@@ -220,7 +220,7 @@ class GradeYearSettingService
      */
     public function getSettingsByGrade($gradeId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_GRADE_YEAR_SETTINGS);
+        AuthHelper::authorize(GradeYearSettingPermission::VIEW_GRADE_YEAR_SETTINGS);
 
         $settings = GradeYearSetting::where('grade_id', $gradeId)->with([
             'year',
@@ -238,7 +238,7 @@ class GradeYearSettingService
      */
     public function getSettingsByYear($yearId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_GRADE_YEAR_SETTINGS);
+        AuthHelper::authorize(GradeYearSettingPermission::VIEW_GRADE_YEAR_SETTINGS);
 
         $settings = GradeYearSetting::where('year_id', $yearId)->with([
             'year',

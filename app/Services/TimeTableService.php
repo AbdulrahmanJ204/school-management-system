@@ -12,6 +12,7 @@ use App\Models\TimeTable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use Illuminate\Support\Facades\Auth;
 
 class TimeTableService
 {
@@ -20,7 +21,7 @@ class TimeTableService
      */
     public function create($request): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         AuthHelper::authorize(TimetablePermission::create_timetable->value);
 

@@ -8,6 +8,7 @@ use App\Models\Assignment;
 use App\Models\StudentEnrollment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StudentAssignmentService
 {
@@ -16,7 +17,7 @@ class StudentAssignmentService
      */
     public function listAssignments(Request $request): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $student = $user->student;
 
         if (!$student) {

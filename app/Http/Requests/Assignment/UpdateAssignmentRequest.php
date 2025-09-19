@@ -4,6 +4,7 @@ namespace App\Http\Requests\Assignment;
 
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateAssignmentRequest extends BaseRequest
 {
@@ -12,7 +13,7 @@ class UpdateAssignmentRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->user_type === 'teacher';
+        return Auth::user()->user_type === 'teacher';
     }
 
     /**
@@ -59,7 +60,7 @@ class UpdateAssignmentRequest extends BaseRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            $user = auth()->user();
+            $user = Auth::user();
             $teacher = $user->teacher;
             
             if (!$teacher) {

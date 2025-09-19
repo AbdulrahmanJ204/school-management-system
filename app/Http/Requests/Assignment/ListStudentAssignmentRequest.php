@@ -4,6 +4,7 @@ namespace App\Http\Requests\Assignment;
 
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 
 class ListStudentAssignmentRequest extends BaseRequest
 {
@@ -12,7 +13,7 @@ class ListStudentAssignmentRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->user_type === 'student';
+        return Auth::user()->user_type === 'student';
     }
 
     /**

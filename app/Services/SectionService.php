@@ -2,26 +2,27 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\SectionPermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\SectionRequest;
 use App\Http\Resources\SectionResource;
 use App\Models\Section;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class SectionService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listSection(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_SECTIONS);
+        AuthHelper::authorize(SectionPermission::VIEW_SECTIONS);
 
         $sections = Section::with([
             'grade'
@@ -39,7 +40,7 @@ class SectionService
      */
     public function listTrashedSections(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SECTIONS);
+        AuthHelper::authorize(SectionPermission::MANAGE_DELETED_SECTIONS);
 
         $sections = Section::with([
             'grade'
@@ -58,9 +59,9 @@ class SectionService
      */
     public function createSection(SectionRequest $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_SECTION);
+        AuthHelper::authorize(SectionPermission::CREATE_SECTION);
 
-        $admin = auth()->user();
+        $admin = Auth::user();
         $credentials = $request->validated();
         $credentials['created_by'] = $admin->id;
         $section = Section::create($credentials);
@@ -82,7 +83,7 @@ class SectionService
      */
     public function showSection(Section $section): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_SECTION);
+        AuthHelper::authorize(SectionPermission::VIEW_SECTION);
 
         $section->load([
             'grade',
@@ -100,7 +101,7 @@ class SectionService
      */
     public function updateSection(SectionRequest $request, Section $section): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_SECTION);
+        AuthHelper::authorize(SectionPermission::UPDATE_SECTION);
 
         $section->update($request->validated());
 
@@ -119,7 +120,7 @@ class SectionService
      */
     public function destroySection(Section $section): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_SECTION);
+        AuthHelper::authorize(SectionPermission::DELETE_SECTION);
 
         $section->delete();
 
@@ -134,7 +135,7 @@ class SectionService
      */
     public function restoreSection($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SECTIONS);
+        AuthHelper::authorize(SectionPermission::MANAGE_DELETED_SECTIONS);
 
         $section = Section::withTrashed()->findOrFail($id);
 
@@ -160,7 +161,7 @@ class SectionService
      */
     public function forceDeleteSection($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SECTIONS);
+        AuthHelper::authorize(SectionPermission::MANAGE_DELETED_SECTIONS);
 
 //        $section = Section::withTrashed()->findOrFail($id);
         $section = Section::findOrFail($id);

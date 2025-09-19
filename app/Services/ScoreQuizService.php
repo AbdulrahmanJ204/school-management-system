@@ -9,18 +9,19 @@ use App\Helpers\ResponseHelper;
 use App\Http\Resources\ScoreQuizResource;
 use App\Models\Quiz;
 use App\Models\ScoreQuiz;
+use Illuminate\Support\Facades\Auth;
 
 class ScoreQuizService
 {
     public function create($request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if ($user->user_type !== 'student') {
             throw new PermissionException();
         }
 
-        $student_id = auth()->user()->student->id;
+        $student_id = Auth::user()->student->id;
 
         if (!$student_id) {
             throw new StudentNotFoundException();

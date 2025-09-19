@@ -2,28 +2,29 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\GradePermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\GradeRequest;
 use App\Http\Resources\GradeResource;
 use App\Models\Grade;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class GradeService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listGrade(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_GRADES);
+        AuthHelper::authorize(GradePermission::VIEW_GRADES);
 
         $grades = Grade::with([
             'year',
@@ -43,7 +44,7 @@ class GradeService
      */
     public function listTrashedGrades(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADES);
+        AuthHelper::authorize(GradePermission::MANAGE_DELETED_GRADES);
 
         $grades = Grade::with([
             'year',
@@ -64,9 +65,9 @@ class GradeService
      */
     public function createGrade(GradeRequest $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_GRADE);
+        AuthHelper::authorize(GradePermission::CREATE_GRADE);
 
-        $admin = auth()->user();
+        $admin = Auth::user();
         $credentials = $request->validated();
         $credentials['created_by'] = $admin->id;
         $grade = Grade::create($credentials);
@@ -84,7 +85,7 @@ class GradeService
      */
     public function showGrade(Grade $grade): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_GRADE);
+        AuthHelper::authorize(GradePermission::VIEW_GRADE);
 
         $grade->load([
             'year',
@@ -103,7 +104,7 @@ class GradeService
      */
     public function updateGrade($request, Grade $grade): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_GRADE);
+        AuthHelper::authorize(GradePermission::UPDATE_GRADE);
 
         $grade->update([
             'title' => $request->title,
@@ -127,7 +128,7 @@ class GradeService
      */
     public function destroyGrade(Grade $grade): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_GRADE);
+        AuthHelper::authorize(GradePermission::DELETE_GRADE);
 
         $grade->delete();
 
@@ -142,7 +143,7 @@ class GradeService
      */
     public function restoreGrade($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADES);
+        AuthHelper::authorize(GradePermission::MANAGE_DELETED_GRADES);
 
         $grade = Grade::withTrashed()->findOrFail($id);
 
@@ -168,7 +169,7 @@ class GradeService
      */
     public function forceDeleteGrade($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_GRADES);
+        AuthHelper::authorize(GradePermission::MANAGE_DELETED_GRADES);
 
         $grade = Grade::withTrashed()->findOrFail($id);
 

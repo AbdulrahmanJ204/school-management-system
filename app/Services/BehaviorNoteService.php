@@ -2,27 +2,28 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\BehaviorNotePermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\BehaviorNoteResource;
 use App\Models\BehaviorNote;
 use App\Models\SchoolDay;
 use App\Models\StudentEnrollment;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class BehaviorNoteService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listBehaviorNotes($request = null): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTES);
+        AuthHelper::authorize(BehaviorNotePermission::VIEW_BEHAVIOR_NOTES);
 
         $query = BehaviorNote::with([
            'student',
@@ -93,7 +94,7 @@ class BehaviorNoteService
      */
     public function listTrashedBehaviorNotes(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_BEHAVIOR_NOTES);
+        AuthHelper::authorize(BehaviorNotePermission::MANAGE_DELETED_BEHAVIOR_NOTES);
 
         $behaviorNotes = BehaviorNote::onlyTrashed()
             ->with([
@@ -117,10 +118,10 @@ class BehaviorNoteService
      */
     public function createBehaviorNote($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_BEHAVIOR_NOTE);
+        AuthHelper::authorize(BehaviorNotePermission::CREATE_BEHAVIOR_NOTE);
 
         $data = $request->validated();
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::user()->id;
 
         $behaviorNote = BehaviorNote::create($data);
 
@@ -139,7 +140,7 @@ class BehaviorNoteService
      */
     public function showBehaviorNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTE);
+        AuthHelper::authorize(BehaviorNotePermission::VIEW_BEHAVIOR_NOTE);
 
         $behaviorNote = BehaviorNote::with([
             'student',
@@ -157,7 +158,7 @@ class BehaviorNoteService
      */
     public function updateBehaviorNote($request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_BEHAVIOR_NOTE);
+        AuthHelper::authorize(BehaviorNotePermission::UPDATE_BEHAVIOR_NOTE);
 
         $behaviorNote = BehaviorNote::findOrFail($id);
         $data = $request->validated();
@@ -178,7 +179,7 @@ class BehaviorNoteService
      */
     public function deleteBehaviorNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_BEHAVIOR_NOTE);
+        AuthHelper::authorize(BehaviorNotePermission::DELETE_BEHAVIOR_NOTE);
 
         $behaviorNote = BehaviorNote::findOrFail($id);
         $behaviorNote->delete();
@@ -194,7 +195,7 @@ class BehaviorNoteService
      */
     public function restoreBehaviorNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_BEHAVIOR_NOTES);
+        AuthHelper::authorize(BehaviorNotePermission::MANAGE_DELETED_BEHAVIOR_NOTES);
 
         $behaviorNote = BehaviorNote::onlyTrashed()->findOrFail($id);
         $behaviorNote->restore();
@@ -213,7 +214,7 @@ class BehaviorNoteService
      */
     public function forceDeleteBehaviorNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_BEHAVIOR_NOTES);
+        AuthHelper::authorize(BehaviorNotePermission::MANAGE_DELETED_BEHAVIOR_NOTES);
 
         $behaviorNote = BehaviorNote::onlyTrashed()->findOrFail($id);
         $behaviorNote->forceDelete();
@@ -230,9 +231,9 @@ class BehaviorNoteService
      */
     public function getStudentBehaviorNotes($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTES);
+        AuthHelper::authorize(BehaviorNotePermission::VIEW_BEHAVIOR_NOTES);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $student = $user->student;
 
         if (!$student) {
@@ -276,9 +277,9 @@ class BehaviorNoteService
      */
     public function getTeacherBehaviorNotes($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_BEHAVIOR_NOTES);
+        AuthHelper::authorize(BehaviorNotePermission::VIEW_BEHAVIOR_NOTES);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = $user->teacher;
 
         if (!$teacher) {
@@ -349,9 +350,9 @@ class BehaviorNoteService
      */
     public function createTeacherBehaviorNote($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_BEHAVIOR_NOTE);
+        AuthHelper::authorize(BehaviorNotePermission::CREATE_BEHAVIOR_NOTE);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = $user->teacher;
 
         if (!$teacher) {
@@ -409,9 +410,9 @@ class BehaviorNoteService
      */
     public function updateTeacherBehaviorNote($request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_BEHAVIOR_NOTE);
+        AuthHelper::authorize(BehaviorNotePermission::UPDATE_BEHAVIOR_NOTE);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = $user->teacher;
 
         if (!$teacher) {
@@ -455,9 +456,9 @@ class BehaviorNoteService
      */
     public function deleteTeacherBehaviorNote($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_BEHAVIOR_NOTE);
+        AuthHelper::authorize(BehaviorNotePermission::DELETE_BEHAVIOR_NOTE);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $teacher = $user->teacher;
 
         if (!$teacher) {

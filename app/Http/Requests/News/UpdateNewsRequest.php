@@ -5,6 +5,7 @@ namespace App\Http\Requests\News;
 use App\Enums\Permissions\NewsPermission;
 use App\Enums\StringsManager\NewsStr;
 use App\Http\Requests\BaseRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateNewsRequest extends BaseRequest
 {
@@ -13,7 +14,7 @@ class UpdateNewsRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->can(NewsPermission::update->value);
+        return Auth::user()->can(NewsPermission::update->value);
     }
 
     /**

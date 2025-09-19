@@ -16,7 +16,7 @@ trait FileHelpers
     private function getYearId($request): mixed
     {
         $data = $request->validated();
-        return $request->filled($this->queryYear) ? $data[$this->queryYear] :
+        return $request->filled('year') ? $data['year'] :
             Year::select('id')->active()->get()->first()->id;
     }
 
@@ -25,7 +25,7 @@ trait FileHelpers
         if ($deletePath) {
             $this->deleteFileFromStorage($deletePath);
         }
-        $file = $request->file($this->apiFile);
+        $file = $request->file('file');
         $extension = $file->getClientOriginalExtension();
         $hashedWithoutExtension = pathinfo($file->hashName(), PATHINFO_FILENAME);
 

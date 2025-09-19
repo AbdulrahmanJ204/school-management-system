@@ -10,6 +10,7 @@ use App\Http\Requests\ListDeletedNewsRequest;
 use App\Http\Resources\NewsResource;
 use App\Models\News;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 trait ListNews
 {
@@ -17,7 +18,7 @@ trait ListNews
     public function list($request, $trashed = false): JsonResponse
     {
         $yearId = $this->getYearId($request);
-        $user_type = auth()->user()->user_type;
+        $user_type = Auth::user()->user_type;
         return match ($user_type) {
             UserType::Admin->value => $trashed ?
                 $this->listDeleted($request) :
@@ -30,7 +31,7 @@ trait ListNews
 
     private function listStudentNews($yearId): JsonResponse
     {
-        $enrollments = auth()->user()->student->yearEnrollments($yearId);
+        $enrollments = Auth::user()->student->yearEnrollments($yearId);
         if ($enrollments->isEmpty()) {
             return ResponseHelper::jsonResponse([], __(NewsStr::messageNoEnrollments->value), 400);
         }
@@ -76,11 +77,11 @@ trait ListNews
      */
     public function filterAdmin($request, $query, mixed $data): void
     {
-        if ($request->has($this->querySection)) {
-            $query->forSection($data[$this->querySection]);
-        } else if ($request->has($this->queryGrade)) {
-            $query->forGrade($data[$this->queryGrade]);
-        } else if ($request->has($this->queryGeneral)) {
+        if ($request->has('section')) {
+            $query->forSection($data['section']);
+        } else if ($request->has('grade')) {
+            $query->forGrade($data['grade']);
+        } else if ($request->has('general')) {
             $query->forPublic();
         }
     }

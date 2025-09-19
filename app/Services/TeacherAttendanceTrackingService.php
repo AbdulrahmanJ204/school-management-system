@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherAttendanceTrackingService
 {
@@ -136,7 +137,7 @@ class TeacherAttendanceTrackingService
                 'student_id' => $studentId,
                 'class_session_id' => $sessionId,
                 'status' => $databaseStatus,
-                'created_by' => auth()->id(),
+                'created_by' => Auth::user()->id,
             ]);
         }
 
@@ -195,7 +196,7 @@ class TeacherAttendanceTrackingService
      */
     public function getAttendanceHistory(Request $request): JsonResponse
     {
-        $teacherId = auth()->user()->teacher->id;
+        $teacherId = Auth::user()->teacher->id;
 
         // Build query for teacher's assignments
         $query = TeacherSectionSubject::where('teacher_id', $teacherId)
@@ -214,13 +215,13 @@ class TeacherAttendanceTrackingService
 
         // Get school days where teacher has recorded attendance
         $trackedDays = SchoolDay::whereHas('classSessions', function ($query) use ($teacherAssignments) {
-                $query->where('teacher_id', auth()->user()->teacher->id)
+                $query->where('teacher_id', Auth::user()->teacher->id)
                     ->whereHas('studentAttendances')
                     ->whereIn('section_id', $teacherAssignments->pluck('section_id'))
                     ->whereIn('subject_id', $teacherAssignments->pluck('subject_id'));
             })
             ->with(['classSessions' => function ($query) use ($teacherAssignments) {
-                $query->where('teacher_id', auth()->user()->teacher->id)
+                $query->where('teacher_id', Auth::user()->teacher->id)
                     ->whereHas('studentAttendances')
                     ->whereIn('section_id', $teacherAssignments->pluck('section_id'))
                     ->whereIn('subject_id', $teacherAssignments->pluck('subject_id'))
@@ -261,7 +262,7 @@ class TeacherAttendanceTrackingService
      */
     public function trackStudentAttendance(int $studentId): JsonResponse
     {
-        $teacherId = auth()->user()->teacher->id;
+        $teacherId = Auth::user()->teacher->id;
 
         // Get student
         $student = Student::with(['user'])->findOrFail($studentId);
@@ -292,7 +293,7 @@ class TeacherAttendanceTrackingService
             // Get all class sessions for this subject and section
             $classSessions = ClassSession::where('subject_id', $subject->id)
                 ->where('section_id', $section->id)
-                ->where('teacher_id', auth()->user()->teacher->id)
+                ->where('teacher_id', Auth::user()->teacher->id)
                 ->with(['schoolDay', 'classPeriod'])
                 ->orderBy('created_at')
                 ->get();
@@ -350,11 +351,11 @@ class TeacherAttendanceTrackingService
      */
     private function verifyTeacherAuthorization(int $sectionId, int $subjectId): void
     {
-        if (!auth()->user()->teacher) {
+        if (!Auth::user()->teacher) {
             throw new PermissionException('المستخدم الحالي ليس أستاذاً');
         }
 
-        $teacherId = auth()->user()->teacher->id;
+        $teacherId = Auth::user()->teacher->id;
 
         $isAuthorized = TeacherSectionSubject::where('teacher_id', $teacherId)
             ->where('section_id', $sectionId)

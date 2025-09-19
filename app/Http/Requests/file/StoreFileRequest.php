@@ -9,6 +9,7 @@ use App\Enums\UserType;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class StoreFileRequest extends BaseRequest
 {
@@ -17,7 +18,7 @@ class StoreFileRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(FilesPermission::store->value);
+        return Auth::user()->hasPermissionTo(FilesPermission::store->value);
     }
 
     /**
@@ -27,7 +28,7 @@ class StoreFileRequest extends BaseRequest
      */
     public function rules(): array
     {
-        $userType = auth()->user()->user_type;
+        $userType = Auth::user()->user_type;
         return match ($userType) {
             UserType::Admin->value => $this->adminRules(),
             UserType::Teacher->value => $this->teacherRules(),

@@ -21,8 +21,8 @@ trait TargetsHandler
         // The above Note will make headache if used with files because
         // teachers are included in the equation, so may be would do it for news.
 
-        if ($request->filled($this->apiSectionIds)) {
-            foreach ($data[$this->apiSectionIds] as $section_id) {
+        if ($request->filled('section_ids')) {
+            foreach ($data['section_ids'] as $section_id) {
                 $targetsClass::create([
                     $model->getForeignKey() => $model->id,
                     'grade_id' => null,
@@ -30,8 +30,8 @@ trait TargetsHandler
                     'created_by' => $userId,
                 ]);
             }
-        } else if ($request->filled($this->apiGradeIds)) {
-            foreach ($data[$this->apiGradeIds] as $grade_id) {
+        } else if ($request->filled('grade_ids')) {
+            foreach ($data['grade_ids'] as $grade_id) {
                 $targetsClass::create([
                     $model->getForeignKey() => $model->id,
                     'grade_id' => $grade_id,
@@ -52,21 +52,21 @@ trait TargetsHandler
     private function adminUpdateTargets($request, $data, $model, $targetsClass): void
     {
         $user = $request->user();
-        if ($request->filled($this->apiSectionIds)) {
+        if ($request->filled('section_ids')) {
             $this->updateSections(
                 userId: $user->id,
                 data: $data,
                 model: $model,
                 targetsClass: $targetsClass,
             );
-        } else if ($request->filled($this->apiGradeIds)) {
+        } else if ($request->filled('grade_ids')) {
             $this->updateGrades(
                 userId: $user->id,
                 data: $data,
                 model: $model,
                 targetsClass: $targetsClass
             );
-        } else if ($request->filled($this->apiIsGeneral) && $data[$this->apiIsGeneral]) {
+        } else if ($request->filled('is_general') && $data['is_general']) {
             $this->updateGeneralTargets(
                 userId: $user->id,
                 model: $model,
@@ -85,8 +85,8 @@ trait TargetsHandler
                 ->pluck('grade_id')
                 ->toArray();
 
-        $gradesToDelete = array_diff($existingGrades, $data[$this->apiGradeIds]);
-        $gradesToAdd = array_diff($data[$this->apiGradeIds], $existingGrades);
+        $gradesToDelete = array_diff($existingGrades, $data['grade_ids']);
+        $gradesToAdd = array_diff($data['grade_ids'], $existingGrades);
         if (!empty($gradesToDelete)) {
             $model
                 ->targets()
@@ -137,8 +137,8 @@ trait TargetsHandler
             ->toArray();
 
 
-        $sectionsToDelete = array_diff($existingSections, $data[$this->apiSectionIds]);
-        $sectionsToAdd = array_diff($data[$this->apiSectionIds], $existingSections);
+        $sectionsToDelete = array_diff($existingSections, $data['section_ids']);
+        $sectionsToAdd = array_diff($data['section_ids'], $existingSections);
         if (!empty($sectionsToDelete)) {
             $model->targets()
                 ->sectionTargets()

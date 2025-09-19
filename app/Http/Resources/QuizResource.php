@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Enums\UserType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class QuizResource extends JsonResource
 {
@@ -29,7 +30,7 @@ class QuizResource extends JsonResource
 
             // Teacher info (optional, remove if you don’t need)
             'created_by' => [
-                'id' => auth()->user()->id ?? null,
+                'id' => Auth::user()->id ?? null,
             ],
 
             // Multiple targets

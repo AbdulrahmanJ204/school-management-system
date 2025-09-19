@@ -16,19 +16,19 @@ trait NewsHelpers
     private function getYearId($request): mixed
     {
         $data = $request->validated();
-        return $request->filled($this->queryYear) ? $data[$this->queryYear] :
+        return $request->filled('year') ? $data['year'] :
             Year::select('id')->active()->get()->first()->id;
     }
 
     private function handlePhoto($request, $deletePath = null): ?string
     {
         $photoPath = null;
-        if ($request->hasFile($this->apiPhoto)) {
+        if ($request->hasFile('photo')) {
             try {
                 if ($deletePath && Storage::disk($this->storageDisk)->exists($deletePath)) {
                     Storage::disk($this->storageDisk)->delete($deletePath);
                 }
-                $image = $request->file($this->apiPhoto);
+                $image = $request->file('photo');
                 $imageName = $image->hashName();
                 $imagePath = $this->imagesPath . '/' . $imageName;
 

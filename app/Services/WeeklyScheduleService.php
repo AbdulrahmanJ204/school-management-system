@@ -109,7 +109,7 @@ class WeeklyScheduleService
                     'teacher_section_subject_id' => $scheduleData['teacher_section_subject_id'],
                     'timetable_id' => $timetableId,
                     'week_day' => $scheduleData['week_day'],
-                    'created_by' => auth()->id(),
+                    'created_by' => Auth::user()->id,
                 ]);
 
                 $createdSchedules[] = $schedule;

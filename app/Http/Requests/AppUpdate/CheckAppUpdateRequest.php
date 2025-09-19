@@ -5,6 +5,7 @@ namespace App\Http\Requests\AppUpdate;
 use App\Enums\Platform;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class CheckAppUpdateRequest extends BaseRequest
 {
@@ -13,7 +14,7 @@ class CheckAppUpdateRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && in_array(auth()->user()->user_type, ['teacher', 'student']);
+        return auth()->check() && in_array(Auth::user()->user_type, ['teacher', 'student']);
     }
 
     /**

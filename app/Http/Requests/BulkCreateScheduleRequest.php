@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\Permissions\TimetablePermission;
 use App\Enums\WeekDay;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class BulkCreateScheduleRequest extends FormRequest
 {
@@ -13,8 +14,8 @@ class BulkCreateScheduleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(TimetablePermission::create_schedule->value) ||
-               auth()->user()->hasPermissionTo(TimetablePermission::update_schedule->value);
+        return Auth::user()->hasPermissionTo(TimetablePermission::create_schedule->value) ||
+               Auth::user()->hasPermissionTo(TimetablePermission::update_schedule->value);
     }
 
     /**

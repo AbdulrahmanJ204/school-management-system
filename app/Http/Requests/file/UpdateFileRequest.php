@@ -8,6 +8,7 @@ use App\Enums\StringsManager\Files\FileApi;
 use App\Enums\UserType;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class UpdateFileRequest extends BaseRequest
@@ -17,7 +18,7 @@ class UpdateFileRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(FilesPermission::update->value);
+        return Auth::user()->hasPermissionTo(FilesPermission::update->value);
     }
 
     /**
@@ -27,7 +28,7 @@ class UpdateFileRequest extends BaseRequest
      */
     public function rules(): array
     {
-        $userType = auth()->user()->user_type;
+        $userType = Auth::user()->user_type;
         return match ($userType) {
             UserType::Admin->value => $this->adminRules(),
             UserType::Teacher->value => $this->teacherRules(),

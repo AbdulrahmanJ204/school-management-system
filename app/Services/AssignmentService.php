@@ -2,26 +2,29 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\AssignmentPermission;
 use App\Exceptions\PermissionException;
+use App\Helpers\AuthHelper;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\AssignmentResource;
 use App\Models\Assignment;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class AssignmentService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listAssignments(Request $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_ASSIGNMENTS);
+        AuthHelper::authorize(AssignmentPermission::VIEW_ASSIGNMENTS);
 
         $query = Assignment::with([
             'assignedSession',
@@ -77,7 +80,7 @@ class AssignmentService
      */
     public function listTrashedAssignments(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_ASSIGNMENTS);
+        AuthHelper::authorize(AssignmentPermission::MANAGE_DELETED_ASSIGNMENTS);
 
         $assignments = Assignment::onlyTrashed()
             ->with([
@@ -101,10 +104,10 @@ class AssignmentService
      */
     public function createAssignment(Request $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_ASSIGNMENT);
+        AuthHelper::authorize(AssignmentPermission::CREATE_ASSIGNMENT);
 
         $data = $request->validated();
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::user()->id();
 
         // Handle photo upload if provided
         if ($request->hasFile('photo')) {
@@ -131,7 +134,7 @@ class AssignmentService
      */
     public function showAssignment($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_ASSIGNMENT);
+        AuthHelper::authorize(AssignmentPermission::VIEW_ASSIGNMENT);
 
         $assignment = Assignment::with([
             'assignedSession',
@@ -153,7 +156,7 @@ class AssignmentService
      */
     public function updateAssignment(Request $request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_ASSIGNMENT);
+        AuthHelper::authorize(AssignmentPermission::UPDATE_ASSIGNMENT);
 
         $assignment = Assignment::findOrFail($id);
         $data = $request->validated();
@@ -162,7 +165,7 @@ class AssignmentService
         if ($request->hasFile('photo')) {
             // Delete old photo if exists
             if ($assignment->photo) {
-                \Storage::disk('public')->delete($assignment->photo);
+                Storage::disk('public')->delete($assignment->photo);
             }
             $data['photo'] = $request->file('photo')->store('assignments', 'public');
         }
@@ -186,7 +189,7 @@ class AssignmentService
      */
     public function deleteAssignment($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_ASSIGNMENT);
+        AuthHelper::authorize(AssignmentPermission::DELETE_ASSIGNMENT);
 
         $assignment = Assignment::findOrFail($id);
         $assignment->delete();
@@ -202,7 +205,7 @@ class AssignmentService
      */
     public function restoreAssignment($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_ASSIGNMENTS);
+        AuthHelper::authorize(AssignmentPermission::MANAGE_DELETED_ASSIGNMENTS);
 
         $assignment = Assignment::onlyTrashed()->findOrFail($id);
         $assignment->restore();
@@ -224,13 +227,13 @@ class AssignmentService
      */
     public function forceDeleteAssignment($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_ASSIGNMENTS);
+        AuthHelper::authorize(AssignmentPermission::MANAGE_DELETED_ASSIGNMENTS);
 
         $assignment = Assignment::onlyTrashed()->findOrFail($id);
         
         // Delete photo if exists
         if ($assignment->photo) {
-            \Storage::disk('public')->delete($assignment->photo);
+            Storage::disk('public')->delete($assignment->photo);
         }
         
         $assignment->forceDelete();
@@ -246,7 +249,7 @@ class AssignmentService
      */
     public function getBySubject($subjectId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_ASSIGNMENTS);
+        AuthHelper::authorize(AssignmentPermission::VIEW_ASSIGNMENTS);
 
         $assignments = Assignment::where('subject_id', $subjectId)
             ->with([
@@ -270,7 +273,7 @@ class AssignmentService
      */
     public function getBySection($sectionId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_ASSIGNMENTS);
+        AuthHelper::authorize(AssignmentPermission::VIEW_ASSIGNMENTS);
 
         $assignments = Assignment::where('section_id', $sectionId)
             ->with([
@@ -294,7 +297,7 @@ class AssignmentService
      */
     public function getByType($type): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_ASSIGNMENTS);
+        AuthHelper::authorize(AssignmentPermission::VIEW_ASSIGNMENTS);
 
         $assignments = Assignment::where('type', $type)
             ->with([

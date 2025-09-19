@@ -8,13 +8,14 @@ use App\Models\File;
 use App\Models\FileDownload;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 trait DownloadFile
 {
 
     public function download($fileId)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $file = $user->user_type === UserType::Admin->value ?
             File::withTrashed()->findOrFail($fileId)
             : File::findOrFail($fileId);

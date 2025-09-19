@@ -20,18 +20,18 @@ trait UpdateNews
 
         $data = $request->validated();
         $updateData = [];
-        if ($request->filled($this->apiTitle)) {
-            $updateData['title'] = $data[$this->apiTitle];
+        if ($request->filled('title')) {
+            $updateData['title'] = $data['title'];
         }
-        if ($request->filled($this->apiContent)) {
-            $content = $this->handleContent($data[$this->apiContent]);
+        if ($request->filled('content')) {
+            $content = $this->handleContent($data['content']);
             $updateData['content'] = $content;
         }
-        if ($request->hasFile($this->apiPhoto)) {
+        if ($request->hasFile('photo')) {
             $photoPath = $this->handlePhoto($request, $news->photo);
             $updateData['photo'] = $photoPath;
         }
-        if ($request->filled($this->apiRemovePhoto) && $data[$this->apiRemovePhoto]) {
+        if ($request->filled('remove_photo') && $data['remove_photo']) {
             if ($news->photo) {
                 if (Storage::disk($this->storageDisk)->exists($news->photo)) {
                     Storage::disk($this->storageDisk)->delete($news->photo);

@@ -25,7 +25,7 @@ class StudentTimetableController extends Controller
     public function timetable(Request $request): JsonResponse
     {
         try {
-            $userId = auth()->id();
+            $userId = Auth::user()->id;
             
             $timetableData = $this->studentTimetableService->getStudentTimetable($userId);
 

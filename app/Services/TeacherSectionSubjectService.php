@@ -2,26 +2,26 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\TeacherSectionSubjectPermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\TeacherSectionSubjectResource;
 use App\Models\Section;
 use App\Models\TeacherSectionSubject;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class TeacherSectionSubjectService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listTeacherSectionSubjects(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_SECTION_SUBJECTS);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::VIEW_TEACHER_SECTION_SUBJECTS);
 
         $teacherSectionSubjects = TeacherSectionSubject::with([
             'teacher.user',
@@ -43,7 +43,7 @@ class TeacherSectionSubjectService
      */
     public function listTrashedTeacherSectionSubjects(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_TEACHER_SECTION_SUBJECTS);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::MANAGE_DELETED_TEACHER_SECTION_SUBJECTS);
 
         $teacherSectionSubjects = TeacherSectionSubject::onlyTrashed()
             ->with([
@@ -66,10 +66,10 @@ class TeacherSectionSubjectService
      */
     public function createTeacherSectionSubject($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_TEACHER_SECTION_SUBJECT);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::CREATE_TEACHER_SECTION_SUBJECT);
 
         $data = $request->validated();
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::user()->id;
         $data['grade_id'] = Section::findOrFail($data['section_id'])->grade_id;
 
         $teacherSectionSubject = TeacherSectionSubject::create($data);
@@ -91,7 +91,7 @@ class TeacherSectionSubjectService
      */
     public function showTeacherSectionSubject($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_SECTION_SUBJECT);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::VIEW_TEACHER_SECTION_SUBJECT);
 
         $teacherSectionSubject = TeacherSectionSubject::with([
             'teacher.user',
@@ -112,7 +112,7 @@ class TeacherSectionSubjectService
      */
     public function updateTeacherSectionSubject($request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_TEACHER_SECTION_SUBJECT);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::UPDATE_TEACHER_SECTION_SUBJECT);
 
         $teacherSectionSubject = TeacherSectionSubject::findOrFail($id);
         $data = $request->validated();
@@ -136,7 +136,7 @@ class TeacherSectionSubjectService
      */
     public function deleteTeacherSectionSubject($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_TEACHER_SECTION_SUBJECT);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::DELETE_TEACHER_SECTION_SUBJECT);
 
         $teacherSectionSubject = TeacherSectionSubject::findOrFail($id);
         $teacherSectionSubject->delete();
@@ -152,7 +152,7 @@ class TeacherSectionSubjectService
      */
     public function restoreTeacherSectionSubject($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_TEACHER_SECTION_SUBJECTS);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::MANAGE_DELETED_TEACHER_SECTION_SUBJECTS);
 
         $teacherSectionSubject = TeacherSectionSubject::onlyTrashed()->findOrFail($id);
         $teacherSectionSubject->restore();
@@ -173,7 +173,7 @@ class TeacherSectionSubjectService
      */
     public function forceDeleteTeacherSectionSubject($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_TEACHER_SECTION_SUBJECTS);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::MANAGE_DELETED_TEACHER_SECTION_SUBJECTS);
 
 //        $teacherSectionSubject = TeacherSectionSubject::onlyTrashed()->findOrFail($id);
         $teacherSectionSubject = TeacherSectionSubject::findOrFail($id);
@@ -190,7 +190,7 @@ class TeacherSectionSubjectService
      */
     public function getByTeacher($teacherId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_SECTION_SUBJECTS);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::VIEW_TEACHER_SECTION_SUBJECTS);
 
         $teacherSectionSubjects = TeacherSectionSubject::where('teacher_id', $teacherId)
             ->with([
@@ -213,7 +213,7 @@ class TeacherSectionSubjectService
      */
     public function getBySection($sectionId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_SECTION_SUBJECTS);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::VIEW_TEACHER_SECTION_SUBJECTS);
 
         $teacherSectionSubjects = TeacherSectionSubject::where('section_id', $sectionId)
             ->with([
@@ -236,7 +236,7 @@ class TeacherSectionSubjectService
      */
     public function getBySubject($subjectId): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_TEACHER_SECTION_SUBJECTS);
+        AuthHelper::authorize(TeacherSectionSubjectPermission::VIEW_TEACHER_SECTION_SUBJECTS);
 
         $teacherSectionSubjects = TeacherSectionSubject::where('subject_id', $subjectId)
             ->with([

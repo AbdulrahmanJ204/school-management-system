@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\Permissions\TimetablePermission;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CreateClassPeriodRequest extends FormRequest
 {
@@ -12,7 +13,7 @@ class CreateClassPeriodRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(TimetablePermission::create_class_period->value);
+        return Auth::user()->hasPermissionTo(TimetablePermission::create_class_period->value);
     }
 
     /**

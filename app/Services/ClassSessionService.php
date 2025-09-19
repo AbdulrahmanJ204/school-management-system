@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\ClassSessionPermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\ClassSessionRequest;
@@ -10,14 +10,14 @@ use App\Http\Resources\ClassSessionResource;
 use App\Models\ClassSession;
 use App\Models\Schedule;
 use App\Models\SchoolDay;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class ClassSessionService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * Get list of all class sessions.
@@ -25,7 +25,7 @@ class ClassSessionService
      */
     public function listClassSessions(): void
     {
-        $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSIONS);
+        AuthHelper::authorize(ClassSessionPermission::VIEW_CLASS_SESSIONS);
         //
     }
 
@@ -35,7 +35,7 @@ class ClassSessionService
      */
     public function createClassSession(ClassSessionRequest $request): void
     {
-        $this->checkPermission(PermissionEnum::CREATE_CLASS_SESSION);
+        AuthHelper::authorize(ClassSessionPermission::CREATE_CLASS_SESSION);
         //
     }
 
@@ -45,7 +45,7 @@ class ClassSessionService
      */
     public function showClassSession(ClassSession $classSession): void
     {
-        $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSION);
+        AuthHelper::authorize(ClassSessionPermission::VIEW_CLASS_SESSION);
         //
     }
 
@@ -55,7 +55,7 @@ class ClassSessionService
      */
     public function updateClassSession(ClassSessionRequest $request, ClassSession $classSession): void
     {
-        $this->checkPermission(PermissionEnum::UPDATE_CLASS_SESSION);
+        AuthHelper::authorize(ClassSessionPermission::UPDATE_CLASS_SESSION);
         //
     }
 
@@ -65,7 +65,7 @@ class ClassSessionService
      */
     public function destroyClassSession(ClassSession $classSession): void
     {
-        $this->checkPermission(PermissionEnum::DELETE_CLASS_SESSION);
+        AuthHelper::authorize(ClassSessionPermission::DELETE_CLASS_SESSION);
         //
     }
 
@@ -77,7 +77,7 @@ class ClassSessionService
      */
     public function cancelClassSession(ClassSession $classSession): void
     {
-        $this->checkPermission(PermissionEnum::UPDATE_CLASS_SESSION);
+        AuthHelper::authorize(ClassSessionPermission::UPDATE_CLASS_SESSION);
         //
     }
 
@@ -87,7 +87,7 @@ class ClassSessionService
      */
     public function getClassSessionsByTeacher($teacherId): void
     {
-        $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSIONS);
+        AuthHelper::authorize(ClassSessionPermission::VIEW_CLASS_SESSIONS);
         //
     }
 
@@ -97,7 +97,7 @@ class ClassSessionService
      */
     public function getClassSessionsBySection($sectionId): void
     {
-        $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSIONS);
+        AuthHelper::authorize(ClassSessionPermission::VIEW_CLASS_SESSIONS);
         //
     }
 
@@ -107,7 +107,7 @@ class ClassSessionService
      */
     public function getClassSessionsBySchoolDay($schoolDayId): void
     {
-        $this->checkPermission(PermissionEnum::VIEW_CLASS_SESSIONS);
+        AuthHelper::authorize(ClassSessionPermission::VIEW_CLASS_SESSIONS);
         //
     }
 }

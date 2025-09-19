@@ -48,32 +48,32 @@ trait UpdateFile
 
         $updateData = [];
         // Handle Title and Description change
-        if ($request->filled($this->apiTitle)) {
-            $updateData['title'] = $data[$this->apiTitle];
+        if ($request->filled('title')) {
+            $updateData['title'] = $data['title'];
         }
-        if ($request->filled($this->apiType)) {
-            $updateData['type'] = $data[$this->apiType];
+        if ($request->filled('type')) {
+            $updateData['type'] = $data['type'];
         }
-        if ($request->has($this->apiDescription)) {
-            $updateData['description'] = $data[$this->apiDescription];
+        if ($request->has('description')) {
+            $updateData['description'] = $data['description'];
         }
 
         // handle subject change , to send new code to handle file changes in case of any change.
         // if user sent subject id and no_subject parameters , subject_id has higher priority
-        $requestHasFile = $request->hasFile($this->apiFile);
+        $requestHasFile = $request->hasFile('file');
         $requestChangedSubject =
-            $request->has($this->apiSubjectId) &&
-            $data[$this->apiSubjectId] !== $file->subject_id;
+            $request->has('subject_id') &&
+            $data['subject_id'] !== $file->subject_id;
 
         $subjectCode = $file->subject_id ?
             Subject::find($file->subject_id)->code :
             $this->generalPath;
         if ($requestChangedSubject) {
-            $subjectCode = Subject::find($data[$this->apiSubjectId])?->code ?? $this->generalPath;
-            $updateData['subject_id'] = $data[$this->apiSubjectId];
+            $subjectCode = Subject::find($data['subject_id'])?->code ?? $this->generalPath;
+            $updateData['subject_id'] = $data['subject_id'];
         }
         if (
-            $request->filled($this->apiNoSubject)
+            $request->filled('no_subject')
             &&
             $file->subject_id
         ) {
@@ -101,7 +101,7 @@ trait UpdateFile
                 model: $file,
                 targetsClass: FileTarget::class,
             );
-        } else if ($request->filled($this->apiSectionIds)) {
+        } else if ($request->filled('section_ids')) {
             $this->handleFileTargetsOnUpdateTeacher(
                 data: $data,
                 file: $file,
@@ -140,31 +140,31 @@ trait UpdateFile
         // then he can update the file.
 
 
-        if ($request->filled($this->apiSubjectId)) {
+        if ($request->filled('subject_id')) {
             if (!$fileBelongsToOneTeacher) {
                 throw new PermissionException();
             }
-            $newSubjectId = $data[$this->apiSubjectId];
+            $newSubjectId = $data['subject_id'];
             $teacherSections =
                 TeacherSectionSubject::where('teacher_id', $teacher->id)
                     ->where('is_active', true)
                     ->where('subject_id', $newSubjectId)
                     ->pluck('section_id')->toArray();
 
-            $targetsSections = $data[$this->apiSectionIds];
+            $targetsSections = $data['section_ids'];
             $canTarget = array_intersect($teacherSections, $targetsSections);
             $cannotTarget = array_diff($targetsSections, $canTarget);
             if (empty($canTarget) || !empty($cannotTarget)) {
                 throw new PermissionException();
             }
-        } else if ($request->filled($this->apiSectionIds)) {
+        } else if ($request->filled('section_ids')) {
             $teacherSections =
 
                 TeacherSectionSubject::where('teacher_id', $teacher->id)
                     ->where('is_active', true)
                     ->where('subject_id', $file->subject_id)
                     ->pluck('section_id')->toArray();
-            $targetsSections = $data[$this->apiSectionIds];
+            $targetsSections = $data['section_ids'];
 
             $canTarget = array_intersect($teacherSections, $targetsSections);
             $cannotTarget = array_diff($targetsSections, $canTarget);
@@ -203,8 +203,8 @@ trait UpdateFile
             ->pluck('section_id')
             ->toArray();
 
-        $sectionsToDelete = array_diff($existingSections, $data[$this->apiSectionIds]);
-        $sectionsToAdd = array_diff($data[$this->apiSectionIds], $existingSections);
+        $sectionsToDelete = array_diff($existingSections, $data['section_ids']);
+        $sectionsToAdd = array_diff($data['section_ids'], $existingSections);
 
         $file->targets()->whereIn('section_id', $sectionsToDelete)
             ->whereNull('grade_id')

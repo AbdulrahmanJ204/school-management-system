@@ -2,26 +2,27 @@
 
 namespace App\Services;
 
-use App\Enums\PermissionEnum;
+use App\Enums\Permissions\SemesterPermission;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\SemesterRequest;
 use App\Http\Resources\SemesterResource;
 use App\Models\Semester;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\Auth;
 
 class SemesterService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listSemesters(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_SEMESTERS);
+        AuthHelper::authorize(SemesterPermission::VIEW_SEMESTERS);
 
         $semesters = Semester::with([
             'year'
@@ -39,7 +40,7 @@ class SemesterService
      */
     public function listTrashedSemesters(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SEMESTERS);
+        AuthHelper::authorize(SemesterPermission::MANAGE_DELETED_SEMESTERS);
 
         $semesters = Semester::with([
             'year'
@@ -58,9 +59,9 @@ class SemesterService
      */
     public function createSemester(SemesterRequest $request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_SEMESTER);
+        AuthHelper::authorize(SemesterPermission::CREATE_SEMESTER);
 
-        $admin = auth()->user();
+        $admin = Auth::user();
         $credentials = $request->validated();
         $credentials['created_by'] = $admin->id;
         $semester = Semester::create($credentials);
@@ -77,7 +78,7 @@ class SemesterService
      */
     public function showSemester(Semester $semester): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_SEMESTER);
+        AuthHelper::authorize(SemesterPermission::VIEW_SEMESTER);
 
         $semester->load([
             'year',
@@ -94,7 +95,7 @@ class SemesterService
      */
     public function updateSemester($request, $semester): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_SEMESTER);
+        AuthHelper::authorize(SemesterPermission::UPDATE_SEMESTER);
 
         if($request->is_active){
             $activeSemesters = Semester::where('is_active',true)->get();
@@ -120,7 +121,7 @@ class SemesterService
      */
     public function destroySemester(Semester $semester): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_SEMESTER);
+        AuthHelper::authorize(SemesterPermission::DELETE_SEMESTER);
 
         // Check if semester has related data
         if ($semester->schoolDays()->exists()) {
@@ -145,7 +146,7 @@ class SemesterService
      */
     public function restoreSemester($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SEMESTERS);
+        AuthHelper::authorize(SemesterPermission::MANAGE_DELETED_SEMESTERS);
 
         $semester = Semester::withTrashed()->findOrFail($id);
 
@@ -171,7 +172,7 @@ class SemesterService
      */
     public function forceDeleteSemester($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_SEMESTERS);
+        AuthHelper::authorize(SemesterPermission::MANAGE_DELETED_SEMESTERS);
 
 //        $semester = Semester::withTrashed()->findOrFail($id);
         $semester = Semester::findOrFail($id);
@@ -208,7 +209,7 @@ class SemesterService
      */
     public function ActiveSemester(Semester $semester): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_SEMESTER);
+        AuthHelper::authorize(SemesterPermission::UPDATE_SEMESTER);
 
         $activeSemesters = Semester::where('is_active',true)->get();
         foreach ($activeSemesters as $activeSemester){

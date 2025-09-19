@@ -25,7 +25,7 @@ class StudentHomeController extends Controller
     public function home(Request $request): JsonResponse
     {
         try {
-            $userId = auth()->id();
+            $userId = Auth::user()->id;
             
             $homeData = $this->studentHomeService->getStudentHomeData($userId);
 

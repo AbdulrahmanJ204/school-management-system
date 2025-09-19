@@ -2,27 +2,27 @@
 
 namespace App\Services;
 
+use App\Enums\Permissions\ExamPermission;
 use App\Enums\ExamType;
-use App\Enums\PermissionEnum;
 use App\Exceptions\PermissionException;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\ExamResource;
 use App\Models\Exam;
 use App\Models\Subject;
-use App\Traits\HasPermissionChecks;
+
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class ExamService
 {
-    use HasPermissionChecks;
+    
 
     /**
      * @throws PermissionException
      */
     public function listExams($request = null): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_EXAMS);
+        AuthHelper::authorize(ExamPermission::VIEW_EXAMS);
 
         $query = Exam::with([
              'schoolDay',
@@ -62,7 +62,7 @@ class ExamService
      */
     public function listTrashedExams(): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_EXAMS);
+        AuthHelper::authorize(ExamPermission::MANAGE_DELETED_EXAMS);
 
         $exams = Exam::onlyTrashed()
             ->with([
@@ -84,14 +84,14 @@ class ExamService
      */
     public function createExam($request): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::CREATE_EXAM);
+        AuthHelper::authorize(ExamPermission::CREATE_EXAM);
 
         $exam = Exam::create([
             'school_day_id' => $request->school_day_id,
             'grade_id' => Subject::findOrFail($request->subject_id)->getGrade()->id,
             'subject_id' => $request->subject_id,
             'type' => $request->type ?? ExamType::EXAM,
-            'created_by' => auth()->id(),
+            'created_by' => Auth::user()->id,
         ]);
 
          $exam->load(['schoolDay', 'grade', 'subject']);
@@ -108,7 +108,7 @@ class ExamService
      */
     public function showExam($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::VIEW_EXAM);
+        AuthHelper::authorize(ExamPermission::VIEW_EXAM);
 
         $exam = Exam::with([
              'schoolDay',
@@ -127,7 +127,7 @@ class ExamService
      */
     public function updateExam($request, $id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::UPDATE_EXAM);
+        AuthHelper::authorize(ExamPermission::UPDATE_EXAM);
 
         $exam = Exam::findOrFail($id);
 
@@ -151,7 +151,7 @@ class ExamService
      */
     public function deleteExam($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::DELETE_EXAM);
+        AuthHelper::authorize(ExamPermission::DELETE_EXAM);
 
         $exam = Exam::findOrFail($id);
         $exam->delete();
@@ -167,7 +167,7 @@ class ExamService
      */
     public function restoreExam($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_EXAMS);
+        AuthHelper::authorize(ExamPermission::MANAGE_DELETED_EXAMS);
 
         $exam = Exam::onlyTrashed()->findOrFail($id);
         $exam->restore();
@@ -183,7 +183,7 @@ class ExamService
      */
     public function forceDeleteExam($id): JsonResponse
     {
-        $this->checkPermission(PermissionEnum::MANAGE_DELETED_EXAMS);
+        AuthHelper::authorize(ExamPermission::MANAGE_DELETED_EXAMS);
 
 //        $exam = Exam::onlyTrashed()->findOrFail($id);
         $exam = Exam::findOrFail($id);

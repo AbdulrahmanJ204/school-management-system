@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\Permissions\TimetablePermission;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CreateSchoolShiftRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class CreateSchoolShiftRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo(TimetablePermission::create->value);
+        return Auth::user()->hasPermissionTo(TimetablePermission::create->value);
     }
 
     /**

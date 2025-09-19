@@ -5,6 +5,7 @@ namespace App\Http\Requests\StudentEnrollment;
 use App\Http\Requests\BaseRequest;
 use App\Models\StudentEnrollment;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateStudentEnrollmentRequest extends BaseRequest
 {
@@ -13,7 +14,7 @@ class UpdateStudentEnrollmentRequest extends BaseRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo('تحديث تسجيل طالب');
+        return Auth::user()->hasPermissionTo('تحديث تسجيل طالب');
     }
 
     /**
