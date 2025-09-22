@@ -1,0 +1,543 @@
+<?php
+
+namespace App\Services;
+
+use App\Exceptions\PermissionException;
+use App\Helpers\ResponseHelper;
+use App\Http\Resources\UserResource;
+use App\Models\Section;
+use App\Models\Semester;
+use App\Models\Student;
+use App\Models\Subject;
+use App\Models\TeacherAttendance;
+use App\Models\User;
+use App\Models\TeacherSectionSubject;
+use App\Models\StudentEnrollment;
+use App\Models\StudentMark;
+use App\Models\Schedule;
+use App\Models\ClassSession;
+use App\Enums\WeekDay;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+
+class TeacherService
+{
+    /**
+     * @throws PermissionException
+     */
+    public function listTeachers(): JsonResponse
+    {
+        if (!Auth::user()->hasPermissionTo('عرض الاساتذة')) {
+            throw new PermissionException();
+        }
+
+        $teachers = User::where('user_type', 'teacher')
+            ->with(['teacher'])
+            ->orderBy('first_name', 'asc')
+            ->paginate(50);
+
+        return ResponseHelper::jsonResponse(
+            UserResource::collection($teachers),
+            __('messages.teacher.listed'),
+            200,
+            true,
+            $teachers->lastPage(),
+            $teachers->total()
+        );
+    }
+
+    /**
+     * Get teacher's grades, sections, and subjects
+     * @throws PermissionException
+     */
+    public function getTeacherGradesSectionsSubjects(): JsonResponse
+    {
+        if (!Auth::user()->hasPermissionTo('عرض مواد الأساتذة')) {
+            throw new PermissionException();
+        }
+
+        // Check if the authenticated user is a teacher
+        if (!Auth::user()->teacher) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'المستخدم الحالي ليس أستاذاً',
+                403,
+                false
+            );
+        }
+
+        $teacherId = Auth::user()->teacher->id;
+
+        $teacherData = TeacherSectionSubject::where('teacher_id', $teacherId)
+            ->where('is_active', true)
+            ->with([
+                'grade:id,title',
+                'section:id,title,grade_id',
+                'subject:id,name,full_mark,main_subject_id,homework_percentage,oral_percentage,activity_percentage,quiz_percentage,exam_percentage',
+                'subject.mainSubject:id,success_rate'
+            ])
+            ->whereHas('subject')
+            ->get()
+            ->groupBy('grade_id')
+            ->map(function ($gradeData, $gradeId) {
+                $grade = $gradeData->first()->grade;
+
+                $sections = $gradeData->groupBy('section_id')
+                    ->map(function ($sectionData, $sectionId) {
+                        $section = $sectionData->first()->section;
+
+                        $subjects = $sectionData->map(function ($item) {
+
+                            // Ensure we have a valid subject
+                            if (!$item->subject) {
+                                return null;
+                            }
+
+                            // Check if subject and mainSubject exist and have required properties
+                            if ($item->subject->mainSubject &&
+                                isset($item->subject->mainSubject->success_rate) &&
+                                $item->subject->mainSubject->success_rate !== null &&
+                                is_numeric($item->subject->mainSubject->success_rate)) {
+                                $minMark = (int)($item->subject->full_mark * $item->subject->mainSubject->success_rate / 100);
+                            } else {
+                                // Fallback: use a default success rate of 50% if mainSubject is not available
+                                // This could happen if the relationship is not loaded or if there's a data issue
+                                $minMark = (int)($item->subject->full_mark * 0.5);
+                            }
+
+                            return [
+                                'id' => $item->subject->id,
+                                'name' => $item->subject->name,
+                                'full_mark' => $item->subject->full_mark,
+                                'min_mark' => $minMark,
+                                'max_homework_mark' => $item->subject->homework_percentage * $item->subject->full_mark / 100,
+                                'max_oral_mark' => $item->subject->oral_percentage * $item->subject->full_mark / 100,
+                                'max_activity_mark' => $item->subject->activity_percentage * $item->subject->full_mark / 100,
+                                'max_quiz_mark' => $item->subject->quiz_percentage * $item->subject->full_mark / 100,
+                                'max_exam_mark' => $item->subject->exam_percentage * $item->subject->full_mark / 100,
+                            ];
+                        })
+                        ->filter() // Remove any null values
+                        ->values();
+
+                        return [
+                            'id' => $section->id,
+                            'section_name' => $section->title,
+                            'grade_id' => $section->grade_id,
+                            'subjects' => $subjects
+                        ];
+                    })->values();
+
+                return [
+                    'id' => $grade->id,
+                    'grade_name' => $grade->title,
+                    'sections' => $sections
+                ];
+            })->values();
+
+        return ResponseHelper::jsonResponse(
+            $teacherData,
+            'تم جلب بيانات الصفوف والشعب والمواد بنجاح',
+        );
+    }
+
+    /**
+     * Get students in a section with their marks for a specific subject
+     * @throws PermissionException
+     */
+    public function getStudentsInSectionWithMarks(int $sectionId, int $subjectId): JsonResponse
+    {
+        // Check if the authenticated user is a teacher
+        if (!Auth::user()->teacher) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'المستخدم الحالي ليس أستاذاً',
+                403,
+                false
+            );
+        }
+
+        $teacherId = Auth::user()->teacher->id;
+
+        // Verify that the teacher is assigned to this section and subject
+        $teacherAssignment = TeacherSectionSubject::where('teacher_id', $teacherId)
+            ->where('section_id', $sectionId)
+            ->where('subject_id', $subjectId)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$teacherAssignment) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'غير مصرح لك بالوصول إلى هذه الشعبة أو المادة',
+                403,
+                false
+            );
+        }
+
+        // Get current active semester
+        $currentSemester = Semester::where('is_active', true)->first();
+
+        if (!$currentSemester) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'لا يوجد فصل دراسي نشط حالياً',
+                404,
+                false
+            );
+        }
+
+        // Get students enrolled in the section for the current semester
+        $students = StudentEnrollment::where('section_id', $sectionId)
+            ->where('semester_id', $currentSemester->id)
+            ->with([
+                'student.user',
+                'studentMarks' => function ($query) use ($subjectId) {
+                    $query->where('subject_id', $subjectId);
+                }
+            ])
+            ->get()
+            ->map(function ($enrollment) {
+                $user = $enrollment->student->user;
+                $mark = $enrollment->studentMarks->first();
+
+                return [
+                    'id' => $user->student->id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'father_name' => $user->father_name,
+                    'mother_name' => $user->mother_name,
+                    'photo' => $user->image ? asset('storage/' . $user->image) : asset('storage/user_images/default.png'),
+                    'birth_date' => $user->birth_date,
+                    'gender' => $user->gender,
+                    'phone_number' => $user->phone,
+                    'email' => $user->email,
+                    'grandfather_name' => $enrollment->student->grandfather,
+                    'general_id' => $enrollment->student->general_id,
+                    'results' => [
+                        'activityMark' => $mark ? $mark->activity : null,
+                        'oralMark' => $mark ? $mark->oral : null,
+                        'homeworkMark' => $mark ? $mark->homework : null,
+                        'quizMark' => $mark ? $mark->quiz : null,
+                        'examMark' => $mark ? $mark->exam : null,
+                    ]
+                ];
+            });
+
+        return ResponseHelper::jsonResponse(
+            $students,
+            'تم جلب بيانات الطلاب وعلاماتهم بنجاح',
+        );
+    }
+
+    /**
+     * Get teacher profile with detailed information
+     * @throws PermissionException
+     */
+    public function getTeacherProfile(): JsonResponse
+    {
+        // Check if the authenticated user is a teacher
+        if (!Auth::user()->teacher) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'المستخدم الحالي ليس أستاذاً',
+                403,
+                false
+            );
+        }
+
+        $teacher = Auth::user()->teacher;
+        $user = Auth::user();
+
+        // Calculate age
+        $birthDate = Carbon::parse($user->birth_date);
+        $age = $birthDate->age;
+
+        // Get available days from schedules
+        $availableDays = Schedule::whereHas('teacherSectionSubject', function ($query) use ($teacher) {
+            $query->where('teacher_id', $teacher->id)->where('is_active', true);
+        })
+        ->pluck('week_day')
+        ->unique()
+        ->map(function ($day) {
+            return WeekDay::arabic()[$day];
+        })
+        ->values()
+        ->toArray();
+
+        // Calculate attendance statistics
+        // TeacherAttendance only records absences and lateness, not present attendance
+        $totalSessions = ClassSession::where('teacher_id', $teacher->id)->count();
+
+        if ($totalSessions > 0) {
+            $completedSessions = ClassSession::where('teacher_id', $teacher->id)
+                ->where('status', 'completed')
+                ->count();
+
+            $attendancePercentage = round(($completedSessions / $totalSessions) * 100);
+
+            // Get absent records from TeacherAttendance
+            $absenceRecords = TeacherAttendance::where('teacher_id', $teacher->id)->get();
+
+            $absencePercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
+                ->where('status', 'absent')
+                ->count() / $totalSessions) * 100);
+
+            $latenessPercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
+                ->where('status', 'lateness')
+                ->count() / $totalSessions) * 100);
+
+            $justifiedAbsencePercentage = round((TeacherAttendance::where('teacher_id', $teacher->id)
+                ->where('status', 'justified_absent')
+                ->count() / $totalSessions) * 100);
+        } else {
+            $attendancePercentage = 0;
+            $absencePercentage = 0;
+            $latenessPercentage = 0;
+            $justifiedAbsencePercentage = 0;
+        }
+
+        // Get grades and sections
+        $gradesAndSections = TeacherSectionSubject::where('teacher_id', $teacher->id)
+            ->where('is_active', true)
+            ->with(['grade:id,title', 'section:id,title'])
+            ->get()
+            ->groupBy('grade.title')
+            ->map(function ($gradeData) {
+                $sections = [];
+                foreach ($gradeData->pluck('section.title') as $sectionTitle) {
+                    // Convert Arabic section names to numbers
+                    $sectionNumber = $this->convertArabicSectionToNumber($sectionTitle);
+                    $sections[$sectionNumber] = true;
+                }
+                return $sections;
+            })
+            ->toArray();
+
+        // Get primary subject (most taught subject)
+        $primarySubject = TeacherSectionSubject::where('teacher_id', $teacher->id)
+            ->where('is_active', true)
+            ->with('subject:id,name')
+            ->get()
+            ->groupBy('subject.name')
+            ->map->count()
+            ->sortDesc()
+            ->keys()
+            ->first() ?? 'غير محدد';
+
+        $profileData = [
+            'firstName' => $user->first_name,
+            'lastName' => $user->last_name,
+            'subject' => $primarySubject,
+            'fatherName' => $user->father_name,
+            'image' => $user->image ? asset('storage/' . $user->image) : asset('storage/user_images/default.png'),
+            'birthDate' => $user->birth_date,
+            'age' => $age,
+            'gender' => $user->gender,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'availableDays' => ["الأربعاء","الأحد","الخميس"],
+//            Todo after Create class session
+//            'availableDays' => $availableDays,
+            'attendancePercentage' => $attendancePercentage,
+            'absencePercentage' => $absencePercentage,
+            'latenessPercentage' => $latenessPercentage,
+            'justifiedAbsencePercentage' => $justifiedAbsencePercentage,
+            'classesAndSections' => $gradesAndSections ?: (object)[]
+        ];
+
+        return ResponseHelper::jsonResponse(
+            $profileData,
+            'تم جلب بيانات الملف الشخصي بنجاح',
+        );
+    }
+
+    /**
+     * Convert Arabic section names to numbers
+     */
+    private function convertArabicSectionToNumber(string $sectionName): int
+    {
+        $arabicToNumber = [
+            'الأولى' => 1,
+            'الثانية' => 2,
+            'الثالثة' => 3,
+            'الرابعة' => 4,
+            'الخامسة' => 5,
+            'السادسة' => 6,
+            'السابعة' => 7,
+            'الثامنة' => 8,
+            'التاسعة' => 9,
+            'العاشرة' => 10,
+            'الحادية عشر' => 11,
+            'الثانية عشر' => 12,
+            'الثالثة عشر' => 13,
+            'الرابعة عشر' => 14,
+            'الخامسة عشر' => 15,
+            'السادسة عشر' => 16,
+            'السابعة عشر' => 17,
+            'الثامنة عشر' => 18,
+            'التاسعة عشر' => 19,
+            'العشرون' => 20
+        ];
+
+        return $arabicToNumber[$sectionName] ?? (int) $sectionName;
+    }
+
+    /**
+     * Add or update student marks for a specific subject
+     *
+     * @param int $studentId
+     * @param array $markData
+     * @return JsonResponse
+     */
+    public function addOrUpdateStudentMarks(int $studentId, array $markData): JsonResponse
+    {
+        $teacherId = Auth::user()->teacher->id;
+        $subjectId = $markData['subject_id'];
+
+        // Get the student
+        $student = Student::find($studentId);
+        if (!$student) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'الطالب غير موجود',
+                404,
+                false
+            );
+        }
+
+        // Get the specified semester
+        if (isset($markData['semester_id'])) {
+            $semester = Semester::find($markData['semester_id']);
+            if (!$semester) {
+                $semester = Semester::where('is_active', true)->first();
+            }
+        } else {
+            $semester = Semester::where('is_active', true)->first();
+        }
+
+        // Get the specified section
+        $section = Section::find($markData['section_id']);
+        if (!$section) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'الشعبة المحددة غير موجودة',
+                404,
+                false
+            );
+        }
+
+        // Verify that the teacher is assigned to teach this subject for the specified section
+        $teacherAssignment = TeacherSectionSubject::where('teacher_id', $teacherId)
+            ->where('subject_id', $subjectId)
+            ->where('section_id', $section->id)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$teacherAssignment) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'غير مصرح لك بتدريس هذه المادة في هذه الشعبة',
+                403,
+                false
+            );
+        }
+
+        // Get student's enrollment for the specified semester and section
+        $enrollment = StudentEnrollment::where('student_id', $studentId)
+            ->where('semester_id', $semester->id)
+            ->where('section_id', $section->id)
+            ->first();
+
+        if (!$enrollment) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'الطالب غير مسجل في هذه الشعبة للفصل الدراسي المحدد',
+                404,
+                false
+            );
+        }
+
+        // Get the subject to calculate total
+        $subject = Subject::find($subjectId);
+        if (!$subject) {
+            return ResponseHelper::jsonResponse(
+                null,
+                'المادة غير موجودة',
+                404,
+                false
+            );
+        }
+
+        // Check if marks already exist for this student-subject-enrollment combination
+        $existingMark = StudentMark::where('enrollment_id', $enrollment->id)
+            ->where('subject_id', $subjectId)
+            ->first();
+
+        // Calculate total based on subject percentages
+        $total = 0;
+        if (isset($markData['homework']) && $markData['homework'] !== null) {
+            $total += ($markData['homework'] * $subject->homework_percentage) / 100;
+        }
+        if (isset($markData['oral']) && $markData['oral'] !== null) {
+            $total += ($markData['oral'] * $subject->oral_percentage) / 100;
+        }
+        if (isset($markData['activity']) && $markData['activity'] !== null) {
+            $total += ($markData['activity'] * $subject->activity_percentage) / 100;
+        }
+        if (isset($markData['quiz']) && $markData['quiz'] !== null) {
+            $total += ($markData['quiz'] * $subject->quiz_percentage) / 100;
+        }
+        if (isset($markData['exam']) && $markData['exam'] !== null) {
+            $total += ($markData['exam'] * $subject->exam_percentage) / 100;
+        }
+
+        // Prepare data for creation/update
+        $markData['enrollment_id'] = $enrollment->id;
+        $markData['total'] = round($total);
+        $markData['created_by'] = Auth::user()->id();
+
+        if ($existingMark) {
+            // Update existing marks
+            $existingMark->update($markData);
+            $studentMark = $existingMark->fresh();
+            $message = 'تم تحديث علامات الطالب بنجاح';
+            $statusCode = 200;
+        } else {
+            // Create new marks
+            $studentMark = StudentMark::create($markData);
+            $message = 'تم حفظ علامات الطالب بنجاح';
+            $statusCode = 201;
+        }
+
+        // Load relationships for response
+        $studentMark->load([
+            'subject',
+            'enrollment.student.user',
+            'enrollment.section',
+            'enrollment.semester'
+        ]);
+
+        // Prepare response data
+        $responseData = [
+            'student_id' => $studentId,
+            'subject_id' => $subjectId,
+            'homework' => $markData['homework'] ?? null,
+            'oral' => $markData['oral'] ?? null,
+            'activity' => $markData['activity'] ?? null,
+            'quiz' => $markData['quiz'] ?? null,
+            'exam' => $markData['exam'] ?? null,
+            'total' => $markData['total'],
+            'enrollment_id' => $enrollment->id,
+            'id' => $studentMark->id
+        ];
+
+        return ResponseHelper::jsonResponse(
+            $responseData,
+            $message,
+            $statusCode,
+            true
+        );
+    }
+}

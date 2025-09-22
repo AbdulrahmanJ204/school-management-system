@@ -1,0 +1,306 @@
+<?php
+
+return [
+    'user' => [
+        'created' => 'تم إنشاء المستخدم بنجاح.',
+        'updated' => 'تم تحديث بيانات المستخدم بنجاح.',
+        'deleted' => 'تم حذف المستخدم بنجاح.',
+        'not-found' => 'لم يتم العثور على المستخدم.',
+        'image_upload_failed'=>'فشل تحميل الصورة.',
+        'device_exists' => 'الجهاز مسجل فعلا.',
+        'get' => 'تم عرض المستخدم بنجاح.',
+        'list_admins_and_teachers' => 'تم جلب الاساتذة و المدراء.'
+    ],
+    'auth' => [
+        'login' => 'تم تسجيل الدخول بنجاح.',
+        'logout' => 'تم تسجيل الخروج بنجاح.',
+        'permission_denied' => 'ليس لديك صلاحية للقيام بهذا الأمر.',
+        'invalid_password' => 'كلمة مرور غير صحيحة!.',
+        'invalid_token' => '.الرمز غير صحيح او منتهي الصلاحية',
+        'refresh' => 'تم تحديث الرمز.',
+        'password_changed' => 'تم تغيير كلمة المرور بنجاح.',
+        'reset_link_sent' => 'تم ارسال رابط اعادة تعيين كلمة السر.',
+        'invalid_user_type' => 'غير مسموح تسجيل الدخول بمستخدم من هذا النوع.',
+        'pass_user_type' => 'يجب تمرير نوع موجود.',
+        'invalid_username_prefix' => 'بادئة اسم المستخدم غير صالحة.',
+        'invalid_user_id' => 'معرف المستخدم غير صالح.'
+    ],
+    'quiz' => [
+        'created' => 'تم إنشاء الاختبار المؤتمت بنجاح.',
+        'activated' => 'تم تفعيل الاختبار المؤتمت بنجاح.',
+        'not-found' => 'لم يتم إيجاد الاختبار المؤتمت.',
+        'already_active' => 'الاختبار المؤتمت مفعل بالفعل.',
+        'deactivated' => 'تم تعطيل الاختبار المؤتمت بنجاح.',
+        'already_inactive' => 'الاختبار المؤتمت معطل بالفعل.',
+        'updated' => 'تم تعديل الاختبار المؤتمت.',
+        'deleted' => 'تم حذف الاختبار المؤتمت.',
+        'score_already_submitted' => 'علامة الاختبار المؤتمت مرفوعة بالفعل.',
+        'score_created' => 'تم رفع علامة الاختبار المؤتمت.',
+        'score_must_not_exceed' => 'علامة الاختبار المؤتمت لا يجب ان تتعدى',
+        'listed' => 'تم عرض الاختبارات المؤتمتة.',
+        'fetched' => 'تم جلب الاختبار المؤتمت بنجاح.',
+        'generated' => 'تم توليد الاختبار المؤتمت بنجاح.'
+    ],
+    'question' => [
+        'created' => 'تم إنشاء السؤال.',
+        'already_exists' => 'السؤال موجود بالفعل في الاختبار.',
+        'invalid_right_choice' => 'حقل الخيار الصحيح غير صالح.',
+        'not-found' => 'لم يتم إيجاد السؤال.',
+        'invalid_text' => 'سؤال غير صالح.',
+        'updated' => 'تم تحديث السؤال بنجاح.',
+        'deleted' => 'تم حذف السؤال بنجاح.'
+    ],
+
+    'student' => [
+        'not_found' => 'لم يتم ايجاد الطالب.',
+        'enrollment' => [
+            'not-found' => 'تسجيل الطالب غير موجود في هذا الفصل الدراسي.'
+        ],
+        'marks' => [
+            'no-marks-found' => 'لم يتم العثور على درجات للطالب في هذا الفصل الدراسي.'
+        ],
+        'report' => [
+            'generated' => 'تم إنشاء تقرير الطالب بنجاح.'
+        ]
+    ],
+
+    'grade' => [
+        'created' => 'تم إنشاء الصف بنجاح.',
+        'updated' => 'تم تحديث بيانات الصف بنجاح.',
+        'deleted' => 'تم حذف الصف بنجاح.',
+        'restored' => 'تم استعادة الصف بنجاح.',
+        'force_deleted' => 'تم حذف الصف نهائياً من قاعدة البيانات.',
+        'not-found' => 'لم يتم العثور على الصف.',
+        'cannot_delete_with_sections' => 'لا يمكن حذف الصف الذي يحتوي على شعب',
+        'cannot_delete_with_subjects' => 'لا يمكن حذف الصف الذي يحتوي على مواد',
+        'cannot_delete_with_settings' => 'لا يمكن حذف الصف الذي يحتوي على إعدادات سنوية',
+        'title_exists' => 'اسم الصف موجود مسبقاً.',
+        'has_sections' => 'لا يمكن حذف الصف، يحتوي على شعب.',
+        'has_subject_majors' => 'لا يمكن حذف الصف، يحتوي على مواد رئيسية.',
+        'has_settings' => 'لا يمكن حذف الصف، يحتوي على إعدادات سنوية.',
+    ],
+
+    'section' => [
+        'created' => 'تم إنشاء الشعبة بنجاح.',
+        'updated' => 'تم تحديث بيانات الشعبة بنجاح.',
+        'deleted' => 'تم حذف الشعبة بنجاح.',
+        'restored' => 'تم استعادة الشعبة بنجاح.',
+        'force_deleted' => 'تم حذف الشعبة نهائياً من قاعدة البيانات.',
+        'not-found' => 'لم يتم العثور على الشعبة.',
+        'has_students' => 'لا يمكن حذف الشعبة، تحتوي على طلاب.',
+        'title_exists_in_grade' => 'اسم الشعبة موجود في هذا الصف مسبقاً.',
+        'has_quiz_targets' => 'لا يمكن حذف الشعبة، تحتوي على أهداف اختبارات.',
+    ],
+
+    'year' => [
+        'created' => 'تم إنشاء العام الدراسي بنجاح.',
+        'updated' => 'تم تحديث بيانات العام الدراسي بنجاح.',
+        'deleted' => 'تم حذف العام الدراسي بنجاح.',
+        'restored' => 'تم استعادة العام الدراسي بنجاح.',
+        'force_deleted' => 'تم حذف العام الدراسي نهائياً من قاعدة البيانات.',
+        'not-found' => 'لم يتم العثور على العام الدراسي.',
+        'activated' => 'تم تفعيل العام الدراسي بنجاح.',
+        'overlapping_dates' => 'تواريخ العام الدراسي متداخلة مع عام آخر.',
+        'has_semesters' => 'لا يمكن حذف العام الدراسي، يحتوي على فصول دراسية.',
+    ],
+
+    'semester' => [
+        'created' => 'تم إنشاء الفصل الدراسي بنجاح.',
+        'updated' => 'تم تحديث بيانات الفصل الدراسي بنجاح.',
+        'deleted' => 'تم حذف الفصل الدراسي بنجاح.',
+        'restored' => 'تم استعادة الفصل الدراسي بنجاح.',
+        'force_deleted' => 'تم حذف الفصل الدراسي نهائياً من قاعدة البيانات.',
+        'not-found' => 'لم يتم العثور على الفصل الدراسي.',
+        'overlapping_dates' => 'تواريخ الفصل الدراسي متداخلة مع فصل آخر.',
+        'outside_year_range' => 'تواريخ الفصل الدراسي خارج نطاق العام الدراسي.',
+        'has_enrollments' => 'لا يمكن حذف الفصل الدراسي، يحتوي على تسجيلات طلاب.',
+        'has_school_days' => 'لا يمكن حذف الفصل الدراسي، يحتوي على أيام دراسية.',
+    ],
+
+    'school_day' => [
+        'created' => 'تم إنشاء اليوم الدراسي بنجاح',
+        'updated' => 'تم تحديث اليوم الدراسي بنجاح',
+        'deleted' => 'تم حذف اليوم الدراسي بنجاح',
+        'restored' => 'تم استعادة اليوم الدراسي بنجاح',
+        'force_deleted' => 'تم حذف اليوم الدراسي نهائياً من قاعدة البيانات',
+        'not_found' => 'اليوم الدراسي غير موجود',
+        'already_exists' => 'اليوم الدراسي موجود مسبقاً.',
+        'outside_semester' => 'التاريخ خارج نطاق الفصل الدراسي.',
+        'has_related_data' => 'لا يمكن حذف اليوم الدراسي، يحتوي على بيانات مرتبطة.',
+    ],
+
+    'subject_major' => [
+        'created' => 'تم إنشاء المادة الرئيسية بنجاح',
+        'updated' => 'تم تحديث المادة الرئيسية بنجاح',
+        'deleted' => 'تم حذف المادة الرئيسية بنجاح',
+        'restored' => 'تم استعادة المادة الرئيسية بنجاح',
+        'force_deleted' => 'تم حذف المادة الرئيسية نهائياً من قاعدة البيانات',
+        'not_found' => 'المادة الرئيسية غير موجودة',
+        'code_exists' => 'رمز المادة الرئيسية موجود مسبقاً.',
+        'cannot_delete_with_subjects' => 'لا يمكن حذف المادة الرئيسية التي تحتوي على مواد فرعية',
+    ],
+
+    'subject' => [
+        'created' => 'تم إنشاء المادة بنجاح',
+        'updated' => 'تم تحديث المادة بنجاح',
+        'deleted' => 'تم حذف المادة بنجاح',
+        'restored' => 'تم استعادة المادة بنجاح',
+        'force_deleted' => 'تم حذف المادة نهائياً من قاعدة البيانات',
+        'not_found' => 'المادة غير موجودة',
+        'code_exists' => 'رمز المادة موجود مسبقاً.',
+        'percentage_sum_error' => 'مجموع النسب المئوية يجب أن يساوي 100%',
+        'cannot_delete_with_relations' => 'لا يمكن حذف المادة التي تحتوي على بيانات مرتبطة',
+    ],
+
+    'student_enrollment' => [
+        'created' => 'تم إنشاء تسجيل الطالب بنجاح',
+        'updated' => 'تم تحديث تسجيل الطالب بنجاح',
+        'deleted' => 'تم حذف تسجيل الطالب بنجاح',
+        'restored' => 'تم استعادة تسجيل الطالب بنجاح',
+        'force_deleted' => 'تم حذف تسجيل الطالب نهائياً من قاعدة البيانات',
+        'not_found' => 'تسجيل الطالب غير موجود',
+        'already_exists' => 'الطالب مسجل مسبقاً في هذا الفصل الدراسي',
+        'has_marks' => 'لا يمكن حذف التسجيل، يحتوي على درجات',
+    ],
+
+    'grade_year_setting' => [
+        'created' => 'تم إنشاء إعداد الصف السنوي بنجاح',
+        'updated' => 'تم تحديث إعداد الصف السنوي بنجاح',
+        'deleted' => 'تم حذف إعداد الصف السنوي بنجاح',
+        'restored' => 'تم استعادة إعداد الصف السنوي بنجاح',
+        'force_deleted' => 'تم حذف إعداد الصف السنوي نهائياً من قاعدة البيانات',
+        'not_found' => 'إعداد الصف السنوي غير موجود',
+        'already_exists' => 'يوجد إعداد مسبق لهذا الصف في هذا العام الدراسي',
+    ],
+
+    'student_mark' => [
+        'created' => 'تم إدخال الدرجات بنجاح.',
+        'updated' => 'تم تحديث الدرجات بنجاح.',
+        'deleted' => 'تم حذف الدرجات بنجاح.',
+        'not-found' => 'لم يتم العثور على الدرجات.',
+        'invalid_mark' => 'الدرجة غير صحيحة.',
+        'exceeds_full_mark' => 'الدرجة تتجاوز الدرجة الكاملة.',
+        'already_exists' => 'يوجد درجة مسجلة مسبقاً لهذا الطالب في هذه المادة.',
+    ],
+
+    'attendance' => [
+        'marked' => 'تم تسجيل الحضور بنجاح.',
+        'updated' => 'تم تحديث الحضور بنجاح.',
+        'not-found' => 'لم يتم العثور على سجل الحضور.',
+        'already_marked' => 'تم تسجيل الحضور لهذا اليوم مسبقاً.',
+        'bulk_marked' => 'تم تسجيل الحضور بالجملة بنجاح.',
+        'report_generated' => 'تم إنشاء تقرير الحضور بنجاح.',
+    ],
+
+    'behavior_note' => [
+        'created' => 'تم إضافة الملاحظة السلوكية بنجاح.',
+        'updated' => 'تم تحديث الملاحظة السلوكية بنجاح.',
+        'deleted' => 'تم حذف الملاحظة السلوكية بنجاح.',
+        'not-found' => 'لم يتم العثور على الملاحظة السلوكية.',
+    ],
+
+    'study_note' => [
+        'created' => 'تم إضافة الملاحظة الدراسية بنجاح.',
+        'updated' => 'تم تحديث الملاحظة الدراسية بنجاح.',
+        'deleted' => 'تم حذف الملاحظة الدراسية بنجاح.',
+        'not-found' => 'لم يتم العثور على الملاحظة الدراسية.',
+    ],
+
+    'combined_notes' => [
+        'listed' => 'تم عرض الملاحظات الدراسية والسلوكية بنجاح.',
+    ],
+
+    'exam' => [
+        'created' => 'تم إنشاء الامتحان بنجاح.',
+        'updated' => 'تم تحديث الامتحان بنجاح.',
+        'deleted' => 'تم حذف الامتحان بنجاح.',
+        'restored' => 'تم استعادة الامتحان بنجاح.',
+        'force_deleted' => 'تم حذف الامتحان نهائياً بنجاح.',
+        'not-found' => 'لم يتم العثور على الامتحان.',
+        'listed' => 'تم عرض الامتحانات بنجاح.',
+        'showed' => 'تم عرض الامتحان بنجاح.',
+    ],
+
+    'complaint' => [
+        'created' => 'تم إرسال الشكوى بنجاح.',
+        'updated' => 'تم تحديث الشكوى بنجاح.',
+        'deleted' => 'تم حذف الشكوى بنجاح.',
+        'restored' => 'تم استعادة الشكوى بنجاح.',
+        'force_deleted' => 'تم حذف الشكوى نهائياً بنجاح.',
+        'not-found' => 'لم يتم العثور على الشكوى.',
+        'listed' => 'تم عرض الشكاوى بنجاح.',
+        'showed' => 'تم عرض الشكوى بنجاح.',
+        'answered' => 'تم الرد على الشكوى بنجاح.',
+        'already_answered' => 'تم الرد على الشكوى مسبقاً.',
+    ],
+
+    'message' => [
+        'created' => 'تم إرسال الرسالة بنجاح.',
+        'updated' => 'تم تحديث الرسالة بنجاح.',
+        'deleted' => 'تم حذف الرسالة بنجاح.',
+        'restored' => 'تم استعادة الرسالة بنجاح.',
+        'force_deleted' => 'تم حذف الرسالة نهائياً من قاعدة البيانات.',
+        'not-found' => 'لم يتم العثور على الرسالة.',
+        'listed' => 'تم عرض الرسائل.',
+        'fetched' => 'تم جلب الرسالة بنجاح.',
+    ],
+
+    'app_update' => [
+        'created' => 'تم إضافة التحديث بنجاح.',
+        'updated' => 'تم تحديث بيانات التحديث بنجاح.',
+        'deleted' => 'تم حذف التحديث بنجاح.',
+        'not-found' => 'لم يتم العثور على التحديث.',
+        'published' => 'تم نشر التحديث بنجاح.',
+        'available' => 'يتوفر تحديث جديد للتطبيق.',
+        'up_to_date' => 'التطبيق محدث لآخر إصدار.',
+    ],
+
+    'role' => [
+        'created' => 'تم انشاء الدور بنجاح.',
+        'updated' => 'تم تعديل الدور بنجاح.',
+        'not_found' => 'لم يتم العثور على الدور.',
+        'listed' => 'تم عرض الادوار.',
+        'get' => 'تم عرض الدور.',
+        'deleted' => 'تم حذف الدور بنجاح.'
+    ],
+
+    'permission' => [
+        'list' => 'تم عرض الصلاحيات.'
+    ],
+
+    'class_period' => [
+        'created' => 'Class period created successfully.',
+        'updated' => 'Class period updated successfully.',
+        'deleted' => 'Class period deleted successfully.',
+        'force_deleted' => 'Class period and all related records deleted successfully.',
+        'not_found' => 'Class period not found.',
+        'get' => 'Class period retrieved successfully.',
+        'list' => 'Class periods listed successfully.',
+        'has_class_sessions' => 'Cannot delete class period: It has related class sessions. Please delete the class sessions first or use force delete.',
+        'has_schedules' => 'Cannot delete class period: It has related schedules. Please delete the schedules first or use force delete.',
+        'cannot_delete' => 'Cannot delete class period due to existing relationships.'
+    ],
+
+    'school_shift' => [
+        'created' => 'School shift created successfully.',
+        'updated' => 'School shift updated successfully.',
+        'not_found' => 'School shift not found.',
+        'deleted' => 'School shift deleted successfully.',
+        'get' => 'School shift retrieved successfully.',
+        'list' => 'School shifts listed successfully.',
+        'overlapped' => 'School shift overlaps with existing shift.',
+        'has_class_periods' => 'Cannot delete school shift, it contains class periods.',
+        'has_schedules' => 'Cannot delete school shift, it contains schedules.',
+        'deletion_failed' => 'Failed to delete school shift.'
+    ],
+
+    'timetable' => [
+        'created' => 'Timetable created successfully.',
+        'updated' => 'Timetable updated successfully.',
+        'not_found' => 'Timetable not found.',
+        'deleted' => 'Timetable deleted successfully.',
+        'get' => 'Timetable retrieved successfully.',
+        'list' => 'Timetables listed successfully.',
+        'not_active' => 'Timetable is not active.'
+    ]
+];

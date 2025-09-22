@@ -13,11 +13,35 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
+
+            // Personal Details
+            $table->string('first_name');
+            $table->string('father_name')->nullable();
+            $table->string('last_name');
+            $table->string('mother_name');
+            $table->enum('gender', ['male', 'female']);
+            $table->date('birth_date')->nullable();
+
+            // Contact & Account
+            // $table->string('user_name')->unique();
+            $table->string('email')->unique()->nullable();
+            $table->string('phone')->nullable();
+            $table->string('password')->nullable();
+
+            // Role system
+            $table->enum('user_type', ['admin', 'teacher', 'student'])->default('student');
+
+            // Email verification system (custom)
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('email_verification_token', 64)->nullable();
+
+            // Profile
+            $table->string('image')->nullable(); // stored as path to image in storage/app
+
+            // Activity tracking
+            $table->timestamp('last_login')->nullable();
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
 

@@ -1,0 +1,16 @@
+// queryParams: school_day_id , section
+
+{
+    "students": [
+        {
+            "subject_id": 4,
+            "enrollment_id": 8,
+            "homework": 1,
+            "oral": 10,
+            "activity": 5,
+            "quiz": 18,
+            "exam": 5
+        }
+    ]
+
+}

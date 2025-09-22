@@ -1,0 +1,43 @@
+// queryParams: school_day_id , section
+{
+    "data": {
+        "students": [
+            {
+                "id": 1,
+                "full_name": "manar",
+                "day_status": "'present', 'justified_absent', 'absent', 'lateness'",
+                "class_periods": [
+                    // todo for backend: sort them by start time , type study mo forsa
+                    {
+                        "class_period_id": 1, // مشان الترتيب
+
+                        "class_session_id": 2, // for post only
+                        "status": "'present', 'justified_absent', 'absent', 'lateness'"
+                    },
+                    {
+                        "class_period_id": 2,
+                        "class_session_id": 5,
+                        "status": "'present', 'justified_absent', 'absent', 'lateness'"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "full_name": "manar",
+                "day_status": "'present', 'justified_absent', 'absent', 'lateness'",
+                "class_periods": [
+                    {
+                        "class_period_id": 1,
+                        "class_session_id": 2,
+                        "status": "'present', 'justified_absent', 'absent', 'lateness'"
+                    },
+                    {
+                        "class_period_id": 2,
+                        "class_session_id": 5,
+                        "status": "'present', 'justified_absent', 'absent', 'lateness'"
+                    }
+                ]
+            }
+        ]
+    }
+}

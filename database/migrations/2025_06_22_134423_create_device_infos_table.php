@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('device_infos', function (Blueprint $table) {
+            $table->id();
+            $table->string('brand')->nullable();
+            $table->string('device')->nullable();
+            $table->string('manufacturer')->nullable();
+            $table->string('model')->nullable();
+            $table->string('product')->nullable();
+            $table->string('name')->nullable();
+            $table->string('identifier')->nullable();
+            $table->string('os_version')->nullable();
+            $table->string('os_name')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('device_infos');
+    }
+};

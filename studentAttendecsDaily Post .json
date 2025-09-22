@@ -1,0 +1,15 @@
+{
+    "school_day_id": 1,
+    "students":[
+        {
+            "id" : 1,
+            "status" : "'present', 'justified_absent', 'absent', 'lateness'"
+        }
+            ,
+        {
+            "id" : 1,
+            "status" : "'present', 'justified_absent', 'absent', 'lateness'"
+        }
+
+    ]
+}

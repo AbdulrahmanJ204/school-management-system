@@ -2,8 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Semester;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Year;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,11 +16,44 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call(
+            [
+                RolePermissionSeeder::class,
+                AdminSeeder::class,
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        User::factory()->student()->count(100)->create();
+        User::factory()->teacher()->count(5)->create();
+        User::factory()->admin()->count(3)->create();
+
+        $this->call([
+            YearSeeder::class,
+            SemesterSeeder::class,
+            SchoolDaySeeder::class,
+            GradeSeeder::class,
+            SectionSeeder::class,
+            SubjectSeeder::class,
+            StudentEnrollmentSeeder::class,
+            NewsSeeder::class,
+            GradeYearSettingSeeder::class,
+            TeacherSectionSubjectSeeder::class,
+            ClassPeriodSeeder::class,
+            ScheduleSeeder::class,
+            StudentMarkSeeder::class,
+            StudyNoteSeeder::class,
+            BehaviorNoteSeeder::class,
+            ExamSeeder::class,
+            ComplaintSeeder::class,
+            MessageSeeder::class,
+            ClassSessionSeeder::class,
+            QuizSeeder::class,
+            StudentAttendanceSeeder::class,
+            TeacherAttendanceSeeder::class,
+            FileSeeder::class,
+            AssignmentSeeder::class,
+            QuestionSeeder::class,
+            AppUpdateSeeder::class,
         ]);
     }
 }
